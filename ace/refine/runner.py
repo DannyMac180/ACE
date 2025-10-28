@@ -16,16 +16,18 @@ class RefineRunner:
     refined playbook updates.
     """
     
-    def __init__(self, playbook: Playbook, threshold: float = 0.90):
+    def __init__(self, playbook: Playbook, threshold: float = 0.90, archive_ratio: float = 0.75):
         """
         Initialize the RefineRunner.
         
         Args:
             playbook: The current Playbook to refine against
             threshold: Similarity threshold for deduplication (default: 0.90)
+            archive_ratio: Harmful ratio threshold for archival (default: 0.75)
         """
         self.playbook = playbook
         self.threshold = threshold
+        self.archive_ratio = archive_ratio
     
     def run(self, reflection: Reflection) -> RefineResult:
         """
@@ -174,15 +176,39 @@ class RefineRunner:
         """
         Archive low-utility bullets based on harmful/helpful ratio.
         
-        Stub implementation - to be completed in future task.
+        Bullets are archived if their harmful ratio (harmful / (helpful + harmful))
+        exceeds the archive_ratio threshold.
         
         Returns:
             List of ARCHIVE operations
         """
-        return []
+        archive_ops: List[RefineOp] = []
+        bullets_to_remove = []
+        
+        for bullet in self.playbook.bullets:
+            total_count = bullet.helpful + bullet.harmful
+            
+            # Only evaluate bullets with feedback
+            if total_count > 0:
+                harmful_ratio = bullet.harmful / total_count
+                
+                if harmful_ratio > self.archive_ratio:
+                    # Create ARCHIVE operation
+                    archive_op = RefineOp(
+                        op="ARCHIVE",
+                        target_ids=[bullet.id]
+                    )
+                    archive_ops.append(archive_op)
+                    bullets_to_remove.append(bullet)
+        
+        # Remove archived bullets from playbook
+        for bullet in bullets_to_remove:
+            self.playbook.bullets.remove(bullet)
+        
+        return archive_ops
 
 
-def refine(reflection: Reflection, playbook: Playbook, threshold: float = 0.90) -> RefineResult:
+def refine(reflection: Reflection, playbook: Playbook, threshold: float = 0.90, archive_ratio: float = 0.75) -> RefineResult:
     """
     Main entry point for the refinement pipeline.
     
@@ -192,9 +218,10 @@ def refine(reflection: Reflection, playbook: Playbook, threshold: float = 0.90) 
         reflection: A Reflection object from the Reflector
         playbook: The current Playbook to refine against
         threshold: Similarity threshold for deduplication (default: 0.90)
+        archive_ratio: Harmful ratio threshold for archival (default: 0.75)
         
     Returns:
         RefineResult: Summary of operations performed (merged count, archived count, ops)
     """
-    runner = RefineRunner(playbook=playbook, threshold=threshold)
+    runner = RefineRunner(playbook=playbook, threshold=threshold, archive_ratio=archive_ratio)
     return runner.run(reflection)

@@ -355,3 +355,75 @@ def test_consolidate_handles_candidate_ids():
     assert survivor.helpful == 2
     assert survivor.harmful == 0
     assert len(playbook.bullets) == 1
+
+
+def test_archive_policy_removes_high_harmful_ratio_bullets():
+    """Test that archival policy removes bullets with harmful ratio exceeding threshold."""
+    playbook = Playbook(
+        version=1,
+        bullets=[
+            Bullet(
+                id="strat-00001",
+                section="strategies",
+                content="Good strategy",
+                tags=["topic:retrieval"],
+                helpful=8,
+                harmful=2  # ratio: 2/10 = 0.20 (keep)
+            ),
+            Bullet(
+                id="strat-00002",
+                section="strategies",
+                content="Bad strategy",
+                tags=["topic:retrieval"],
+                helpful=2,
+                harmful=8  # ratio: 8/10 = 0.80 (archive, exceeds 0.75)
+            ),
+            Bullet(
+                id="strat-00003",
+                section="strategies",
+                content="Neutral strategy",
+                tags=["topic:test"],
+                helpful=0,
+                harmful=0  # ratio: 0/0 (keep, no feedback)
+            ),
+            Bullet(
+                id="strat-00004",
+                section="strategies",
+                content="Borderline strategy",
+                tags=["topic:test"],
+                helpful=3,
+                harmful=9  # ratio: 9/12 = 0.75 (keep, equals threshold)
+            ),
+            Bullet(
+                id="strat-00005",
+                section="strategies",
+                content="Mostly harmful",
+                tags=["topic:test"],
+                helpful=1,
+                harmful=10  # ratio: 10/11 = 0.909 (archive)
+            )
+        ]
+    )
+    
+    # Use default archive_ratio of 0.75
+    reflection = Reflection()
+    result = refine(reflection, playbook, archive_ratio=0.75)
+    
+    # Should archive strat-00002 (0.80) and strat-00005 (0.909)
+    assert result.archived == 2
+    
+    # Verify archived bullets are removed from playbook
+    assert len(playbook.bullets) == 3
+    remaining_ids = [b.id for b in playbook.bullets]
+    assert "strat-00001" in remaining_ids
+    assert "strat-00002" not in remaining_ids
+    assert "strat-00003" in remaining_ids
+    assert "strat-00004" in remaining_ids  # 0.75 equals threshold, should keep
+    assert "strat-00005" not in remaining_ids
+    
+    # Verify ARCHIVE operations are in result
+    archive_ops = [op for op in result.ops if op.op == "ARCHIVE"]
+    assert len(archive_ops) == 2
+    archived_ids = [op.target_ids[0] for op in archive_ops]
+    assert "strat-00002" in archived_ids
+    assert "strat-00005" in archived_ids
