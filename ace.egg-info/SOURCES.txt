@@ -10,12 +10,12 @@ ace/core/merge.py
 ace/core/reflect.py
 ace/core/retrieve.py
 ace/core/schema.py
-ace/core/store.py
 ace/core/retrieval/hybrid_retriever.py
 ace/core/storage/bullet_store.py
 ace/core/storage/db.py
 ace/core/storage/embedding_store.py
 ace/core/storage/minhash_store.py
+ace/core/storage/store_adapter.py
 ace/curator/__init__.py
 ace/curator/curator.py
 ace/curator/prompts.py
