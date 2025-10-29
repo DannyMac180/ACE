@@ -1,4 +1,3 @@
-
 from core.schema import Bullet
 from core.storage.bullet_store import BulletStore
 from core.storage.db import DatabaseConnection
@@ -6,7 +5,12 @@ from core.storage.embedding_store import EmbeddingStore
 
 
 class HybridRetriever:
-    def __init__(self, db_conn: DatabaseConnection, bullet_store: BulletStore, embedding_store: EmbeddingStore):
+    def __init__(
+        self,
+        db_conn: DatabaseConnection,
+        bullet_store: BulletStore,
+        embedding_store: EmbeddingStore,
+    ):
         self.db = db_conn
         self.bullet_store = bullet_store
         self.embedding_store = embedding_store

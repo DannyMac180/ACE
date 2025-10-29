@@ -8,11 +8,13 @@ class BulletTag:
     id: str
     tag: Literal["helpful", "harmful"]
 
+
 @dataclass
 class CandidateBullet:
     section: Literal["strategies", "templates", "troubleshooting", "code_snippets", "facts"]
     content: str
     tags: list[str] = field(default_factory=list)
+
 
 @dataclass
 class Reflection:

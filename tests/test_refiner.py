@@ -25,22 +25,20 @@ def test_refine_with_reflection_processes_curator():
                 id="strat-00001",
                 section="strategies",
                 content="Existing strategy",
-                tags=["topic:test"]
+                tags=["topic:test"],
             )
-        ]
+        ],
     )
 
     reflection = Reflection(
-        bullet_tags=[
-            BulletTag(id="strat-00001", tag="helpful")
-        ],
+        bullet_tags=[BulletTag(id="strat-00001", tag="helpful")],
         candidate_bullets=[
             CandidateBullet(
                 section="strategies",
                 content="New strategy from reflection",
-                tags=["topic:retrieval"]
+                tags=["topic:retrieval"],
             )
-        ]
+        ],
     )
 
     result = refine(reflection, playbook)
@@ -80,20 +78,16 @@ def test_refine_runner_run_returns_result():
     playbook = Playbook(version=1, bullets=[])
     reflection = Reflection(
         candidate_bullets=[
-            CandidateBullet(
-                section="facts",
-                content="Test fact",
-                tags=["topic:test"]
-            )
+            CandidateBullet(section="facts", content="Test fact", tags=["topic:test"])
         ]
     )
 
     runner = RefineRunner(playbook=playbook)
     result = runner.run(reflection)
 
-    assert hasattr(result, 'merged')
-    assert hasattr(result, 'archived')
-    assert hasattr(result, 'ops')
+    assert hasattr(result, "merged")
+    assert hasattr(result, "archived")
+    assert hasattr(result, "ops")
 
 
 def test_refine_orchestration_stages():
@@ -105,19 +99,16 @@ def test_refine_orchestration_stages():
     playbook = Playbook(version=1, bullets=[])
     reflection = Reflection(
         candidate_bullets=[
-            CandidateBullet(
-                section="strategies",
-                content="Strategy one",
-                tags=["topic:test"]
-            )
+            CandidateBullet(section="strategies", content="Strategy one", tags=["topic:test"])
         ]
     )
 
     runner = RefineRunner(playbook=playbook)
 
     # Verify that curator is called (it should convert reflection to delta)
-    with patch('ace.refine.runner.curate') as mock_curate:
+    with patch("ace.refine.runner.curate") as mock_curate:
         from ace.core.schema import Delta
+
         mock_curate.return_value = Delta(ops=[])
 
         runner.run(reflection)
@@ -137,7 +128,7 @@ def test_refine_with_helpful_and_harmful_tags():
                 content="Good strategy",
                 tags=["topic:retrieval"],
                 helpful=5,
-                harmful=0
+                harmful=0,
             ),
             Bullet(
                 id="strat-00002",
@@ -145,15 +136,15 @@ def test_refine_with_helpful_and_harmful_tags():
                 content="Bad strategy",
                 tags=["topic:retrieval"],
                 helpful=0,
-                harmful=3
-            )
-        ]
+                harmful=3,
+            ),
+        ],
     )
 
     reflection = Reflection(
         bullet_tags=[
             BulletTag(id="strat-00001", tag="helpful"),
-            BulletTag(id="strat-00002", tag="harmful")
+            BulletTag(id="strat-00002", tag="harmful"),
         ]
     )
 
@@ -173,10 +164,13 @@ def test_deduplicate_finds_similar_bullets():
             Bullet(
                 id="strat-00001",
                 section="strategies",
-                content="Use hybrid retrieval with BM25 and vector embeddings for better search results",
-                tags=["topic:retrieval"]
+                content=(
+                    "Use hybrid retrieval with BM25 and vector embeddings "
+                    "for better search results"
+                ),
+                tags=["topic:retrieval"],
             )
-        ]
+        ],
     )
 
     # Reflection with a very similar candidate bullet (near-duplicate)
@@ -185,7 +179,7 @@ def test_deduplicate_finds_similar_bullets():
             CandidateBullet(
                 section="strategies",
                 content="Use hybrid retrieval with BM25 and vector embeddings for improved search",
-                tags=["topic:retrieval"]
+                tags=["topic:retrieval"],
             )
         ]
     )
@@ -215,9 +209,9 @@ def test_deduplicate_keeps_distinct_bullets():
                 id="strat-00001",
                 section="strategies",
                 content="Use hybrid retrieval with BM25 and vector embeddings",
-                tags=["topic:retrieval"]
+                tags=["topic:retrieval"],
             )
-        ]
+        ],
     )
 
     # Reflection with a completely different candidate bullet
@@ -226,7 +220,7 @@ def test_deduplicate_keeps_distinct_bullets():
             CandidateBullet(
                 section="strategies",
                 content="Always validate user input to prevent injection attacks",
-                tags=["topic:security"]
+                tags=["topic:security"],
             )
         ]
     )
@@ -247,9 +241,9 @@ def test_deduplicate_with_minhash_threshold():
                 id="strat-00001",
                 section="strategies",
                 content="run tests before commit always check coverage",
-                tags=["topic:testing"]
+                tags=["topic:testing"],
             )
-        ]
+        ],
     )
 
     # Very similar wording (high Jaccard) even if embedding differs
@@ -258,7 +252,7 @@ def test_deduplicate_with_minhash_threshold():
             CandidateBullet(
                 section="strategies",
                 content="always run tests before commit check coverage",
-                tags=["topic:testing"]
+                tags=["topic:testing"],
             )
         ]
     )
@@ -285,7 +279,7 @@ def test_consolidate_transfers_counters():
                 content="Use hybrid retrieval",
                 tags=["topic:retrieval"],
                 helpful=5,
-                harmful=1
+                harmful=1,
             ),
             Bullet(
                 id="strat-00002",
@@ -293,19 +287,13 @@ def test_consolidate_transfers_counters():
                 content="Similar retrieval strategy",
                 tags=["topic:retrieval"],
                 helpful=3,
-                harmful=2
-            )
-        ]
+                harmful=2,
+            ),
+        ],
     )
 
     # Create MERGE operation: merge strat-00002 into strat-00001
-    merge_ops = [
-        RefineOp(
-            op="MERGE",
-            target_ids=["strat-00002"],
-            survivor_id="strat-00001"
-        )
-    ]
+    merge_ops = [RefineOp(op="MERGE", target_ids=["strat-00002"], survivor_id="strat-00001")]
 
     runner = RefineRunner(playbook=playbook)
     runner._consolidate(merge_ops)
@@ -334,9 +322,9 @@ def test_consolidate_handles_candidate_ids():
                 content="Existing strategy",
                 tags=["topic:test"],
                 helpful=2,
-                harmful=0
+                harmful=0,
             )
-        ]
+        ],
     )
 
     # MERGE operation with candidate ID (not in playbook)
@@ -344,7 +332,7 @@ def test_consolidate_handles_candidate_ids():
         RefineOp(
             op="MERGE",
             target_ids=["candidate-0"],  # Doesn't exist in playbook
-            survivor_id="strat-00001"
+            survivor_id="strat-00001",
         )
     ]
 
@@ -369,7 +357,7 @@ def test_archive_policy_removes_high_harmful_ratio_bullets():
                 content="Good strategy",
                 tags=["topic:retrieval"],
                 helpful=8,
-                harmful=2  # ratio: 2/10 = 0.20 (keep)
+                harmful=2,  # ratio: 2/10 = 0.20 (keep)
             ),
             Bullet(
                 id="strat-00002",
@@ -377,7 +365,7 @@ def test_archive_policy_removes_high_harmful_ratio_bullets():
                 content="Bad strategy",
                 tags=["topic:retrieval"],
                 helpful=2,
-                harmful=8  # ratio: 8/10 = 0.80 (archive, exceeds 0.75)
+                harmful=8,  # ratio: 8/10 = 0.80 (archive, exceeds 0.75)
             ),
             Bullet(
                 id="strat-00003",
@@ -385,7 +373,7 @@ def test_archive_policy_removes_high_harmful_ratio_bullets():
                 content="Neutral strategy",
                 tags=["topic:test"],
                 helpful=0,
-                harmful=0  # ratio: 0/0 (keep, no feedback)
+                harmful=0,  # ratio: 0/0 (keep, no feedback)
             ),
             Bullet(
                 id="strat-00004",
@@ -393,7 +381,7 @@ def test_archive_policy_removes_high_harmful_ratio_bullets():
                 content="Borderline strategy",
                 tags=["topic:test"],
                 helpful=3,
-                harmful=9  # ratio: 9/12 = 0.75 (keep, equals threshold)
+                harmful=9,  # ratio: 9/12 = 0.75 (keep, equals threshold)
             ),
             Bullet(
                 id="strat-00005",
@@ -401,9 +389,9 @@ def test_archive_policy_removes_high_harmful_ratio_bullets():
                 content="Mostly harmful",
                 tags=["topic:test"],
                 helpful=1,
-                harmful=10  # ratio: 10/11 = 0.909 (archive)
-            )
-        ]
+                harmful=10,  # ratio: 10/11 = 0.909 (archive)
+            ),
+        ],
     )
 
     # Use default archive_ratio of 0.75

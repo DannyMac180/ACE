@@ -6,6 +6,7 @@ from .schema import BulletTag, CandidateBullet, Reflection
 
 class ReflectionParseError(Exception):
     """Raised when reflection JSON parsing fails."""
+
     pass
 
 
@@ -41,7 +42,7 @@ def parse_reflection(json_str: str) -> Reflection:
     try:
         data = json.loads(cleaned)
     except json.JSONDecodeError as e:
-        raise ReflectionParseError(f"Invalid JSON: {e}")
+        raise ReflectionParseError(f"Invalid JSON: {e}") from None
 
     if not isinstance(data, dict):
         raise ReflectionParseError("JSON must be an object")
@@ -69,10 +70,18 @@ def parse_reflection(json_str: str) -> Reflection:
             if not isinstance(cb, dict):
                 raise ReflectionParseError("Each candidate_bullet must be an object")
             if "section" not in cb or "content" not in cb:
-                raise ReflectionParseError("candidate_bullet must have 'section' and 'content' fields")
+                raise ReflectionParseError(
+                    "candidate_bullet must have 'section' and 'content' fields"
+                )
 
             section = cb["section"]
-            valid_sections = ["strategies", "templates", "troubleshooting", "code_snippets", "facts"]
+            valid_sections = [
+                "strategies",
+                "templates",
+                "troubleshooting",
+                "code_snippets",
+                "facts",
+            ]
             if section not in valid_sections:
                 raise ReflectionParseError(f"Invalid section: {section}")
 

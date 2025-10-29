@@ -34,15 +34,23 @@ class Store:
 
     def save_bullet(self, bullet: Bullet):
         with sqlite3.connect(self.db_path) as conn:
-            conn.execute("""
-                INSERT OR REPLACE INTO bullets (id, section, content, tags, helpful, harmful, last_used, added_at)
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO bullets
+                (id, section, content, tags, helpful, harmful, last_used, added_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                bullet.id, bullet.section, bullet.content,
-                json.dumps(bullet.tags), bullet.helpful, bullet.harmful,
-                bullet.last_used.isoformat() if bullet.last_used else None,
-                bullet.added_at.isoformat()
-            ))
+            """,
+                (
+                    bullet.id,
+                    bullet.section,
+                    bullet.content,
+                    json.dumps(bullet.tags),
+                    bullet.helpful,
+                    bullet.harmful,
+                    bullet.last_used.isoformat() if bullet.last_used else None,
+                    bullet.added_at.isoformat(),
+                ),
+            )
 
     def get_bullets(self) -> list[Bullet]:
         with sqlite3.connect(self.db_path) as conn:
@@ -62,6 +70,7 @@ class Store:
     def _deserialize_bullet(self, row: tuple) -> Bullet:
         """Deserialize a database row into a Bullet object."""
         from datetime import datetime
+
         return Bullet(
             id=row[0],
             section=row[1],
@@ -70,7 +79,7 @@ class Store:
             helpful=row[4],
             harmful=row[5],
             last_used=datetime.fromisoformat(row[6]) if row[6] else None,
-            added_at=datetime.fromisoformat(row[7])
+            added_at=datetime.fromisoformat(row[7]),
         )
 
     def get_version(self) -> int:

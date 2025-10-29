@@ -117,7 +117,7 @@ class OpenRouterClient(LLMClient):
         app_name: str | None = None,
         default_max_tokens: int | None = None,
         default_temperature: float = 0.7,
-        reasoning_effort: str | None = "medium"
+        reasoning_effort: str | None = "medium",
     ):
         """
         Initialize the OpenRouter client.
@@ -161,10 +161,7 @@ class OpenRouterClient(LLMClient):
         Raises:
             requests.exceptions.RequestException: If API request fails
         """
-        headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json"
-        }
+        headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
 
         if self.site_url:
             headers["HTTP-Referer"] = self.site_url
@@ -191,10 +188,7 @@ class OpenRouterClient(LLMClient):
 
         try:
             response = requests.post(
-                self.BASE_URL,
-                headers=headers,
-                json=payload,
-                timeout=kwargs.get("timeout", 60)
+                self.BASE_URL, headers=headers, json=payload, timeout=kwargs.get("timeout", 60)
             )
             response.raise_for_status()
 

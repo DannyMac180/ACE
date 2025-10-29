@@ -60,9 +60,7 @@ class RefineRunner:
 
         # Combine results
         result = RefineResult(
-            merged=len(merge_ops),
-            archived=len(archive_ops),
-            ops=merge_ops + archive_ops
+            merged=len(merge_ops), archived=len(archive_ops), ops=merge_ops + archive_ops
         )
 
         return result
@@ -111,9 +109,7 @@ class RefineRunner:
                 if is_duplicate:
                     # Create MERGE operation: keep existing bullet, merge candidate into it
                     merge_op = RefineOp(
-                        op="MERGE",
-                        target_ids=[candidate_id],
-                        survivor_id=existing_bullet.id
+                        op="MERGE", target_ids=[candidate_id], survivor_id=existing_bullet.id
                     )
                     merge_ops.append(merge_op)
                     break  # Only merge with first match
@@ -132,7 +128,7 @@ class RefineRunner:
         """Generate MinHash signature for text."""
         m = MinHash(num_perm=num_perm)
         for word in text.split():
-            m.update(word.encode('utf8'))
+            m.update(word.encode("utf8"))
         return m
 
     def _consolidate(self, merge_ops: list[RefineOp]) -> None:
@@ -195,10 +191,7 @@ class RefineRunner:
 
                 if harmful_ratio > self.archive_ratio:
                     # Create ARCHIVE operation
-                    archive_op = RefineOp(
-                        op="ARCHIVE",
-                        target_ids=[bullet.id]
-                    )
+                    archive_op = RefineOp(op="ARCHIVE", target_ids=[bullet.id])
                     archive_ops.append(archive_op)
                     bullets_to_remove.append(bullet)
 
@@ -209,7 +202,9 @@ class RefineRunner:
         return archive_ops
 
 
-def refine(reflection: Reflection, playbook: Playbook, threshold: float = 0.90, archive_ratio: float = 0.75) -> RefineResult:
+def refine(
+    reflection: Reflection, playbook: Playbook, threshold: float = 0.90, archive_ratio: float = 0.75
+) -> RefineResult:
     """
     Main entry point for the refinement pipeline.
 

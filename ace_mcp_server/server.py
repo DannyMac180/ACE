@@ -17,19 +17,23 @@ store = Store()
 retriever = Retriever(store)
 reflector = Reflector()
 
+
 @app.tool()
 def ace_retrieve(query: str, top_k: int = 24) -> list[dict[str, Any]]:
     bullets = retriever.retrieve(query, top_k)
     return [asdict(b) for b in bullets]
+
 
 @app.tool()
 def ace_record_trajectory(doc: dict[str, Any]) -> str:
     # Stub: record trajectory and return id
     return "traj-0001"
 
+
 @app.tool()
 def ace_reflect(doc: dict[str, Any]) -> dict[str, Any]:
     return reflector.reflect(doc)
+
 
 @app.tool()
 def ace_curate(reflection_data: dict[str, Any]) -> dict[str, int]:
@@ -59,10 +63,12 @@ def ace_curate(reflection_data: dict[str, Any]) -> dict[str, int]:
 
     return {"merged": result.merged, "archived": result.archived}
 
+
 @app.tool()
 def ace_commit(delta: dict[str, Any]) -> dict[str, int]:
     # Stub: apply delta and return new version
     return {"version": 1}
+
 
 @app.tool()
 def ace_refine(threshold: float = 0.90) -> dict[str, int]:
@@ -90,18 +96,21 @@ def ace_refine(threshold: float = 0.90) -> dict[str, int]:
 
     return {"merged": result.merged, "archived": result.archived}
 
+
 @app.tool()
 def ace_stats() -> dict[str, Any]:
     bullets = store.get_bullets()
     helpful_sum = sum(b.helpful for b in bullets)
     return {
         "num_bullets": len(bullets),
-        "helpful_ratio": helpful_sum / len(bullets) if bullets else 0
+        "helpful_ratio": helpful_sum / len(bullets) if bullets else 0,
     }
+
 
 @app.resource("ace://playbook.json")
 def get_playbook() -> str:
     bullets = store.get_bullets()
     playbook = Playbook(version=store.get_version(), bullets=bullets)
     import json
+
     return json.dumps(playbook.__dict__)

@@ -1,6 +1,7 @@
 # ace/reflector/prompts.py
 
-REFLECTOR_SYSTEM_PROMPT = """You are an expert software development reflector that analyzes task outcomes and generates actionable insights.
+REFLECTOR_SYSTEM_PROMPT = """You are an expert software development reflector \
+that analyzes task outcomes and generates actionable insights.
 
 Your role is to:
 1. Identify errors or failures in the execution

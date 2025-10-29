@@ -12,10 +12,8 @@ def test_add_operation():
     delta = Delta(
         op="ADD",
         new_bullet=DeltaBullet(
-            section="strategies",
-            content="Use hybrid retrieval",
-            tags=["topic:retrieval"]
-        )
+            section="strategies", content="Use hybrid retrieval", tags=["topic:retrieval"]
+        ),
     )
     manager.apply_delta(delta)
 
@@ -40,21 +38,12 @@ def test_patch_operation():
     manager = PlaybookManager()
 
     delta_add = Delta(
-        op="ADD",
-        new_bullet=DeltaBullet(
-            section="strategies",
-            content="Original content",
-            tags=[]
-        )
+        op="ADD", new_bullet=DeltaBullet(section="strategies", content="Original content", tags=[])
     )
     manager.apply_delta(delta_add)
     bullet_id = manager.playbook.bullets[0].id
 
-    delta_patch = Delta(
-        op="PATCH",
-        target_id=bullet_id,
-        patch="Updated content"
-    )
+    delta_patch = Delta(op="PATCH", target_id=bullet_id, patch="Updated content")
     manager.apply_delta(delta_patch)
 
     assert manager.playbook.version == 2
@@ -81,8 +70,7 @@ def test_incr_helpful_operation():
     manager = PlaybookManager()
 
     delta_add = Delta(
-        op="ADD",
-        new_bullet=DeltaBullet(section="strategies", content="Test", tags=[])
+        op="ADD", new_bullet=DeltaBullet(section="strategies", content="Test", tags=[])
     )
     manager.apply_delta(delta_add)
     bullet_id = manager.playbook.bullets[0].id
@@ -99,8 +87,7 @@ def test_incr_harmful_operation():
     manager = PlaybookManager()
 
     delta_add = Delta(
-        op="ADD",
-        new_bullet=DeltaBullet(section="strategies", content="Test", tags=[])
+        op="ADD", new_bullet=DeltaBullet(section="strategies", content="Test", tags=[])
     )
     manager.apply_delta(delta_add)
     bullet_id = manager.playbook.bullets[0].id
@@ -116,8 +103,7 @@ def test_deprecate_operation():
     manager = PlaybookManager()
 
     delta_add = Delta(
-        op="ADD",
-        new_bullet=DeltaBullet(section="strategies", content="Test", tags=[])
+        op="ADD", new_bullet=DeltaBullet(section="strategies", content="Test", tags=[])
     )
     manager.apply_delta(delta_add)
     bullet_id = manager.playbook.bullets[0].id
@@ -143,12 +129,10 @@ def test_multiple_operations_idempotent():
     manager = PlaybookManager()
 
     delta1 = Delta(
-        op="ADD",
-        new_bullet=DeltaBullet(section="strategies", content="Bullet 1", tags=[])
+        op="ADD", new_bullet=DeltaBullet(section="strategies", content="Bullet 1", tags=[])
     )
     delta2 = Delta(
-        op="ADD",
-        new_bullet=DeltaBullet(section="facts", content="Bullet 2", tags=["tag1"])
+        op="ADD", new_bullet=DeltaBullet(section="facts", content="Bullet 2", tags=["tag1"])
     )
 
     manager.apply_delta(delta1)

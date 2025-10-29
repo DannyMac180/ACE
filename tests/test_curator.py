@@ -16,7 +16,7 @@ def test_curate_with_helpful_tags():
     reflection = Reflection(
         bullet_tags=[
             BulletTag(id="strat-00091", tag="helpful"),
-            BulletTag(id="tmpl-00022", tag="helpful")
+            BulletTag(id="tmpl-00022", tag="helpful"),
         ]
     )
     delta = curate(reflection)
@@ -33,7 +33,7 @@ def test_curate_with_harmful_tags():
     reflection = Reflection(
         bullet_tags=[
             BulletTag(id="trbl-00007", tag="harmful"),
-            BulletTag(id="strat-00050", tag="harmful")
+            BulletTag(id="strat-00050", tag="harmful"),
         ]
     )
     delta = curate(reflection)
@@ -52,13 +52,13 @@ def test_curate_with_candidate_bullets():
             CandidateBullet(
                 section="strategies",
                 content="Use hybrid retrieval for better results",
-                tags=["topic:retrieval", "stack:python"]
+                tags=["topic:retrieval", "stack:python"],
             ),
             CandidateBullet(
                 section="troubleshooting",
                 content="Check FAISS index dimension mismatch",
-                tags=["topic:vector", "tool:faiss"]
-            )
+                tags=["topic:vector", "tool:faiss"],
+            ),
         ]
     )
     delta = curate(reflection)
@@ -81,19 +81,20 @@ def test_curate_with_candidate_bullets():
 
 
 def test_curate_with_mixed_operations():
-    """Test that a reflection with both tags and candidate bullets generates correct mixed operations."""
+    """Test that a reflection with both tags and candidate bullets generates
+    correct mixed operations."""
     reflection = Reflection(
         bullet_tags=[
             BulletTag(id="strat-00091", tag="helpful"),
-            BulletTag(id="tmpl-00022", tag="harmful")
+            BulletTag(id="tmpl-00022", tag="harmful"),
         ],
         candidate_bullets=[
             CandidateBullet(
                 section="facts",
                 content="SQLite supports JSON1 extension",
-                tags=["db:sqlite", "topic:storage"]
+                tags=["db:sqlite", "topic:storage"],
             )
-        ]
+        ],
     )
     delta = curate(reflection)
 
@@ -119,7 +120,7 @@ def test_curate_preserves_all_candidate_bullet_fields():
             CandidateBullet(
                 section="code_snippets",
                 content="import faiss\nindex = faiss.IndexFlatL2(dim)",
-                tags=["lang:python", "lib:faiss", "topic:indexing"]
+                tags=["lang:python", "lib:faiss", "topic:indexing"],
             )
         ]
     )
@@ -147,9 +148,9 @@ def test_curate_with_reflection_insights():
             CandidateBullet(
                 section="troubleshooting",
                 content="Validate embedding dims match FAISS index dims before insertion",
-                tags=["topic:vector", "tool:faiss", "error:dimension"]
+                tags=["topic:vector", "tool:faiss", "error:dimension"],
             )
-        ]
+        ],
     )
     delta = curate(reflection)
 

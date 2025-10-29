@@ -16,5 +16,5 @@ class Reflector:
             "correct_approach": None,
             "key_insight": None,
             "bullet_tags": [],
-            "candidate_bullets": []
+            "candidate_bullets": [],
         }

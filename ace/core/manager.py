@@ -35,7 +35,7 @@ class PlaybookManager:
                 section=delta.new_bullet.section,
                 content=delta.new_bullet.content,
                 tags=delta.new_bullet.tags,
-                added_at=datetime.utcnow()
+                added_at=datetime.utcnow(),
             )
             self.playbook.bullets.append(bullet)
             self.playbook.version += 1

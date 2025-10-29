@@ -13,15 +13,20 @@ class MinHashStore:
     def generate_signature(self, text: str) -> bytes:
         m = MinHash(num_perm=self.num_perm)
         for word in text.split():
-            m.update(word.encode('utf8'))
+            m.update(word.encode("utf8"))
         return pickle.dumps(m)
 
     def add_signature(self, bullet_id: str, text: str):
         sig = self.generate_signature(text)
-        self.db.execute('INSERT OR REPLACE INTO minhash_sigs (bullet_id, signature) VALUES (?, ?)', (bullet_id, sig))
+        self.db.execute(
+            "INSERT OR REPLACE INTO minhash_sigs (bullet_id, signature) VALUES (?, ?)",
+            (bullet_id, sig),
+        )
 
     def get_signature(self, bullet_id: str) -> MinHash:
-        rows = self.db.fetchall('SELECT signature FROM minhash_sigs WHERE bullet_id = ?', (bullet_id,))
+        rows = self.db.fetchall(
+            "SELECT signature FROM minhash_sigs WHERE bullet_id = ?", (bullet_id,)
+        )
         if not rows:
             return None
         return pickle.loads(rows[0][0])
@@ -30,4 +35,4 @@ class MinHashStore:
         return sig1.jaccard(sig2)
 
     def remove_signature(self, bullet_id: str):
-        self.db.execute('DELETE FROM minhash_sigs WHERE bullet_id = ?', (bullet_id,))
+        self.db.execute("DELETE FROM minhash_sigs WHERE bullet_id = ?", (bullet_id,))

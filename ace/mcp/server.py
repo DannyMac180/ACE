@@ -4,6 +4,7 @@ ACE MCP Server - Model Context Protocol implementation for ACE.
 Exposes endpoints for playbook retrieval, reflection, curation, and refinement.
 Built with FastMCP (FastAPI-based MCP implementation).
 """
+
 from dataclasses import asdict
 
 from fastmcp import FastMCP
@@ -44,7 +45,11 @@ async def commit(delta: dict) -> dict:
         playbook = store.load_playbook()
         delta_obj = Delta.from_dict(delta)
         updated_playbook = apply_delta(playbook, delta_obj, store)
-        return {"success": True, "message": "Delta applied successfully", "version": updated_playbook.version}
+        return {
+            "success": True,
+            "message": "Delta applied successfully",
+            "version": updated_playbook.version,
+        }
     except Exception as e:
         return {"success": False, "error": str(e)}
 
@@ -65,10 +70,7 @@ async def get_playbook_json() -> str:
     version = store.get_version()
     bullets = store.get_bullets()
 
-    playbook_dict = {
-        "version": version,
-        "bullets": [asdict(b) for b in bullets]
-    }
+    playbook_dict = {"version": version, "bullets": [asdict(b) for b in bullets]}
 
     return json.dumps(playbook_dict, indent=2, default=str)
 
@@ -81,12 +83,8 @@ def main() -> None:
         python -m ace.mcp.server
     """
     import uvicorn
-    uvicorn.run(
-        "ace.mcp.server:mcp",
-        host="127.0.0.1",
-        port=8000,
-        reload=True
-    )
+
+    uvicorn.run("ace.mcp.server:mcp", host="127.0.0.1", port=8000, reload=True)
 
 
 if __name__ == "__main__":

@@ -10,18 +10,21 @@ from .db import DatabaseConnection
 # Load embedding model (all-MiniLM-L6-v2: 384d, Apache 2.0 license)
 _model = None
 
+
 def _get_model():
     global _model
     if _model is None:
-        _model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+        _model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
     return _model
+
 
 def generate_embedding(text: str) -> np.ndarray:
     model = _get_model()
     return model.encode(text, convert_to_numpy=True).astype(np.float32)
 
+
 class EmbeddingStore:
-    def __init__(self, db_conn: DatabaseConnection, index_path: str = 'faiss_index.idx'):
+    def __init__(self, db_conn: DatabaseConnection, index_path: str = "faiss_index.idx"):
         self.db = db_conn
         self.index_path = index_path
         self.index = None
@@ -33,8 +36,8 @@ class EmbeddingStore:
         if os.path.exists(self.index_path):
             self.index = faiss.read_index(self.index_path)
             # Load mappings
-            if os.path.exists(self.index_path + '.mapping'):
-                with open(self.index_path + '.mapping', 'rb') as f:
+            if os.path.exists(self.index_path + ".mapping"):
+                with open(self.index_path + ".mapping", "rb") as f:
                     self.id_to_idx, self.idx_to_id = pickle.load(f)
         else:
             self.index = faiss.IndexFlatIP(384)  # Cosine similarity
@@ -43,7 +46,7 @@ class EmbeddingStore:
 
     def save_index(self):
         faiss.write_index(self.index, self.index_path)
-        with open(self.index_path + '.mapping', 'wb') as f:
+        with open(self.index_path + ".mapping", "wb") as f:
             pickle.dump((self.id_to_idx, self.idx_to_id), f)
 
     def add_embedding(self, bullet_id: str, text: str):
@@ -55,7 +58,10 @@ class EmbeddingStore:
         self.id_to_idx[bullet_id] = idx
         self.idx_to_id[idx] = bullet_id
         # Persist to DB
-        self.db.execute('INSERT OR REPLACE INTO embeddings (bullet_id, vector) VALUES (?, ?)', (bullet_id, vector.tobytes()))
+        self.db.execute(
+            "INSERT OR REPLACE INTO embeddings (bullet_id, vector) VALUES (?, ?)",
+            (bullet_id, vector.tobytes()),
+        )
 
     def search(self, query: str, top_k: int = 24) -> list[str]:
         vector = generate_embedding(query)
@@ -71,13 +77,13 @@ class EmbeddingStore:
         # TODO: Implement proper removal
         del self.id_to_idx[bullet_id]
         del self.idx_to_id[idx]
-        self.db.execute('DELETE FROM embeddings WHERE bullet_id = ?', (bullet_id,))
+        self.db.execute("DELETE FROM embeddings WHERE bullet_id = ?", (bullet_id,))
         # Rebuild index
         self.rebuild_index()
 
     def rebuild_index(self):
         self.index = faiss.IndexFlatIP(384)
-        rows = self.db.fetchall('SELECT bullet_id, vector FROM embeddings')
+        rows = self.db.fetchall("SELECT bullet_id, vector FROM embeddings")
         for bullet_id, vector_bytes in rows:
             vector = np.frombuffer(vector_bytes, dtype=np.float32)
             idx = self.index.ntotal

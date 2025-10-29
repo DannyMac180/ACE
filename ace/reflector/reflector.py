@@ -86,12 +86,16 @@ class Reflector:
                 last_error = e
                 if attempt < self.max_retries - 1:
                     # Add guidance for retry
-                    user_prompt += f"\n\nPrevious attempt failed: {e}. Please output ONLY valid JSON without markdown fencing."
+                    user_prompt += (
+                        f"\n\nPrevious attempt failed: {e}. "
+                        "Please output ONLY valid JSON without markdown fencing."
+                    )
                     continue
                 else:
                     raise ReflectionParseError(
-                        f"Failed to parse reflection after {self.max_retries} attempts. Last error: {e}"
-                    )
+                        f"Failed to parse reflection after {self.max_retries} "
+                        f"attempts. Last error: {e}"
+                    ) from None
 
         # Should never reach here, but just in case
         raise ReflectionParseError(f"Unexpected error: {last_error}")

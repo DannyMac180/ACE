@@ -1,4 +1,3 @@
-
 import pytest
 
 from ace.llm import CompletionResponse, LLMClient, Message, MockLLMClient
@@ -107,7 +106,7 @@ class TestMockLLMClient:
             Message(role="system", content="You are a helpful assistant"),
             Message(role="user", content="Hello"),
             Message(role="assistant", content="Hi there"),
-            Message(role="user", content="Tell me something")
+            Message(role="user", content="Tell me something"),
         ]
         response = client.complete(messages)
 
@@ -134,12 +133,7 @@ class TestMockLLMClient:
     def test_complete_kwargs_are_ignored(self):
         client = MockLLMClient()
         messages = [Message(role="user", content="Test")]
-        response = client.complete(
-            messages,
-            temperature=0.5,
-            max_tokens=100,
-            extra_param="ignored"
-        )
+        response = client.complete(messages, temperature=0.5, max_tokens=100, extra_param="ignored")
 
         assert isinstance(response, CompletionResponse)
 

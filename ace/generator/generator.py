@@ -14,11 +14,7 @@ class Generator:
     Implements a basic ReAct-style loop: Reason → Act → Observe.
     """
 
-    def __init__(
-        self,
-        max_steps: int = 10,
-        tool_executor: Callable[[str], str] | None = None
-    ):
+    def __init__(self, max_steps: int = 10, tool_executor: Callable[[str], str] | None = None):
         """
         Initialize the Generator.
 
@@ -71,7 +67,9 @@ class Generator:
             return "Approaching step limit, need to wrap up and finalize results."
 
         last_obs = steps_so_far[-1].observation if steps_so_far else ""
-        return f"Based on previous observation '{last_obs}', determining next action for goal: {goal}"
+        return (
+            f"Based on previous observation '{last_obs}', determining next action for goal: {goal}"
+        )
 
     def _decide_action(self, thought: str, step_num: int, goal: str) -> str:
         """
@@ -160,7 +158,7 @@ class Generator:
                     action=action,
                     observation=observation,
                     thought=thought,
-                    timestamp=datetime.utcnow()
+                    timestamp=datetime.utcnow(),
                 )
                 steps.append(step)
                 logger.info(f"Completed step {step_num + 1}/{self.max_steps}")
@@ -179,7 +177,7 @@ class Generator:
             final_status=final_status,
             total_steps=len(steps),
             started_at=started_at,
-            completed_at=completed_at
+            completed_at=completed_at,
         )
 
         logger.info(
