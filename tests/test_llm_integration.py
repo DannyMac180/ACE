@@ -139,7 +139,9 @@ class TestOpenRouterClientIntegration:
     def test_complete_http_error(self, mock_post, openrouter_client):
         mock_response = Mock()
         mock_response.status_code = 500
-        mock_response.raise_for_status.side_effect = Exception("HTTP 500 Error")
+        mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError(
+            "HTTP 500 Error"
+        )
         mock_post.return_value = mock_response
 
         messages = [Message(role="user", content="Test")]
