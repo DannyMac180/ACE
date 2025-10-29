@@ -109,6 +109,7 @@ def test_curate_with_mixed_operations():
 
     # Then ADD operations
     assert delta.ops[2].op == "ADD"
+    assert delta.ops[2].new_bullet is not None
     assert delta.ops[2].new_bullet["section"] == "facts"
     assert delta.ops[2].new_bullet["content"] == "SQLite supports JSON1 extension"
 
@@ -129,6 +130,7 @@ def test_curate_preserves_all_candidate_bullet_fields():
     assert len(delta.ops) == 1
     op = delta.ops[0]
     assert op.op == "ADD"
+    assert op.new_bullet is not None
     assert op.new_bullet["section"] == "code_snippets"
     assert op.new_bullet["content"] == "import faiss\nindex = faiss.IndexFlatL2(dim)"
     assert len(op.new_bullet["tags"]) == 3
@@ -158,4 +160,5 @@ def test_curate_with_reflection_insights():
     # Only candidate_bullets and bullet_tags generate operations
     assert len(delta.ops) == 1
     assert delta.ops[0].op == "ADD"
+    assert delta.ops[0].new_bullet is not None
     assert "dims" in delta.ops[0].new_bullet["content"].lower()

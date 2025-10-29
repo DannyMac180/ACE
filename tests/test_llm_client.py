@@ -8,14 +8,14 @@ class TestLLMClient:
 
     def test_llm_client_is_abstract(self):
         with pytest.raises(TypeError):
-            LLMClient()
+            LLMClient()  # type: ignore
 
     def test_llm_client_subclass_must_implement_complete(self):
         class IncompleteLLMClient(LLMClient):
             pass
 
         with pytest.raises(TypeError):
-            IncompleteLLMClient()
+            IncompleteLLMClient()  # type: ignore
 
     def test_llm_client_subclass_with_complete_works(self):
         class CompleteLLMClient(LLMClient):

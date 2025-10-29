@@ -1,7 +1,7 @@
 import pytest
 
 from ace.core.manager import PlaybookManager
-from ace.core.schema import Delta, DeltaBullet
+from ace.core.schema import DeltaOp
 
 
 def test_add_operation():
@@ -9,11 +9,13 @@ def test_add_operation():
     assert manager.playbook.version == 0
     assert len(manager.playbook.bullets) == 0
 
-    delta = Delta(
+    delta = DeltaOp(
         op="ADD",
-        new_bullet=DeltaBullet(
-            section="strategies", content="Use hybrid retrieval", tags=["topic:retrieval"]
-        ),
+        new_bullet={
+            "section": "strategies",
+            "content": "Use hybrid retrieval",
+            "tags": ["topic:retrieval"],
+        },
     )
     manager.apply_delta(delta)
 
@@ -28,7 +30,7 @@ def test_add_operation():
 
 def test_add_without_new_bullet_raises():
     manager = PlaybookManager()
-    delta = Delta(op="ADD")
+    delta = DeltaOp(op="ADD")
 
     with pytest.raises(ValueError, match="'ADD' operation requires new_bullet"):
         manager.apply_delta(delta)
@@ -37,13 +39,14 @@ def test_add_without_new_bullet_raises():
 def test_patch_operation():
     manager = PlaybookManager()
 
-    delta_add = Delta(
-        op="ADD", new_bullet=DeltaBullet(section="strategies", content="Original content", tags=[])
+    delta_add = DeltaOp(
+        op="ADD",
+        new_bullet={"section": "strategies", "content": "Original content", "tags": []},
     )
     manager.apply_delta(delta_add)
     bullet_id = manager.playbook.bullets[0].id
 
-    delta_patch = Delta(op="PATCH", target_id=bullet_id, patch="Updated content")
+    delta_patch = DeltaOp(op="PATCH", target_id=bullet_id, patch="Updated content")
     manager.apply_delta(delta_patch)
 
     assert manager.playbook.version == 2
@@ -52,7 +55,7 @@ def test_patch_operation():
 
 def test_patch_without_target_raises():
     manager = PlaybookManager()
-    delta = Delta(op="PATCH", patch="New content")
+    delta = DeltaOp(op="PATCH", patch="New content")
 
     with pytest.raises(ValueError, match="'PATCH' operation requires target_id and patch"):
         manager.apply_delta(delta)
@@ -60,7 +63,7 @@ def test_patch_without_target_raises():
 
 def test_patch_nonexistent_bullet_raises():
     manager = PlaybookManager()
-    delta = Delta(op="PATCH", target_id="nonexistent", patch="Content")
+    delta = DeltaOp(op="PATCH", target_id="nonexistent", patch="Content")
 
     with pytest.raises(ValueError, match="Bullet not found"):
         manager.apply_delta(delta)
@@ -69,13 +72,13 @@ def test_patch_nonexistent_bullet_raises():
 def test_incr_helpful_operation():
     manager = PlaybookManager()
 
-    delta_add = Delta(
-        op="ADD", new_bullet=DeltaBullet(section="strategies", content="Test", tags=[])
+    delta_add = DeltaOp(
+        op="ADD", new_bullet={"section": "strategies", "content": "Test", "tags": []}
     )
     manager.apply_delta(delta_add)
     bullet_id = manager.playbook.bullets[0].id
 
-    delta_incr = Delta(op="INCR_HELPFUL", target_id=bullet_id)
+    delta_incr = DeltaOp(op="INCR_HELPFUL", target_id=bullet_id)
     manager.apply_delta(delta_incr)
 
     assert manager.playbook.version == 2
@@ -86,13 +89,13 @@ def test_incr_helpful_operation():
 def test_incr_harmful_operation():
     manager = PlaybookManager()
 
-    delta_add = Delta(
-        op="ADD", new_bullet=DeltaBullet(section="strategies", content="Test", tags=[])
+    delta_add = DeltaOp(
+        op="ADD", new_bullet={"section": "strategies", "content": "Test", "tags": []}
     )
     manager.apply_delta(delta_add)
     bullet_id = manager.playbook.bullets[0].id
 
-    delta_incr = Delta(op="INCR_HARMFUL", target_id=bullet_id)
+    delta_incr = DeltaOp(op="INCR_HARMFUL", target_id=bullet_id)
     manager.apply_delta(delta_incr)
 
     assert manager.playbook.version == 2
@@ -102,15 +105,15 @@ def test_incr_harmful_operation():
 def test_deprecate_operation():
     manager = PlaybookManager()
 
-    delta_add = Delta(
-        op="ADD", new_bullet=DeltaBullet(section="strategies", content="Test", tags=[])
+    delta_add = DeltaOp(
+        op="ADD", new_bullet={"section": "strategies", "content": "Test", "tags": []}
     )
     manager.apply_delta(delta_add)
     bullet_id = manager.playbook.bullets[0].id
 
     assert len(manager.playbook.bullets) == 1
 
-    delta_deprecate = Delta(op="DEPRECATE", target_id=bullet_id)
+    delta_deprecate = DeltaOp(op="DEPRECATE", target_id=bullet_id)
     manager.apply_delta(delta_deprecate)
 
     assert manager.playbook.version == 2
@@ -119,7 +122,7 @@ def test_deprecate_operation():
 
 def test_invalid_operation_raises():
     manager = PlaybookManager()
-    delta = Delta(op="INVALID_OP")
+    delta = DeltaOp(op="INVALID_OP")
 
     with pytest.raises(ValueError, match="Invalid operation: INVALID_OP"):
         manager.apply_delta(delta)
@@ -128,11 +131,11 @@ def test_invalid_operation_raises():
 def test_multiple_operations_idempotent():
     manager = PlaybookManager()
 
-    delta1 = Delta(
-        op="ADD", new_bullet=DeltaBullet(section="strategies", content="Bullet 1", tags=[])
+    delta1 = DeltaOp(
+        op="ADD", new_bullet={"section": "strategies", "content": "Bullet 1", "tags": []}
     )
-    delta2 = Delta(
-        op="ADD", new_bullet=DeltaBullet(section="facts", content="Bullet 2", tags=["tag1"])
+    delta2 = DeltaOp(
+        op="ADD", new_bullet={"section": "facts", "content": "Bullet 2", "tags": ["tag1"]}
     )
 
     manager.apply_delta(delta1)
@@ -142,7 +145,7 @@ def test_multiple_operations_idempotent():
     assert len(manager.playbook.bullets) == 2
 
     bullet_id = manager.playbook.bullets[0].id
-    delta3 = Delta(op="INCR_HELPFUL", target_id=bullet_id)
+    delta3 = DeltaOp(op="INCR_HELPFUL", target_id=bullet_id)
     manager.apply_delta(delta3)
 
     assert manager.playbook.version == 3
