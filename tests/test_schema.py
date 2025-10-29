@@ -1,17 +1,13 @@
-import pytest
-from ace.core.schema import Bullet, Playbook, Section
+from ace.core.schema import Bullet, Playbook
+
 
 def test_bullet_creation():
-    bullet = Bullet(
-        id="test-001",
-        section="strategies",
-        content="Test bullet",
-        tags=["test"]
-    )
+    bullet = Bullet(id="test-001", section="strategies", content="Test bullet", tags=["test"])
     assert bullet.id == "test-001"
     assert bullet.section == "strategies"
     assert bullet.content == "Test bullet"
     assert bullet.tags == ["test"]
+
 
 def test_playbook_creation():
     bullets = [Bullet(id="1", section="strategies", content="test")]

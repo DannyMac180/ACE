@@ -1,22 +1,24 @@
 # ace/reflector/parser.py
 import json
-from .schema import Reflection, BulletTag, CandidateBullet
+
+from .schema import BulletTag, CandidateBullet, Reflection
 
 
 class ReflectionParseError(Exception):
     """Raised when reflection JSON parsing fails."""
+
     pass
 
 
 def parse_reflection(json_str: str) -> Reflection:
     """Parse JSON string into Reflection object with strict validation.
-    
+
     Args:
         json_str: Raw JSON string from LLM (may contain markdown fencing)
-        
+
     Returns:
         Reflection: Validated reflection object
-        
+
     Raises:
         ReflectionParseError: If JSON is invalid or schema doesn't match
     """
@@ -36,15 +38,15 @@ def parse_reflection(json_str: str) -> Reflection:
                 end_idx = i
                 break
         cleaned = "\n".join(lines[start_idx:end_idx])
-    
+
     try:
         data = json.loads(cleaned)
     except json.JSONDecodeError as e:
-        raise ReflectionParseError(f"Invalid JSON: {e}")
-    
+        raise ReflectionParseError(f"Invalid JSON: {e}") from None
+
     if not isinstance(data, dict):
         raise ReflectionParseError("JSON must be an object")
-    
+
     # Parse bullet_tags
     bullet_tags = []
     if "bullet_tags" in data:
@@ -58,7 +60,7 @@ def parse_reflection(json_str: str) -> Reflection:
             if bt["tag"] not in ["helpful", "harmful"]:
                 raise ReflectionParseError(f"Invalid tag value: {bt['tag']}")
             bullet_tags.append(BulletTag(id=bt["id"], tag=bt["tag"]))
-    
+
     # Parse candidate_bullets
     candidate_bullets = []
     if "candidate_bullets" in data:
@@ -68,17 +70,25 @@ def parse_reflection(json_str: str) -> Reflection:
             if not isinstance(cb, dict):
                 raise ReflectionParseError("Each candidate_bullet must be an object")
             if "section" not in cb or "content" not in cb:
-                raise ReflectionParseError("candidate_bullet must have 'section' and 'content' fields")
-            
+                raise ReflectionParseError(
+                    "candidate_bullet must have 'section' and 'content' fields"
+                )
+
             section = cb["section"]
-            valid_sections = ["strategies", "templates", "troubleshooting", "code_snippets", "facts"]
+            valid_sections = [
+                "strategies",
+                "templates",
+                "troubleshooting",
+                "code_snippets",
+                "facts",
+            ]
             if section not in valid_sections:
                 raise ReflectionParseError(f"Invalid section: {section}")
-            
+
             tags = cb.get("tags", [])
             if not isinstance(tags, list):
                 raise ReflectionParseError("tags must be a list")
-            
+
             candidate_bullets.append(
                 CandidateBullet(
                     section=section,
@@ -86,7 +96,7 @@ def parse_reflection(json_str: str) -> Reflection:
                     tags=tags,
                 )
             )
-    
+
     # Build Reflection
     return Reflection(
         error_identification=data.get("error_identification"),

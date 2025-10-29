@@ -1,49 +1,57 @@
-# ACE/core/schema.py
-from dataclasses import dataclass, field
-from typing import Literal, Optional, List
 from datetime import datetime
+from typing import Literal
+
+from pydantic import BaseModel, Field
 
 Section = Literal["strategies", "templates", "troubleshooting", "code_snippets", "facts"]
 
-@dataclass
-class Bullet:
-    id: str                      # unique, stable (e.g., "strat-00091")
+
+class Bullet(BaseModel):
+    id: str
     section: Section
-    content: str                 # short, reusable, domain-rich
-    tags: List[str] = field(default_factory=list)   # e.g., ["repo:ace","topic:retrieval","db:pg"]
+    content: str
+    tags: list[str] = Field(default_factory=list)
     helpful: int = 0
     harmful: int = 0
-    last_used: Optional[datetime] = None
-    added_at: datetime = field(default_factory=datetime.utcnow)
+    last_used: datetime | None = None
+    added_at: datetime = Field(default_factory=datetime.utcnow)
 
-@dataclass
-class Playbook:
+
+class Reflection(BaseModel):
+    summary: str
+    critique: str
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+
+class DeltaBullet(BaseModel):
+    section: Section
+    content: str
+    tags: list[str] = Field(default_factory=list)
+
+
+class DeltaOp(BaseModel):
+    op: str
+    target_id: str | None = None
+    new_bullet: dict | None = None
+    patch: str | None = None
+
+
+class Delta(BaseModel):
+    ops: list[DeltaOp] = Field(default_factory=list)
+
+
+class RefineOp(BaseModel):
+    op: str
+    survivor_id: str | None = None
+    target_ids: list[str] = Field(default_factory=list)
+
+
+class RefineResult(BaseModel):
+    merged: int
+    archived: int
+    ops: list[RefineOp] = Field(default_factory=list)
+
+
+class Playbook(BaseModel):
     version: int
-    bullets: List[Bullet]
-
-OpType = Literal["ADD", "PATCH", "DEPRECATE", "INCR_HELPFUL", "INCR_HARMFUL"]
-
-@dataclass
-class DeltaOp:
-    op: OpType
-    target_id: Optional[str] = None
-    new_bullet: Optional[dict] = None  # Will contain section, content, tags
-    patch: Optional[str] = None
-
-@dataclass
-class Delta:
-    ops: List[DeltaOp] = field(default_factory=list)
-
-RefineOpType = Literal["MERGE", "ARCHIVE"]
-
-@dataclass
-class RefineOp:
-    op: RefineOpType
-    target_ids: List[str] = field(default_factory=list)  # IDs being merged/archived
-    survivor_id: Optional[str] = None  # For MERGE ops, the ID kept
-
-@dataclass
-class RefineResult:
-    merged: int = 0
-    archived: int = 0
-    ops: List[RefineOp] = field(default_factory=list)
+    bullets: list[Bullet] = Field(default_factory=list)

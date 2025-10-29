@@ -15,7 +15,8 @@ Per AGENTS.md §2.3 and §8:
 - Never emit both ADD and PATCH for the same semantic content
 """
 
-CURATOR_SYSTEM_PROMPT = """You are the ACE Curator. Your job is to convert a Reflection into a Delta of operations.
+CURATOR_SYSTEM_PROMPT = """You are the ACE Curator. Your job is to convert a \
+Reflection into a Delta of operations.
 
 Rules:
 1. Output valid JSON matching the Delta schema (no markdown fencing)

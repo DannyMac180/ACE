@@ -1,7 +1,7 @@
 # ace/reflector/__init__.py
-from .schema import Reflection, BulletTag, CandidateBullet
+from .parser import ReflectionParseError, parse_reflection
 from .reflector import Reflector
-from .parser import parse_reflection, ReflectionParseError
+from .schema import BulletTag, CandidateBullet, Reflection
 
 __all__ = [
     "Reflection",
