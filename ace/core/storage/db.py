@@ -1,7 +1,8 @@
 import os
 import sqlite3
+from typing import Any
 from urllib.parse import urlparse
-from typing import Optional, Any
+
 
 class DatabaseConnection:
     def __init__(self, db_url: str = None):

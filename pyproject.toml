@@ -7,6 +7,9 @@ name = "ace"
 version = "0.1.0"
 description = "Agentic Context Engineering - evolve LLM context via playbook deltas"
 readme = "README.md"
+authors = [
+    {name = "Dan McAteer", email = "dan@example.com"}
+]
 requires-python = ">=3.11"
 dependencies = [
     "sentence-transformers>=2.0.0",
@@ -26,3 +29,41 @@ dev = [
 
 [tool.setuptools.packages.find]
 include = ["ace*", "ace_mcp_server*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "eval"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --strict-markers"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+]
+ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]  # Ignore unused imports in __init__.py
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+strict_equality = true

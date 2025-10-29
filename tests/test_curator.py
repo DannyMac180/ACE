@@ -1,13 +1,13 @@
 # tests/test_curator.py
 from ace.curator import curate
-from ace.reflector.schema import Reflection, BulletTag, CandidateBullet
+from ace.reflector.schema import BulletTag, CandidateBullet, Reflection
 
 
 def test_curate_empty_reflection():
     """Test that curating an empty reflection returns an empty delta."""
     reflection = Reflection()
     delta = curate(reflection)
-    
+
     assert delta.ops == []
 
 
@@ -20,7 +20,7 @@ def test_curate_with_helpful_tags():
         ]
     )
     delta = curate(reflection)
-    
+
     assert len(delta.ops) == 2
     assert delta.ops[0].op == "INCR_HELPFUL"
     assert delta.ops[0].target_id == "strat-00091"
@@ -37,7 +37,7 @@ def test_curate_with_harmful_tags():
         ]
     )
     delta = curate(reflection)
-    
+
     assert len(delta.ops) == 2
     assert delta.ops[0].op == "INCR_HARMFUL"
     assert delta.ops[0].target_id == "trbl-00007"
@@ -62,16 +62,16 @@ def test_curate_with_candidate_bullets():
         ]
     )
     delta = curate(reflection)
-    
+
     assert len(delta.ops) == 2
-    
+
     # First ADD operation
     assert delta.ops[0].op == "ADD"
     assert delta.ops[0].new_bullet is not None
     assert delta.ops[0].new_bullet["section"] == "strategies"
     assert delta.ops[0].new_bullet["content"] == "Use hybrid retrieval for better results"
     assert delta.ops[0].new_bullet["tags"] == ["topic:retrieval", "stack:python"]
-    
+
     # Second ADD operation
     assert delta.ops[1].op == "ADD"
     assert delta.ops[1].new_bullet is not None
@@ -96,16 +96,16 @@ def test_curate_with_mixed_operations():
         ]
     )
     delta = curate(reflection)
-    
+
     assert len(delta.ops) == 3
-    
+
     # Tag operations come first
     assert delta.ops[0].op == "INCR_HELPFUL"
     assert delta.ops[0].target_id == "strat-00091"
-    
+
     assert delta.ops[1].op == "INCR_HARMFUL"
     assert delta.ops[1].target_id == "tmpl-00022"
-    
+
     # Then ADD operations
     assert delta.ops[2].op == "ADD"
     assert delta.ops[2].new_bullet["section"] == "facts"
@@ -124,7 +124,7 @@ def test_curate_preserves_all_candidate_bullet_fields():
         ]
     )
     delta = curate(reflection)
-    
+
     assert len(delta.ops) == 1
     op = delta.ops[0]
     assert op.op == "ADD"
@@ -152,7 +152,7 @@ def test_curate_with_reflection_insights():
         ]
     )
     delta = curate(reflection)
-    
+
     # Insights are captured in the Reflection but don't directly generate ops
     # Only candidate_bullets and bullet_tags generate operations
     assert len(delta.ops) == 1

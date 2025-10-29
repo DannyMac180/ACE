@@ -1,11 +1,12 @@
 # tests/test_reflector.py
 import pytest
+
 from ace.reflector import (
-    Reflection,
     BulletTag,
     CandidateBullet,
-    parse_reflection,
+    Reflection,
     ReflectionParseError,
+    parse_reflection,
 )
 
 
@@ -29,9 +30,9 @@ def test_parse_reflection_valid():
       ]
     }
     """
-    
+
     reflection = parse_reflection(json_str)
-    
+
     assert reflection.error_identification == "Test failed due to missing import"
     assert reflection.root_cause_analysis == "Module was not installed"
     assert reflection.correct_approach == "Add dependency to requirements"
@@ -57,7 +58,7 @@ def test_parse_reflection_with_markdown_fencing():
       "candidate_bullets": []
     }
     ```"""
-    
+
     reflection = parse_reflection(json_str)
     assert reflection.error_identification == "Test failed"
     assert reflection.root_cause_analysis is None
@@ -66,7 +67,7 @@ def test_parse_reflection_with_markdown_fencing():
 def test_parse_reflection_minimal():
     """Test parsing minimal reflection with no optional fields."""
     json_str = '{"bullet_tags": [], "candidate_bullets": []}'
-    
+
     reflection = parse_reflection(json_str)
     assert reflection.error_identification is None
     assert reflection.root_cause_analysis is None
@@ -79,7 +80,7 @@ def test_parse_reflection_minimal():
 def test_parse_reflection_invalid_json():
     """Test that invalid JSON raises ReflectionParseError."""
     json_str = "{ invalid json }"
-    
+
     with pytest.raises(ReflectionParseError, match="Invalid JSON"):
         parse_reflection(json_str)
 
@@ -94,7 +95,7 @@ def test_parse_reflection_invalid_bullet_tag():
       "candidate_bullets": []
     }
     """
-    
+
     with pytest.raises(ReflectionParseError, match="Invalid tag value"):
         parse_reflection(json_str)
 
@@ -113,7 +114,7 @@ def test_parse_reflection_invalid_section():
       ]
     }
     """
-    
+
     with pytest.raises(ReflectionParseError, match="Invalid section"):
         parse_reflection(json_str)
 
@@ -130,7 +131,7 @@ def test_parse_reflection_missing_required_fields():
       ]
     }
     """
-    
+
     with pytest.raises(ReflectionParseError, match="must have"):
         parse_reflection(json_str)
 

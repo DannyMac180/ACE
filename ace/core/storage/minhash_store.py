@@ -1,7 +1,9 @@
-from datasketch import MinHash
 import pickle
-from typing import List
+
+from datasketch import MinHash
+
 from .db import DatabaseConnection
+
 
 class MinHashStore:
     def __init__(self, db_conn: DatabaseConnection, num_perm: int = 128):

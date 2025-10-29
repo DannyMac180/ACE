@@ -1,5 +1,5 @@
-import pytest
-from ace.core.schema import Bullet, Playbook, Section
+from ace.core.schema import Bullet, Playbook
+
 
 def test_bullet_creation():
     bullet = Bullet(

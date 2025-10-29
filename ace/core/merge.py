@@ -1,7 +1,9 @@
 # ace/core/merge.py
-from typing import List, Dict, Any
+from typing import Any
+
 from .schema import Bullet, Playbook
 from .store import Store
+
 
 class DeltaOp:
     def __init__(self, op_type: str, **kwargs):
@@ -9,15 +11,15 @@ class DeltaOp:
         self.data = kwargs
 
     @classmethod
-    def from_dict(cls, d: Dict[str, Any]) -> 'DeltaOp':
+    def from_dict(cls, d: dict[str, Any]) -> 'DeltaOp':
         return cls(d['op'], **{k: v for k, v in d.items() if k != 'op'})
 
 class Delta:
-    def __init__(self, ops: List[DeltaOp]):
+    def __init__(self, ops: list[DeltaOp]):
         self.ops = ops
 
     @classmethod
-    def from_dict(cls, d: Dict[str, Any]) -> 'Delta':
+    def from_dict(cls, d: dict[str, Any]) -> 'Delta':
         return cls([DeltaOp.from_dict(op) for op in d['ops']])
 
 def apply_delta(playbook: Playbook, delta: Delta, store: Store) -> Playbook:

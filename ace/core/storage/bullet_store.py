@@ -1,8 +1,10 @@
 import json
 from datetime import datetime
-from typing import List, Optional
+
 from core.schema import Bullet
+
 from .db import DatabaseConnection
+
 
 class BulletStore:
     def __init__(self, db_conn: DatabaseConnection):
@@ -17,7 +19,7 @@ class BulletStore:
             (bullet.id, bullet.section, bullet.content, tags_json, bullet.helpful, bullet.harmful, last_used_str, added_at_str)
         )
 
-    def get_bullet(self, bullet_id: str) -> Optional[Bullet]:
+    def get_bullet(self, bullet_id: str) -> Bullet | None:
         rows = self.db.fetchall('SELECT * FROM bullets WHERE id = ?', (bullet_id,))
         if not rows:
             return None
@@ -41,7 +43,7 @@ class BulletStore:
     def delete_bullet(self, bullet_id: str) -> None:
         self.db.execute('DELETE FROM bullets WHERE id = ?', (bullet_id,))
 
-    def list_bullets(self, limit: int = 100, offset: int = 0) -> List[Bullet]:
+    def list_bullets(self, limit: int = 100, offset: int = 0) -> list[Bullet]:
         rows = self.db.fetchall('SELECT * FROM bullets LIMIT ? OFFSET ?', (limit, offset))
         bullets = []
         for row in rows:
@@ -54,7 +56,7 @@ class BulletStore:
             ))
         return bullets
 
-    def search_fts(self, query: str, limit: int = 24) -> List[str]:
+    def search_fts(self, query: str, limit: int = 24) -> list[str]:
         # Return bullet IDs matching FTS query
         rows = self.db.fetchall('SELECT id FROM bullets_fts WHERE content MATCH ? LIMIT ?', (query, limit))
         return [row[0] for row in rows]

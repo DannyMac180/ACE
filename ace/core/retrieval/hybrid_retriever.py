@@ -1,8 +1,9 @@
-from typing import List
+
 from core.schema import Bullet
 from core.storage.bullet_store import BulletStore
-from core.storage.embedding_store import EmbeddingStore
 from core.storage.db import DatabaseConnection
+from core.storage.embedding_store import EmbeddingStore
+
 
 class HybridRetriever:
     def __init__(self, db_conn: DatabaseConnection, bullet_store: BulletStore, embedding_store: EmbeddingStore):
@@ -10,7 +11,7 @@ class HybridRetriever:
         self.bullet_store = bullet_store
         self.embedding_store = embedding_store
 
-    def retrieve(self, query: str, top_k: int = 24) -> List[Bullet]:
+    def retrieve(self, query: str, top_k: int = 24) -> list[Bullet]:
         # Lexical search
         lexical_ids = set(self.bullet_store.search_fts(query, top_k * 2))  # More candidates
 

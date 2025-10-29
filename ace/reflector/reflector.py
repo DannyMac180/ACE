@@ -1,15 +1,16 @@
 # ace/reflector/reflector.py
 import os
-from typing import Optional
+
 from openai import OpenAI
-from .schema import Reflection
-from .parser import parse_reflection, ReflectionParseError
+
+from .parser import ReflectionParseError, parse_reflection
 from .prompts import format_reflector_prompt
+from .schema import Reflection
 
 
 class Reflector:
     """Reflector component that generates Reflection objects from task outcomes."""
-    
+
     def __init__(
         self,
         model: str = "gpt-4o-mini",
@@ -17,7 +18,7 @@ class Reflector:
         temperature: float = 0.3,
     ):
         """Initialize Reflector.
-        
+
         Args:
             model: OpenAI model to use
             max_retries: Maximum retry attempts on parse errors
@@ -27,7 +28,7 @@ class Reflector:
         self.max_retries = max_retries
         self.temperature = temperature
         self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    
+
     def reflect(
         self,
         query: str,
@@ -35,10 +36,10 @@ class Reflector:
         code_diff: str = "",
         test_output: str = "",
         logs: str = "",
-        env_meta: Optional[dict] = None,
+        env_meta: dict | None = None,
     ) -> Reflection:
         """Generate a Reflection from task execution data.
-        
+
         Args:
             query: The task or query that was executed
             retrieved_bullet_ids: IDs of bullets retrieved for this task
@@ -46,10 +47,10 @@ class Reflector:
             test_output: Test results or output
             logs: Execution logs
             env_meta: Additional environment metadata
-            
+
         Returns:
             Reflection: Parsed reflection object
-            
+
         Raises:
             ReflectionParseError: If parsing fails after max_retries
         """
@@ -61,7 +62,7 @@ class Reflector:
             logs=logs,
             env_meta=env_meta,
         )
-        
+
         last_error = None
         for attempt in range(self.max_retries):
             try:
@@ -73,14 +74,14 @@ class Reflector:
                     ],
                     temperature=self.temperature,
                 )
-                
+
                 json_str = response.choices[0].message.content
                 if not json_str:
                     raise ReflectionParseError("Empty response from LLM")
-                
+
                 reflection = parse_reflection(json_str)
                 return reflection
-                
+
             except ReflectionParseError as e:
                 last_error = e
                 if attempt < self.max_retries - 1:
@@ -91,6 +92,6 @@ class Reflector:
                     raise ReflectionParseError(
                         f"Failed to parse reflection after {self.max_retries} attempts. Last error: {e}"
                     )
-        
+
         # Should never reach here, but just in case
         raise ReflectionParseError(f"Unexpected error: {last_error}")

@@ -1,8 +1,9 @@
-import pytest
-import tempfile
 import os
-from ace.core.store import Store
+import tempfile
+
 from ace.core.schema import Bullet
+from ace.core.store import Store
+
 
 def test_store_save_and_get():
     with tempfile.NamedTemporaryFile(delete=False) as f:

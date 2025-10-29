@@ -1,13 +1,14 @@
 # ace/core/retrieve.py
-from typing import List
+
 from .schema import Bullet
 from .store import Store
+
 
 class Retriever:
     def __init__(self, store: Store):
         self.store = store
 
-    def retrieve(self, query: str, top_k: int = 24) -> List[Bullet]:
+    def retrieve(self, query: str, top_k: int = 24) -> list[Bullet]:
         # Minimal implementation: simple keyword match
         all_bullets = self.store.get_bullets()
         # Filter by query in content or tags

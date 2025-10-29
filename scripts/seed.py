@@ -8,7 +8,7 @@ from ace.core.store import Store
 def seed_initial_playbook() -> None:
     """Create and persist initial seed bullets to bootstrap the playbook."""
     store = Store()
-    
+
     seed_bullets = [
         Bullet(
             id="strat-00001",
@@ -70,11 +70,17 @@ def seed_initial_playbook() -> None:
             content="Bullets are considered near-duplicates if their embedding cosine similarity exceeds 0.90 or their minhash Jaccard index exceeds 0.85. The bullet with the clearer, more concise text should be retained.",
             tags=["topic:refine", "policy:deduplication"]
         ),
+        Bullet(
+            id="strat-00006",
+            section="strategies",
+            content="When generating structured output, especially tool calls or data schemas, always ensure the output is strictly valid JSON, enclosed in triple backticks if necessary, and avoid extraneous text.",
+            tags=["topic:generation", "policy:json_strictness"]
+        ),
     ]
-    
+
     for bullet in seed_bullets:
         store.save_bullet(bullet)
-    
+
     print(f"✓ Seeded {len(seed_bullets)} initial bullets")
     print(f"  Version: {store.get_version()}")
     print(f"  Total bullets in store: {len(store.get_bullets())}")

@@ -1,8 +1,9 @@
 # ace/core/store.py
-import sqlite3
 import json
-from typing import List, Optional
-from .schema import Bullet, Playbook
+import sqlite3
+
+from .schema import Bullet
+
 
 class Store:
     def __init__(self, db_path: str = "ace.db"):
@@ -43,15 +44,34 @@ class Store:
                 bullet.added_at.isoformat()
             ))
 
-    def get_bullets(self) -> List[Bullet]:
+    def get_bullets(self) -> list[Bullet]:
         with sqlite3.connect(self.db_path) as conn:
             rows = conn.execute("SELECT * FROM bullets").fetchall()
-            return [Bullet(
-                id=row[0], section=row[1], content=row[2],
-                tags=json.loads(row[3]) if row[3] else [],
-                helpful=row[4], harmful=row[5],
-                last_used=row[6], added_at=row[7]
-            ) for row in rows]
+            return [self._deserialize_bullet(row) for row in rows]
+
+    def get_bullet(self, bullet_id: str) -> Bullet | None:
+        """Retrieve a single Bullet by its ID."""
+        with sqlite3.connect(self.db_path) as conn:
+            row = conn.execute("SELECT * FROM bullets WHERE id = ?", (bullet_id,)).fetchone()
+            return self._deserialize_bullet(row) if row else None
+
+    def get_all_bullets(self) -> list[Bullet]:
+        """Retrieve all Bullet instances from the store."""
+        return self.get_bullets()
+
+    def _deserialize_bullet(self, row: tuple) -> Bullet:
+        """Deserialize a database row into a Bullet object."""
+        from datetime import datetime
+        return Bullet(
+            id=row[0],
+            section=row[1],
+            content=row[2],
+            tags=json.loads(row[3]) if row[3] else [],
+            helpful=row[4],
+            harmful=row[5],
+            last_used=datetime.fromisoformat(row[6]) if row[6] else None,
+            added_at=datetime.fromisoformat(row[7])
+        )
 
     def get_version(self) -> int:
         with sqlite3.connect(self.db_path) as conn:

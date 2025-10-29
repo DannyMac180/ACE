@@ -1,9 +1,10 @@
-import numpy as np
-import faiss
-import pickle
 import os
-from typing import List, Dict, Any
+import pickle
+
+import faiss
+import numpy as np
 from sentence_transformers import SentenceTransformer
+
 from .db import DatabaseConnection
 
 # Load embedding model (all-MiniLM-L6-v2: 384d, Apache 2.0 license)
@@ -56,7 +57,7 @@ class EmbeddingStore:
         # Persist to DB
         self.db.execute('INSERT OR REPLACE INTO embeddings (bullet_id, vector) VALUES (?, ?)', (bullet_id, vector.tobytes()))
 
-    def search(self, query: str, top_k: int = 24) -> List[str]:
+    def search(self, query: str, top_k: int = 24) -> list[str]:
         vector = generate_embedding(query)
         distances, indices = self.index.search(vector.reshape(1, -1), top_k)
         return [self.idx_to_id[idx] for idx in indices[0] if idx != -1]

@@ -56,12 +56,12 @@ def format_reflector_prompt(
     env_meta: dict | None = None,
 ) -> tuple[str, str]:
     """Format the reflector prompt with input data.
-    
+
     Returns:
         tuple: (system_prompt, user_prompt)
     """
     env_meta_str = str(env_meta) if env_meta else "None"
-    
+
     user_prompt = REFLECTOR_USER_TEMPLATE.format(
         query=query,
         retrieved_bullet_ids=", ".join(retrieved_bullet_ids) if retrieved_bullet_ids else "None",
@@ -70,5 +70,5 @@ def format_reflector_prompt(
         logs=logs or "None",
         env_meta=env_meta_str,
     )
-    
+
     return REFLECTOR_SYSTEM_PROMPT, user_prompt
