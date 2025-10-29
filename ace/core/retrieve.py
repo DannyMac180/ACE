@@ -13,17 +13,17 @@ class Retriever:
         # Fetch 2x top_k from each method for better coverage
         fts_ids = self.store.bullet_store.search_fts(query, limit=top_k * 2)
         vector_ids = self.store.embedding_store.search(query, top_k=top_k * 2)
-        
+
         # Combine into unique set of candidate IDs
         candidate_ids = list(dict.fromkeys(fts_ids + vector_ids))
-        
+
         # Retrieve full Bullet objects
         bullets = []
         for bullet_id in candidate_ids:
             bullet = self.store.get_bullet(bullet_id)
             if bullet:
                 bullets.append(bullet)
-        
+
         # Rerank by lexical overlap with query terms
         query_terms = set(query.lower().split())
         scored_bullets = []
@@ -34,7 +34,7 @@ class Retriever:
             all_terms = content_terms | tag_terms
             overlap = len(query_terms & all_terms)
             scored_bullets.append((overlap, bullet))
-        
+
         # Sort by score descending and return top_k
         scored_bullets.sort(key=lambda x: x[0], reverse=True)
         return [bullet for _, bullet in scored_bullets[:top_k]]
