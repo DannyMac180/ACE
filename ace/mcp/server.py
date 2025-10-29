@@ -10,7 +10,7 @@ from dataclasses import asdict
 from fastmcp import FastMCP
 
 from ace.core.merge import Delta, apply_delta
-from ace.core.store import Store
+from ace.core.storage.store_adapter import Store
 
 mcp = FastMCP("ACE Playbook Server")
 

@@ -2,7 +2,7 @@
 from typing import Any
 
 from .schema import Bullet, Playbook
-from .store import Store
+from .storage.store_adapter import Store
 
 
 class DeltaOp:

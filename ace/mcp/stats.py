@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Core logic for the 'ace.stats' MCP tool."""
 
-from ace.core.store import Store
+from ace.core.storage.store_adapter import Store
 
 
 def run_stats() -> dict:

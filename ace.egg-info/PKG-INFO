@@ -2,13 +2,18 @@ Metadata-Version: 2.4
 Name: ace
 Version: 0.1.0
 Summary: Agentic Context Engineering - evolve LLM context via playbook deltas
+Author-email: Dan McAteer <dan@example.com>
 Requires-Python: >=3.11
 Description-Content-Type: text/markdown
 Requires-Dist: sentence-transformers>=2.0.0
 Requires-Dist: faiss-cpu>=1.7.0
 Requires-Dist: numpy>=1.24.0
 Requires-Dist: fastmcp>=0.1.0
+Requires-Dist: openai>=1.0.0
+Requires-Dist: datasketch>=1.5.0
 Provides-Extra: dev
 Requires-Dist: pytest>=7.0.0; extra == "dev"
 Requires-Dist: ruff>=0.1.0; extra == "dev"
 Requires-Dist: mypy>=1.0.0; extra == "dev"
+Requires-Dist: types-requests; extra == "dev"
+Requires-Dist: types-psycopg2; extra == "dev"

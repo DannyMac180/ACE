@@ -6,6 +6,8 @@ For project issue tracking use the bd tool.
 
 **IMPORTANT**: This project uses **bd (beads)** for ALL issue tracking. Do NOT use markdown TODOs, task lists, or other tracking methods.
 
+When a bd issue is finished with the work, close it with the reason "Completed".
+
 ### Why bd?
 
 - Dependency-aware: Track blockers and relationships between issues

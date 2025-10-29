@@ -7,7 +7,7 @@ from fastmcp import FastMCP
 from ace.core.reflect import Reflector
 from ace.core.retrieve import Retriever
 from ace.core.schema import Playbook
-from ace.core.store import Store
+from ace.core.storage.store_adapter import Store
 from ace.refine import refine
 from ace.reflector.schema import Reflection
 
