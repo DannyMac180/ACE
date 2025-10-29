@@ -1,14 +1,14 @@
 import os
 import sqlite3
-from typing import Any, Optional
+from typing import Any
 from urllib.parse import urlparse
 
 
 class DatabaseConnection:
-    def __init__(self, db_url: Optional[str] = None):
+    def __init__(self, db_url: str | None = None):
         resolved_url = db_url or os.getenv("ACE_DB_URL") or "sqlite:///ace.db"
         self.db_url: str = resolved_url
-        self.conn: Optional[Any] = None
+        self.conn: Any | None = None
         self.is_sqlite = self.db_url.startswith("sqlite://")
 
     def connect(self):

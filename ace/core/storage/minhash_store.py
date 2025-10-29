@@ -1,5 +1,4 @@
 import pickle
-from typing import Optional
 
 from datasketch import MinHash  # type: ignore
 
@@ -24,7 +23,7 @@ class MinHashStore:
             (bullet_id, sig),
         )
 
-    def get_signature(self, bullet_id: str) -> Optional[MinHash]:
+    def get_signature(self, bullet_id: str) -> MinHash | None:
         rows = self.db.fetchall(
             "SELECT signature FROM minhash_sigs WHERE bullet_id = ?", (bullet_id,)
         )

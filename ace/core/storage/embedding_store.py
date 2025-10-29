@@ -1,6 +1,6 @@
 import os
 import pickle
-from typing import Any, Optional
+from typing import Any
 
 import faiss  # type: ignore
 import numpy as np
@@ -9,7 +9,7 @@ from sentence_transformers import SentenceTransformer
 from .db import DatabaseConnection
 
 # Load embedding model (all-MiniLM-L6-v2: 384d, Apache 2.0 license)
-_model: Optional[SentenceTransformer] = None
+_model: SentenceTransformer | None = None
 
 
 def _get_model() -> SentenceTransformer:
@@ -29,7 +29,7 @@ class EmbeddingStore:
     def __init__(self, db_conn: DatabaseConnection, index_path: str = "faiss_index.idx"):
         self.db = db_conn
         self.index_path = index_path
-        self.index: Optional[Any] = None
+        self.index: Any | None = None
         self.id_to_idx: dict[str, int] = {}
         self.idx_to_id: dict[int, str] = {}
         self.load_index()
