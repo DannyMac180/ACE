@@ -2,7 +2,7 @@
 import json
 import sqlite3
 
-from .schema import Bullet
+from .schema import Bullet, Playbook
 
 
 class Store:
@@ -84,8 +84,15 @@ class Store:
 
     def get_version(self) -> int:
         with sqlite3.connect(self.db_path) as conn:
-            return conn.execute("SELECT version FROM playbook_version").fetchone()[0]
+            result = conn.execute("SELECT version FROM playbook_version").fetchone()
+            return int(result[0]) if result else 0
 
     def set_version(self, version: int):
         with sqlite3.connect(self.db_path) as conn:
             conn.execute("UPDATE playbook_version SET version = ?", (version,))
+
+    def load_playbook(self) -> Playbook:
+        """Load the current playbook from the database."""
+        bullets = self.get_all_bullets()
+        version = self.get_version()
+        return Playbook(version=version, bullets=bullets)

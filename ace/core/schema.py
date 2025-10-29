@@ -29,11 +29,27 @@ class DeltaBullet(BaseModel):
     tags: list[str] = Field(default_factory=list)
 
 
-class Delta(BaseModel):
+class DeltaOp(BaseModel):
     op: str
     target_id: str | None = None
-    new_bullet: DeltaBullet | None = None
+    new_bullet: dict | None = None
     patch: str | None = None
+
+
+class Delta(BaseModel):
+    ops: list[DeltaOp] = Field(default_factory=list)
+
+
+class RefineOp(BaseModel):
+    op: str
+    survivor_id: str | None = None
+    target_ids: list[str] = Field(default_factory=list)
+
+
+class RefineResult(BaseModel):
+    merged: int
+    archived: int
+    ops: list[RefineOp] = Field(default_factory=list)
 
 
 class Playbook(BaseModel):

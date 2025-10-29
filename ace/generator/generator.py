@@ -1,6 +1,7 @@
 import logging
 from collections.abc import Callable
 from datetime import datetime
+from typing import Literal
 
 from ace.generator.schemas import Step, Trajectory
 
@@ -163,7 +164,9 @@ class Generator:
                 steps.append(step)
                 logger.info(f"Completed step {step_num + 1}/{self.max_steps}")
 
-            final_status = "success" if len(steps) > 0 else "failure"
+            final_status: Literal["success", "failure", "partial"] = (
+                "success" if len(steps) > 0 else "failure"
+            )
 
         except Exception as e:
             logger.error(f"Error during execution: {e}", exc_info=True)

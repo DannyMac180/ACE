@@ -1,7 +1,7 @@
-from core.schema import Bullet
-from core.storage.bullet_store import BulletStore
-from core.storage.db import DatabaseConnection
-from core.storage.embedding_store import EmbeddingStore
+from ace.core.schema import Bullet
+from ace.core.storage.bullet_store import BulletStore
+from ace.core.storage.db import DatabaseConnection
+from ace.core.storage.embedding_store import EmbeddingStore
 
 
 class HybridRetriever:
@@ -26,9 +26,9 @@ class HybridRetriever:
         candidate_ids = lexical_ids.union(vector_ids)
 
         # Simple reranking: score as 1 if in both, 0.5 if in one
-        scores = {}
+        scores: dict[str, float] = {}
         for cid in candidate_ids:
-            score = 0
+            score = 0.0
             if cid in lexical_ids:
                 score += 0.5
             if cid in vector_ids:

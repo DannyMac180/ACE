@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from ace.core.schema import Bullet, Delta, Playbook
+from ace.core.schema import Bullet, DeltaOp, Playbook
 
 
 class PlaybookManager:
@@ -23,18 +23,18 @@ class PlaybookManager:
                 return bullet
         raise ValueError(f"Bullet not found: {bullet_id}")
 
-    def apply_delta(self, delta: Delta):
+    def apply_delta(self, delta: DeltaOp):
         """Apply a delta operation to modify playbook state."""
         if delta.op == "ADD":
             if not delta.new_bullet:
                 raise ValueError("'ADD' operation requires new_bullet")
 
-            bullet_id = f"{delta.new_bullet.section[:4]}-{str(uuid.uuid4())[:5]}"
+            bullet_id = f"{delta.new_bullet['section'][:4]}-{str(uuid.uuid4())[:5]}"
             bullet = Bullet(
                 id=bullet_id,
-                section=delta.new_bullet.section,
-                content=delta.new_bullet.content,
-                tags=delta.new_bullet.tags,
+                section=delta.new_bullet["section"],
+                content=delta.new_bullet["content"],
+                tags=delta.new_bullet.get("tags", []),
                 added_at=datetime.utcnow(),
             )
             self.playbook.bullets.append(bullet)

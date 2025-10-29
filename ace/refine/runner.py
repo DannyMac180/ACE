@@ -1,7 +1,7 @@
 # ace/refine/runner.py
 
 import numpy as np
-from datasketch import MinHash
+from datasketch import MinHash  # type: ignore
 
 from ace.core.schema import Delta, Playbook, RefineOp, RefineResult
 from ace.core.storage.embedding_store import generate_embedding
@@ -81,7 +81,7 @@ class RefineRunner:
         merge_ops: list[RefineOp] = []
 
         # Extract candidate bullets from ADD operations
-        candidate_bullets = []
+        candidate_bullets: list[tuple[str, dict]] = []
         for op in delta.ops:
             if op.op == "ADD" and op.new_bullet:
                 # Create a temporary bullet ID for tracking

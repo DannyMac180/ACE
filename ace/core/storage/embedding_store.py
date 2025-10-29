@@ -1,35 +1,37 @@
 import os
 import pickle
+from typing import Any, Optional
 
-import faiss
+import faiss  # type: ignore
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
 from .db import DatabaseConnection
 
 # Load embedding model (all-MiniLM-L6-v2: 384d, Apache 2.0 license)
-_model = None
+_model: Optional[SentenceTransformer] = None
 
 
-def _get_model():
+def _get_model() -> SentenceTransformer:
     global _model
     if _model is None:
         _model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
     return _model
 
 
-def generate_embedding(text: str) -> np.ndarray:
+def generate_embedding(text: str) -> np.ndarray[tuple[int], np.dtype[np.float32]]:
     model = _get_model()
-    return model.encode(text, convert_to_numpy=True).astype(np.float32)
+    embedding = model.encode(text, convert_to_numpy=True)
+    return np.array(embedding, dtype=np.float32)
 
 
 class EmbeddingStore:
     def __init__(self, db_conn: DatabaseConnection, index_path: str = "faiss_index.idx"):
         self.db = db_conn
         self.index_path = index_path
-        self.index = None
-        self.id_to_idx = {}
-        self.idx_to_id = {}
+        self.index: Optional[Any] = None
+        self.id_to_idx: dict[str, int] = {}
+        self.idx_to_id: dict[int, str] = {}
         self.load_index()
 
     def load_index(self):
@@ -53,6 +55,7 @@ class EmbeddingStore:
         if bullet_id in self.id_to_idx:
             return  # Already exists
         vector = generate_embedding(text)
+        assert self.index is not None
         idx = self.index.ntotal
         self.index.add(vector.reshape(1, -1))
         self.id_to_idx[bullet_id] = idx
@@ -64,6 +67,7 @@ class EmbeddingStore:
         )
 
     def search(self, query: str, top_k: int = 24) -> list[str]:
+        assert self.index is not None
         vector = generate_embedding(query)
         distances, indices = self.index.search(vector.reshape(1, -1), top_k)
         return [self.idx_to_id[idx] for idx in indices[0] if idx != -1]
@@ -83,6 +87,7 @@ class EmbeddingStore:
 
     def rebuild_index(self):
         self.index = faiss.IndexFlatIP(384)
+        assert self.index is not None
         rows = self.db.fetchall("SELECT bullet_id, vector FROM embeddings")
         for bullet_id, vector_bytes in rows:
             vector = np.frombuffer(vector_bytes, dtype=np.float32)

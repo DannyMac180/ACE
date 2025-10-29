@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 
-from core.schema import Bullet
+from ace.core.schema import Bullet
 
 from .db import DatabaseConnection
 

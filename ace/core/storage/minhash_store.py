@@ -1,6 +1,7 @@
 import pickle
+from typing import Optional
 
-from datasketch import MinHash
+from datasketch import MinHash  # type: ignore
 
 from .db import DatabaseConnection
 
@@ -23,7 +24,7 @@ class MinHashStore:
             (bullet_id, sig),
         )
 
-    def get_signature(self, bullet_id: str) -> MinHash:
+    def get_signature(self, bullet_id: str) -> Optional[MinHash]:
         rows = self.db.fetchall(
             "SELECT signature FROM minhash_sigs WHERE bullet_id = ?", (bullet_id,)
         )
@@ -32,7 +33,7 @@ class MinHashStore:
         return pickle.loads(rows[0][0])
 
     def compute_jaccard(self, sig1: MinHash, sig2: MinHash) -> float:
-        return sig1.jaccard(sig2)
+        return float(sig1.jaccard(sig2))
 
     def remove_signature(self, bullet_id: str):
         self.db.execute("DELETE FROM minhash_sigs WHERE bullet_id = ?", (bullet_id,))

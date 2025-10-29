@@ -1,13 +1,14 @@
 import os
 import sqlite3
-from typing import Any
+from typing import Any, Optional
 from urllib.parse import urlparse
 
 
 class DatabaseConnection:
-    def __init__(self, db_url: str = None):
-        self.db_url = db_url or os.getenv("ACE_DB_URL", "sqlite:///ace.db")
-        self.conn = None
+    def __init__(self, db_url: Optional[str] = None):
+        resolved_url = db_url or os.getenv("ACE_DB_URL") or "sqlite:///ace.db"
+        self.db_url: str = resolved_url
+        self.conn: Optional[Any] = None
         self.is_sqlite = self.db_url.startswith("sqlite://")
 
     def connect(self):
@@ -25,7 +26,7 @@ class DatabaseConnection:
                 port=parsed.port,
                 user=parsed.username,
                 password=parsed.password,
-                database=parsed.path.lstrip("/"),
+                database=parsed.path.lstrip("/") if parsed.path else "",
             )
 
     def close(self):
@@ -35,17 +36,19 @@ class DatabaseConnection:
     def execute(self, query: str, params: tuple = ()) -> Any:
         if not self.conn:
             self.connect()
+        assert self.conn is not None
         cursor = self.conn.cursor()
         cursor.execute(query, params)
         self.conn.commit()
         return cursor
 
-    def fetchall(self, query: str, params: tuple = ()) -> list:
+    def fetchall(self, query: str, params: tuple = ()) -> list[Any]:
         if not self.conn:
             self.connect()
+        assert self.conn is not None
         cursor = self.conn.cursor()
         cursor.execute(query, params)
-        return cursor.fetchall()
+        return list(cursor.fetchall())
 
 
 def init_schema(db_conn: DatabaseConnection):
