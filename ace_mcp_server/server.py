@@ -6,8 +6,9 @@ from fastmcp import FastMCP
 
 from ace.core.reflect import Reflector
 from ace.core.retrieve import Retriever
-from ace.core.schema import Playbook
+from ace.core.schema import Delta, Playbook
 from ace.core.storage.store_adapter import Store
+from ace.generator.schemas import Trajectory
 from ace.refine import refine
 from ace.reflector.schema import Reflection
 
@@ -26,8 +27,18 @@ def ace_retrieve(query: str, top_k: int = 24) -> list[dict[str, Any]]:
 
 @app.tool()
 def ace_record_trajectory(doc: dict[str, Any]) -> str:
-    # Stub: record trajectory and return id
-    return "traj-0001"
+    """
+    Record a trajectory and return its ID.
+    
+    Args:
+        doc: Dictionary containing trajectory data
+    
+    Returns:
+        Trajectory ID string
+    """
+    trajectory = Trajectory(**doc)
+    trajectory_id = store.save_trajectory(trajectory)
+    return trajectory_id
 
 
 @app.tool()
@@ -66,8 +77,18 @@ def ace_curate(reflection_data: dict[str, Any]) -> dict[str, int]:
 
 @app.tool()
 def ace_commit(delta: dict[str, Any]) -> dict[str, int]:
-    # Stub: apply delta and return new version
-    return {"version": 1}
+    """
+    Apply a delta to the playbook and return the new version.
+    
+    Args:
+        delta: Dictionary containing delta operations
+    
+    Returns:
+        Dict with new version number
+    """
+    delta_obj = Delta(**delta)
+    new_version = store.apply_delta(delta_obj)
+    return {"version": new_version}
 
 
 @app.tool()
