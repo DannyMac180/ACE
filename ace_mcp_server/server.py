@@ -29,10 +29,10 @@ def ace_retrieve(query: str, top_k: int = 24) -> list[dict[str, Any]]:
 def ace_record_trajectory(doc: dict[str, Any]) -> str:
     """
     Record a trajectory and return its ID.
-    
+
     Args:
         doc: Dictionary containing trajectory data
-    
+
     Returns:
         Trajectory ID string
     """
@@ -79,10 +79,10 @@ def ace_curate(reflection_data: dict[str, Any]) -> dict[str, int]:
 def ace_commit(delta: dict[str, Any]) -> dict[str, int]:
     """
     Apply a delta to the playbook and return the new version.
-    
+
     Args:
         delta: Dictionary containing delta operations
-    
+
     Returns:
         Dict with new version number
     """
