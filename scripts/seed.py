@@ -2,7 +2,7 @@
 """Seed initial playbook with high-leverage bullets."""
 
 from ace.core.schema import Bullet
-from ace.core.store import Store
+from ace.core.storage.store_adapter import Store
 
 
 def seed_initial_playbook() -> None:

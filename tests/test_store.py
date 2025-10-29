@@ -2,7 +2,7 @@ import os
 import tempfile
 
 from ace.core.schema import Bullet
-from ace.core.store import Store
+from ace.core.storage.store_adapter import Store
 
 
 def test_store_save_and_get():
