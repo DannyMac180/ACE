@@ -1,0 +1,51 @@
+# ACE Configuration File
+# All values can be overridden by environment variables
+
+[database]
+# SQLite for local; postgres://user:pass@host/db for pgvector
+url = "sqlite:///ace.db"
+
+[embeddings]
+# Embedding model for vector retrieval
+model = "bge-small"
+
+[retrieval]
+# Number of bullets to retrieve per query
+top_k = 24
+
+# Lexical weight for hybrid search (0.0-1.0)
+lexical_weight = 0.5
+
+[refine]
+# Cosine similarity threshold for deduplication (0.0-1.0)
+threshold = 0.90
+
+# Minhash Jaccard threshold for near-duplicate detection
+minhash_threshold = 0.85
+
+[logging]
+# Log level: DEBUG, INFO, WARNING, ERROR
+level = "INFO"
+
+# Log format: json or text
+format = "json"
+
+[mcp]
+# MCP transport: stdio, http, sse
+transport = "stdio"
+
+# HTTP port (only if transport=http)
+port = 8000
+
+[llm]
+# Default LLM provider (openai, anthropic, etc.)
+provider = "openai"
+
+# Model name
+model = "gpt-4o-mini"
+
+# Temperature for reflection/curation
+temperature = 0.0
+
+# Max tokens for LLM responses
+max_tokens = 2000
