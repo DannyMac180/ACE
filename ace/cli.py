@@ -137,7 +137,11 @@ def cmd_tag(args: argparse.Namespace) -> None:
     playbook = store.load_playbook()
     new_playbook = apply_delta(playbook, delta, store)
 
-    result: dict[str, Any] = {"version": new_playbook.version, "bullet_id": args.bullet_id, "tag": op_type}
+    result: dict[str, Any] = {
+        "version": new_playbook.version,
+        "bullet_id": args.bullet_id,
+        "tag": op_type,
+    }
     print_output(result, as_json=args.json)
 
 
