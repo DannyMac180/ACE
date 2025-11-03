@@ -50,7 +50,7 @@ def cmd_retrieve(args: argparse.Namespace) -> None:
     bullets = retriever.retrieve(args.query, top_k=args.top_k)
 
     if args.json:
-        print_output([b.dict() for b in bullets], as_json=True)
+        print_output([b.model_dump() for b in bullets], as_json=True)
     else:
         print(f"Found {len(bullets)} bullets:")
         for bullet in bullets:
@@ -83,7 +83,7 @@ def cmd_curate(args: argparse.Namespace) -> None:
     reflection = Reflection(**reflection_data)
 
     delta = curate(reflection)
-    print_output(asdict(delta), as_json=args.json)
+    print_output(delta.model_dump(), as_json=args.json)
 
 
 def cmd_commit(args: argparse.Namespace) -> None:
@@ -103,7 +103,7 @@ def cmd_commit(args: argparse.Namespace) -> None:
     else:
         playbook = store.load_playbook()
         new_playbook = apply_delta(playbook, delta, store)
-        result = {"version": new_playbook.version}
+        result: dict[str, Any] = {"version": new_playbook.version}
         print_output(result, as_json=args.json)
 
 
@@ -113,7 +113,7 @@ def cmd_playbook_dump(args: argparse.Namespace) -> None:
     store = Store(config.database.url)
     playbook = store.load_playbook()
 
-    playbook_json = playbook.dict()
+    playbook_json = playbook.model_dump()
 
     if args.out:
         with open(args.out, "w") as f:
@@ -137,7 +137,7 @@ def cmd_tag(args: argparse.Namespace) -> None:
     playbook = store.load_playbook()
     new_playbook = apply_delta(playbook, delta, store)
 
-    result = {"version": new_playbook.version, "bullet_id": args.bullet_id, "tag": op_type}
+    result: dict[str, Any] = {"version": new_playbook.version, "bullet_id": args.bullet_id, "tag": op_type}
     print_output(result, as_json=args.json)
 
 
@@ -159,7 +159,7 @@ def cmd_evolve(args: argparse.Namespace) -> None:
 
     if args.print_delta:
         print("Generated Delta:")
-        print_output(asdict(delta), as_json=True)
+        print_output(delta.model_dump(), as_json=True)
 
     if args.apply:
         config = load_config()
@@ -167,9 +167,9 @@ def cmd_evolve(args: argparse.Namespace) -> None:
         playbook = store.load_playbook()
 
         # Convert to MergeDelta for apply_delta
-        merge_delta = MergeDelta.from_dict(asdict(delta))
+        merge_delta = MergeDelta.from_dict(delta.model_dump())
         new_playbook = apply_delta(playbook, merge_delta, store)
-        result = {
+        result: dict[str, Any] = {
             "version": new_playbook.version,
             "ops_applied": len(delta.ops),
         }
@@ -214,7 +214,7 @@ def cmd_stats(args: argparse.Namespace) -> None:
     for b in playbook.bullets:
         sections[b.section] = sections.get(b.section, 0) + 1
 
-    result = {
+    result: dict[str, Any] = {
         "version": playbook.version,
         "total_bullets": total,
         "helpful": helpful,
