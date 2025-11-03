@@ -54,6 +54,12 @@ class Store:
 
     def get_version(self) -> int:
         """Get current playbook version."""
+        # Ensure version table exists
+        self.db.execute("""
+            CREATE TABLE IF NOT EXISTS playbook_version (
+                version INTEGER PRIMARY KEY
+            )
+        """)
         rows = self.db.fetchall("SELECT version FROM playbook_version LIMIT 1")
         return rows[0][0] if rows else 0
 
@@ -73,6 +79,16 @@ class Store:
         bullets = self.get_all_bullets()
         version = self.get_version()
         return Playbook(version=version, bullets=bullets)
+
+    def load_playbook_data(self, playbook: Playbook) -> None:
+        """Import playbook data into the store.
+        
+        Args:
+            playbook: Playbook object to import (replaces current data)
+        """
+        for bullet in playbook.bullets:
+            self.save_bullet(bullet)
+        self.set_version(playbook.version)
 
     def close(self) -> None:
         """Close database connections and save indices."""
