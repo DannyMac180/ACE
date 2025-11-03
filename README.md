@@ -44,6 +44,9 @@ ace refine --threshold 0.90 --dry-run
 
 # Dump full playbook
 ace playbook dump --out playbook.json
+
+# Import playbook from JSON file
+ace playbook import --file playbook.json
 ```
 
 Available commands:
@@ -53,6 +56,7 @@ Available commands:
 - `commit` - Apply delta operations to playbook
 - `evolve` - Run full reflect→curate→commit pipeline
 - `playbook dump` - Export full playbook JSON
+- `playbook import` - Import playbook from JSON file
 - `tag` - Tag a bullet as helpful or harmful
 - `refine` - Deduplicate and consolidate bullets
 - `stats` - Show playbook statistics

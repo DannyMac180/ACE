@@ -10,6 +10,7 @@ from ace.core.config import load_config
 from ace.core.merge import Delta as MergeDelta
 from ace.core.merge import apply_delta
 from ace.core.retrieve import Retriever
+from ace.core.schema import Playbook
 from ace.core.storage.store_adapter import Store
 from ace.curator.curator import curate
 from ace.refine.runner import refine
@@ -121,6 +122,23 @@ def cmd_playbook_dump(args: argparse.Namespace) -> None:
         print(f"Playbook exported to {args.out}")
     else:
         print_output(playbook_json, as_json=True)
+
+
+def cmd_playbook_import(args: argparse.Namespace) -> None:
+    """Import playbook JSON into the store."""
+    config = load_config()
+    store = Store(config.database.url)
+
+    data = read_json_input(args.file)
+    playbook = Playbook.model_validate(data)
+
+    store.load_playbook_data(playbook)
+
+    result: dict[str, Any] = {
+        "version": playbook.version,
+        "bullets_imported": len(playbook.bullets),
+    }
+    print_output(result, as_json=args.json)
 
 
 def cmd_tag(args: argparse.Namespace) -> None:
@@ -276,6 +294,11 @@ def main() -> NoReturn:
     playbook_dump = playbook_subparsers.add_parser("dump", help="Dump full playbook JSON")
     playbook_dump.add_argument("--out", help="Output file path (default: stdout)")
     playbook_dump.set_defaults(func=cmd_playbook_dump)
+
+    playbook_import = playbook_subparsers.add_parser("import", help="Import playbook JSON")
+    playbook_import.add_argument("--file", help="Input file path (or '-' for stdin)")
+    playbook_import.add_argument("--json", action="store_true", help="Output as JSON")
+    playbook_import.set_defaults(func=cmd_playbook_import)
 
     tag_parser = subparsers.add_parser("tag", help="Tag bullet as helpful or harmful")
     tag_parser.add_argument("bullet_id", help="Bullet ID to tag")
