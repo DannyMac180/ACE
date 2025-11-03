@@ -3,13 +3,14 @@
 import argparse
 import json
 import sys
-from pathlib import Path
+from dataclasses import asdict
 from typing import Any, NoReturn
 
 from ace.core.config import load_config
+from ace.core.merge import Delta as MergeDelta
 from ace.core.merge import apply_delta
 from ace.core.retrieve import Retriever
-from ace.core.schema import Delta, DeltaOp, Playbook
+from ace.core.schema import Delta, DeltaOp
 from ace.core.storage.store_adapter import Store
 from ace.curator.curator import curate
 from ace.refine.runner import refine
@@ -74,7 +75,7 @@ def cmd_reflect(args: argparse.Namespace) -> None:
         env_meta=doc.get("env_meta"),
     )
 
-    print_output(reflection.dict(), as_json=args.json)
+    print_output(asdict(reflection), as_json=args.json)
 
 
 def cmd_curate(args: argparse.Namespace) -> None:
@@ -83,7 +84,7 @@ def cmd_curate(args: argparse.Namespace) -> None:
     reflection = Reflection(**reflection_data)
 
     delta = curate(reflection)
-    print_output(delta.dict(), as_json=args.json)
+    print_output(asdict(delta), as_json=args.json)
 
 
 def cmd_commit(args: argparse.Namespace) -> None:
@@ -91,12 +92,12 @@ def cmd_commit(args: argparse.Namespace) -> None:
     config = load_config()
     store = Store(config.database.url)
     delta_data = read_json_input(args.delta)
-    delta = Delta(**delta_data)
+    delta = MergeDelta.from_dict(delta_data)
 
     if args.dry_run:
         print("DRY RUN - would apply the following operations:")
         for op in delta.ops:
-            print(f"  {op.op}: {op.dict()}")
+            print(f"  {op.op_type}: {op.data}")
         playbook = store.load_playbook()
         print(f"\nCurrent version: {playbook.version}")
         print(f"Would increment to: {playbook.version + 1}")
@@ -129,11 +130,11 @@ def cmd_tag(args: argparse.Namespace) -> None:
     store = Store(config.database.url)
 
     op_type = "INCR_HELPFUL" if args.helpful else "INCR_HARMFUL"
-    ops = []
+    ops_list = []
     for _ in range(args.count):
-        ops.append(DeltaOp(op=op_type, target_id=args.bullet_id))
+        ops_list.append({"op": op_type, "target_id": args.bullet_id})
 
-    delta = Delta(ops=ops)
+    delta = MergeDelta.from_dict({"ops": ops_list})
     playbook = store.load_playbook()
     new_playbook = apply_delta(playbook, delta, store)
 
@@ -159,13 +160,16 @@ def cmd_evolve(args: argparse.Namespace) -> None:
 
     if args.print_delta:
         print("Generated Delta:")
-        print_output(delta.dict(), as_json=True)
+        print_output(asdict(delta), as_json=True)
 
     if args.apply:
         config = load_config()
         store = Store(config.database.url)
         playbook = store.load_playbook()
-        new_playbook = apply_delta(playbook, delta, store)
+
+        # Convert to MergeDelta for apply_delta
+        merge_delta = MergeDelta.from_dict(asdict(delta))
+        new_playbook = apply_delta(playbook, merge_delta, store)
         result = {
             "version": new_playbook.version,
             "ops_applied": len(delta.ops),
@@ -182,7 +186,7 @@ def cmd_refine(args: argparse.Namespace) -> None:
     store = Store(config.database.url)
     playbook = store.load_playbook()
 
-    empty_reflection = Reflection(summary="", critique="")
+    empty_reflection = Reflection()
     result = refine(empty_reflection, playbook, threshold=args.threshold)
 
     if not args.dry_run:
