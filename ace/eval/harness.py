@@ -14,7 +14,7 @@ class EvalRunner:
 
     def run(self, suite: str = "all") -> None:
         """Run evaluation suite
-        
+
         Args:
             suite: Which benchmark suite to run. Options: 'retrieval', 'reflection', 'e2e', 'all'
         """
