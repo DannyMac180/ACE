@@ -294,7 +294,7 @@ def main() -> NoReturn:
     playbook_dump = playbook_subparsers.add_parser("dump", help="Dump full playbook JSON")
     playbook_dump.add_argument("--out", help="Output file path (default: stdout)")
     playbook_dump.set_defaults(func=cmd_playbook_dump)
-    
+
     playbook_import = playbook_subparsers.add_parser("import", help="Import playbook JSON")
     playbook_import.add_argument("--file", help="Input file path (or '-' for stdin)")
     playbook_import.add_argument("--json", action="store_true", help="Output as JSON")

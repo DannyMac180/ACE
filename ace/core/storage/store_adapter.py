@@ -82,7 +82,7 @@ class Store:
 
     def load_playbook_data(self, playbook: Playbook) -> None:
         """Import playbook data into the store.
-        
+
         Args:
             playbook: Playbook object to import (replaces current data)
         """
