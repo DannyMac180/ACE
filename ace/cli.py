@@ -10,7 +10,6 @@ from ace.core.config import load_config
 from ace.core.merge import Delta as MergeDelta
 from ace.core.merge import apply_delta
 from ace.core.retrieve import Retriever
-from ace.core.schema import Delta, DeltaOp
 from ace.core.storage.store_adapter import Store
 from ace.curator.curator import curate
 from ace.refine.runner import refine
