@@ -1,7 +1,6 @@
 """Tests for ace.eval.harness module"""
 
 import json
-import tempfile
 from pathlib import Path
 
 import pytest

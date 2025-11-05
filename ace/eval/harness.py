@@ -37,7 +37,7 @@ class EvalRunner:
             )
 
         try:
-            with open(fixture_path, "r") as f:
+            with fixture_path.open(encoding="utf-8") as f:
                 data = json.load(f)
         except json.JSONDecodeError as e:
             raise ValueError(
