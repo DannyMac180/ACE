@@ -100,9 +100,18 @@ class TestEvalRunner:
         """Test that EvalRunner loads retrieval fixtures on init"""
         runner = EvalRunner()
         assert isinstance(runner.retrieval_fixtures, list)
-        assert runner.retrieval_fixtures == []  # Empty by default
+        assert len(runner.retrieval_fixtures) > 0
+        assert runner.retrieval_fixtures[0]["id"] == "R-1"
 
     def test_run_method_exists(self) -> None:
         """Test that run method is callable"""
         runner = EvalRunner()
         runner.run(suite="all")  # Should not raise
+
+    def test_run_retrieval_suite(self, capsys: pytest.CaptureFixture) -> None:
+        """Test that retrieval suite executes and prints case IDs"""
+        runner = EvalRunner()
+        runner.run("retrieval")
+
+        captured = capsys.readouterr()
+        assert "Running retrieval case: R-1" in captured.out

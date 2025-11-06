@@ -69,3 +69,13 @@ class EvalRunner:
             suite: Which benchmark suite to run. Options: 'retrieval', 'reflection', 'e2e', 'all'
         """
         print(f"EvalRunner initialized. Attempting to run suite: {suite}")
+
+        if suite in ("retrieval", "all"):
+            for case in self.retrieval_fixtures:
+                print(f"Running retrieval case: {case['id']}")
+
+        if suite in ("reflection", "all"):
+            print("Reflection suite not yet implemented.")
+
+        if suite in ("e2e", "all"):
+            print("E2E suite not yet implemented.")
