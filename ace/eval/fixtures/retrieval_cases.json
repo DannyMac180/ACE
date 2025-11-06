@@ -1,3 +1,39 @@
 {
-  "cases": []
+  "cases": [
+    {
+      "id": "R-1",
+      "query": "How to configure PostgreSQL vector retrieval",
+      "relevant_ids": ["strat-00001", "code-00042"],
+      "irrelevant_ids": ["trbl-00099", "tmpl-00012"],
+      "min_recall": 0.8
+    },
+    {
+      "id": "R-2",
+      "query": "Best practices for handling JSON parse errors in reflector",
+      "relevant_ids": ["trbl-00003", "strat-00007"],
+      "irrelevant_ids": ["fact-00015", "strat-00091"],
+      "min_recall": 0.5
+    },
+    {
+      "id": "R-3",
+      "query": "Delta application merge strategies",
+      "relevant_ids": ["strat-00091", "code-00101", "tmpl-00005"],
+      "irrelevant_ids": ["trbl-00003"],
+      "min_recall": 0.66
+    },
+    {
+      "id": "R-4",
+      "query": "Deduplication thresholds for embedding similarity",
+      "relevant_ids": ["strat-00022", "fact-00008"],
+      "irrelevant_ids": ["code-00042", "tmpl-00012"],
+      "min_recall": 0.5
+    },
+    {
+      "id": "R-5",
+      "query": "MCP tool contract for ace.retrieve",
+      "relevant_ids": ["code-00050", "tmpl-00033", "strat-00015"],
+      "irrelevant_ids": ["trbl-00099"],
+      "min_recall": 0.66
+    }
+  ]
 }
