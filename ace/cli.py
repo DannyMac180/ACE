@@ -259,6 +259,45 @@ def cmd_stats(args: argparse.Namespace) -> None:
             print(f"  {section}: {count}")
 
 
+def cmd_eval_run(args: argparse.Namespace) -> None:
+    """Run evaluation benchmarks."""
+    try:
+        from ace.eval.harness import EvalRunner
+    except ImportError:
+        print("Error: Evaluation harness not yet implemented.")
+        print("Expected module: ace.eval.harness")
+        sys.exit(1)
+
+    runner = EvalRunner()
+
+    # Run evaluation suite
+    results = runner.run_suite(
+        suite=args.suite,
+        baseline_path=args.baseline,
+        fail_on_regression=args.fail_on_regression,
+    )
+
+    # Format output
+    if args.format == "json" or args.json:
+        output_data = results
+        if args.out:
+            with open(args.out, "w") as f:
+                json.dump(output_data, f, indent=2, default=str)
+            print(f"Results written to {args.out}")
+        else:
+            print_output(output_data, as_json=True)
+    elif args.format == "markdown":
+        markdown_output = runner.format_markdown(results)
+        if args.out:
+            with open(args.out, "w") as f:
+                f.write(markdown_output)
+            print(f"Results written to {args.out}")
+        else:
+            print(markdown_output)
+    else:  # text format
+        runner.print_results(results)
+
+
 def main() -> NoReturn:
     """Main CLI entrypoint."""
     parser = argparse.ArgumentParser(
@@ -334,6 +373,32 @@ def main() -> NoReturn:
     stats_parser = subparsers.add_parser("stats", help="Show playbook statistics")
     stats_parser.add_argument("--json", action="store_true", help="Output as JSON")
     stats_parser.set_defaults(func=cmd_stats)
+
+    eval_parser = subparsers.add_parser("eval", help="Run evaluation benchmarks")
+    eval_subparsers = eval_parser.add_subparsers(dest="eval_cmd", required=True)
+
+    eval_run = eval_subparsers.add_parser("run", help="Run evaluation suite")
+    eval_run.add_argument(
+        "--suite",
+        choices=["retrieval", "reflection", "e2e", "all"],
+        default="all",
+        help="Benchmark suite to run",
+    )
+    eval_run.add_argument("--json", action="store_true", help="Output as JSON")
+    eval_run.add_argument(
+        "--format",
+        choices=["text", "json", "markdown"],
+        default="text",
+        help="Output format",
+    )
+    eval_run.add_argument("--out", help="Output file path (default: stdout)")
+    eval_run.add_argument("--baseline", help="Baseline JSON for regression detection")
+    eval_run.add_argument(
+        "--fail-on-regression",
+        action="store_true",
+        help="Exit with error code if regression detected",
+    )
+    eval_run.set_defaults(func=cmd_eval_run)
 
     args = parser.parse_args()
     args.func(args)
