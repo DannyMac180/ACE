@@ -269,14 +269,14 @@ def cmd_eval_run(args: argparse.Namespace) -> None:
         sys.exit(1)
 
     runner = EvalRunner()
-    
+
     # Run evaluation suite
     results = runner.run_suite(
         suite=args.suite,
         baseline_path=args.baseline,
         fail_on_regression=args.fail_on_regression,
     )
-    
+
     # Format output
     if args.format == "json" or args.json:
         output_data = results
@@ -376,7 +376,7 @@ def main() -> NoReturn:
 
     eval_parser = subparsers.add_parser("eval", help="Run evaluation benchmarks")
     eval_subparsers = eval_parser.add_subparsers(dest="eval_cmd", required=True)
-    
+
     eval_run = eval_subparsers.add_parser("run", help="Run evaluation suite")
     eval_run.add_argument(
         "--suite",

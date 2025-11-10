@@ -127,8 +127,9 @@ class EvalRunner:
         """Check for regression against baseline"""
         try:
             with open(baseline_path) as f:
-                baseline = json.load(f)
+                _baseline = json.load(f)
             # Stub: actual regression logic would compare metrics
+            # TODO: Compare results against _baseline metrics
             return {"status": "no_regression", "baseline_loaded": True}
         except Exception as e:
             return {"status": "error", "message": str(e)}
