@@ -104,14 +104,19 @@ class TestEvalRunner:
         assert runner.retrieval_fixtures[0]["id"] == "R-1"
 
     def test_run_method_exists(self) -> None:
-        """Test that run method is callable"""
+        """Test that run_suite method is callable"""
         runner = EvalRunner()
-        runner.run(suite="all")  # Should not raise
+        result = runner.run_suite(suite="all")  # Should not raise
+        assert "suite" in result
+        assert result["suite"] == "all"
 
-    def test_run_retrieval_suite(self, capsys: pytest.CaptureFixture) -> None:
-        """Test that retrieval suite executes and prints case IDs"""
+    def test_run_retrieval_suite(self) -> None:
+        """Test that retrieval suite executes and returns results"""
         runner = EvalRunner()
-        runner.run("retrieval")
+        result = runner.run_suite("retrieval")
 
-        captured = capsys.readouterr()
-        assert "Running retrieval case: R-1" in captured.out
+        assert result["suite"] == "retrieval"
+        assert "details" in result
+        assert "retrieval" in result["details"]
+        assert result["details"]["retrieval"]["status"] == "complete"
+        assert result["details"]["retrieval"]["cases_run"] == 5
