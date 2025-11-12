@@ -28,7 +28,7 @@ jobs:
       run: mypy ace
 
     - name: Unit tests
-      run: pytest -q
+      run: pytest -q -m "not benchmark"
 
     - name: Refine dry-run
       run: python3 -m ace.refine.run --threshold 0.90 --dry-run || true
