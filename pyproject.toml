@@ -44,6 +44,7 @@ python_functions = ["test_*"]
 addopts = "-v --strict-markers -m 'not benchmark'"
 markers = [
     "benchmark: marks tests as benchmarks (deselect with '-m \"not benchmark\"')",
+    "retrieval_regression: marks tests as retrieval regression tests (golden cases that ensure retrieval quality)",
 ]
 
 [tool.ruff]

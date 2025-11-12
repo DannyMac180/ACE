@@ -28,7 +28,10 @@ jobs:
       run: mypy ace
 
     - name: Unit tests
-      run: pytest -q -m "not benchmark"
+      run: pytest -q -m "not benchmark and not retrieval_regression"
+
+    - name: Retrieval regression tests
+      run: pytest -q -m retrieval_regression
 
     - name: Refine dry-run
       run: python3 -m ace.refine.run --threshold 0.90 --dry-run || true

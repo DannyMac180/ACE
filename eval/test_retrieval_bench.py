@@ -326,6 +326,7 @@ def golden_store(tmp_path, golden_bullets):
     store.close()
 
 
+@pytest.mark.retrieval_regression
 def test_golden_retrieval_pgvector_query(golden_store):
     """
     GOLDEN TEST 1: Query for pgvector troubleshooting should return exact bullet.
@@ -341,6 +342,7 @@ def test_golden_retrieval_pgvector_query(golden_store):
         f"Expected trbl-golden-001 in top-3 for pgvector error query, got {result_ids}"
 
 
+@pytest.mark.retrieval_regression
 def test_golden_retrieval_delta_curation_policy(golden_store):
     """
     GOLDEN TEST 2: Query about delta policies retrieves relevant curation bullets.
@@ -360,6 +362,7 @@ def test_golden_retrieval_delta_curation_policy(golden_store):
         f"Expected delta-related bullets in top-3, got {result_ids}"
 
 
+@pytest.mark.retrieval_regression
 def test_golden_retrieval_mcp_json_error(golden_store):
     """
     GOLDEN TEST 3: MCP JSON parse error query should retrieve specific troubleshooting.
@@ -375,6 +378,7 @@ def test_golden_retrieval_mcp_json_error(golden_store):
         f"Expected trbl-golden-002 in top-2 for MCP JSON error, got {result_ids}"
 
 
+@pytest.mark.retrieval_regression
 def test_golden_retrieval_multi_tag_filtering(golden_store):
     """
     GOLDEN TEST 4: Multi-tag query should retrieve bullets with overlapping tags.
@@ -400,6 +404,7 @@ def test_golden_retrieval_multi_tag_filtering(golden_store):
         "Should retrieve at least one bullet with both topic:retrieval and db:* tags"
 
 
+@pytest.mark.retrieval_regression
 def test_golden_retrieval_lexical_rerank_precision(golden_store):
     """
     GOLDEN TEST 5: Lexical overlap reranking should prioritize high-overlap bullets.
