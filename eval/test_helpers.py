@@ -3,12 +3,16 @@ Test helpers for ACE evaluation harness.
 
 Provides lightweight stubs and mocks that avoid heavy dependencies
 like FAISS and SentenceTransformer for fast, hermetic unit tests.
+
+Also provides HybridStore that uses real embeddings for golden tests
+to ensure full retrieval pipeline coverage.
 """
 
 
 from ace.core.schema import Bullet
 from ace.core.storage.bullet_store import BulletStore
 from ace.core.storage.db import DatabaseConnection
+from ace.core.storage.store_adapter import Store
 
 
 class MockEmbeddingStore:
@@ -70,3 +74,16 @@ class LightweightStore:
         """Close database connection."""
         self.embedding_store.save_index()
         self.db.close()
+
+
+class HybridStore(Store):
+    """
+    Full hybrid store for golden tests that uses real embeddings and FAISS.
+
+    This ensures golden tests exercise the complete retrieval pipeline:
+    BM25 FTS + vector embeddings + lexical reranking.
+    """
+
+    def __init__(self, db_path: str):
+        """Initialize with real SQLite, FAISS, and embeddings."""
+        super().__init__(db_path)
