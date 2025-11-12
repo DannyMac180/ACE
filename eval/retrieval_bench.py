@@ -11,10 +11,10 @@ for fast, hermetic unit tests.
 """
 
 import pytest
-from ace.core.schema import Bullet, Section
-from ace.core.retrieve import Retriever
-
 from test_helpers import LightweightStore
+
+from ace.core.retrieve import Retriever
+from ace.core.schema import Bullet
 
 
 @pytest.fixture
@@ -57,18 +57,18 @@ def sample_bullets() -> list[Bullet]:
 @pytest.fixture
 def store_with_bullets(tmp_path, sample_bullets):
     """Create an isolated lightweight store populated with sample bullets.
-    
+
     Uses yield to ensure proper cleanup and avoids shared FAISS index.
     """
     db_path = tmp_path / "test_retrieval.db"
     index_path = str(tmp_path / "test_index.faiss")
     store = LightweightStore(str(db_path), index_path)
-    
+
     for bullet in sample_bullets:
         store.save_bullet(bullet)
-    
+
     yield store
-    
+
     # Cleanup: close DB and FAISS handles
     store.close()
 
@@ -76,9 +76,9 @@ def store_with_bullets(tmp_path, sample_bullets):
 def test_retrieval_basic(store_with_bullets, sample_bullets):
     """Test basic retrieval returns relevant bullets."""
     retriever = Retriever(store_with_bullets)
-    
+
     results = retriever.retrieve("retrieval", top_k=5)
-    
+
     assert len(results) > 0
     assert any(b.id == "strat-001" for b in results)
 
@@ -86,9 +86,9 @@ def test_retrieval_basic(store_with_bullets, sample_bullets):
 def test_retrieval_tag_match(store_with_bullets):
     """Test that tag-based queries retrieve correctly."""
     retriever = Retriever(store_with_bullets)
-    
+
     results = retriever.retrieve("retrieval", top_k=5)
-    
+
     retrieval_bullets = [b for b in results if "topic:retrieval" in b.tags]
     assert len(retrieval_bullets) > 0
 
@@ -96,9 +96,9 @@ def test_retrieval_tag_match(store_with_bullets):
 def test_retrieval_lexical_rerank(store_with_bullets):
     """Test that lexical overlap reranking prioritizes relevant bullets."""
     retriever = Retriever(store_with_bullets)
-    
+
     results = retriever.retrieve("retrieval BM25 embeddings hybrid", top_k=5)
-    
+
     if results:
         top_result = results[0]
         assert "strat-001" == top_result.id
@@ -107,19 +107,19 @@ def test_retrieval_lexical_rerank(store_with_bullets):
 def test_retrieval_topk_limit(store_with_bullets):
     """Test that top_k parameter limits results correctly."""
     retriever = Retriever(store_with_bullets)
-    
+
     results = retriever.retrieve("test", top_k=2)
-    
+
     assert len(results) <= 2
 
 
 def test_retrieval_empty_query(store_with_bullets):
     """Test retrieval with query that has no overlap returns limited results."""
     retriever = Retriever(store_with_bullets)
-    
+
     # Query with terms that don't match any bullets
     results = retriever.retrieve("zzz", top_k=5)
-    
+
     assert isinstance(results, list)
     # May return results from FTS/vector fallback, but should be limited
     assert len(results) <= 5
@@ -128,9 +128,9 @@ def test_retrieval_empty_query(store_with_bullets):
 def test_retrieval_no_matches(store_with_bullets):
     """Test retrieval with query unlikely to match returns empty or minimal results."""
     retriever = Retriever(store_with_bullets)
-    
+
     results = retriever.retrieve("xyzabc123nonexistent", top_k=5)
-    
+
     assert isinstance(results, list)
     # With no lexical overlap, reranking should yield empty or very few results
     assert len(results) <= 5
@@ -147,9 +147,9 @@ def test_retrieval_no_matches(store_with_bullets):
 def test_retrieval_section_specific(store_with_bullets):
     """Test that we can retrieve from specific sections."""
     retriever = Retriever(store_with_bullets)
-    
+
     results = retriever.retrieve("troubleshooting retrieval", top_k=5)
-    
+
     troubleshooting_bullets = [b for b in results if b.section == "troubleshooting"]
     assert len(troubleshooting_bullets) > 0
 
@@ -157,9 +157,9 @@ def test_retrieval_section_specific(store_with_bullets):
 def test_retrieval_deduplication(store_with_bullets):
     """Test that results don't contain duplicates."""
     retriever = Retriever(store_with_bullets)
-    
+
     results = retriever.retrieve("retrieval", top_k=10)
-    
+
     bullet_ids = [b.id for b in results]
     assert len(bullet_ids) == len(set(bullet_ids))
 
@@ -168,7 +168,7 @@ def test_retrieval_deduplication(store_with_bullets):
 def test_retrieval_performance(store_with_bullets, benchmark):
     """Benchmark retrieval performance."""
     retriever = Retriever(store_with_bullets)
-    
+
     result = benchmark(retriever.retrieve, "retrieval hybrid BM25", top_k=24)
-    
+
     assert len(result) <= 24

@@ -5,7 +5,6 @@ Provides lightweight stubs and mocks that avoid heavy dependencies
 like FAISS and SentenceTransformer for fast, hermetic unit tests.
 """
 
-from typing import Any
 
 from ace.core.schema import Bullet
 from ace.core.storage.bullet_store import BulletStore
