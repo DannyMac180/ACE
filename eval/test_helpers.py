@@ -79,7 +79,7 @@ class LightweightStore:
 class HybridStore(Store):
     """
     Full hybrid store for golden tests that uses real embeddings and FAISS.
-    
+
     This ensures golden tests exercise the complete retrieval pipeline:
     BM25 FTS + vector embeddings + lexical reranking.
     """

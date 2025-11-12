@@ -185,8 +185,8 @@ def test_retrieval_performance(store_with_bullets, benchmark):
 def golden_bullets() -> list[Bullet]:
     """
     Golden bullet set for precise retrieval testing.
-    
-    Covers realistic ACE scenarios: Python stack, DB ops, 
+
+    Covers realistic ACE scenarios: Python stack, DB ops,
     troubleshooting, curation policies, and MCP integration.
     """
     return [
@@ -194,7 +194,10 @@ def golden_bullets() -> list[Bullet]:
         Bullet(
             id="strat-golden-001",
             section="strategies",
-            content="Use pgvector for production; FAISS for local dev. Hybrid retrieval with BM25+embedding always.",
+            content=(
+                "Use pgvector for production; FAISS for local dev. "
+                "Hybrid retrieval with BM25+embedding always."
+            ),
             tags=["topic:retrieval", "db:pgvector", "db:faiss", "stack:python"],
             helpful=5,
             harmful=0,
@@ -202,7 +205,10 @@ def golden_bullets() -> list[Bullet]:
         Bullet(
             id="trbl-golden-001",
             section="troubleshooting",
-            content="If pgvector extension missing: CREATE EXTENSION IF NOT EXISTS vector; then restart connection.",
+            content=(
+                "If pgvector extension missing: CREATE EXTENSION IF NOT EXISTS vector; "
+                "then restart connection."
+            ),
             tags=["topic:retrieval", "db:pgvector", "error:extension"],
             helpful=3,
             harmful=0,
@@ -211,7 +217,10 @@ def golden_bullets() -> list[Bullet]:
         Bullet(
             id="strat-golden-002",
             section="strategies",
-            content="Never rewrite playbook wholesale. Only emit ADD/PATCH/DEPRECATE ops. Run refine weekly.",
+            content=(
+                "Never rewrite playbook wholesale. "
+                "Only emit ADD/PATCH/DEPRECATE ops. Run refine weekly."
+            ),
             tags=["topic:curation", "policy", "delta"],
             helpful=8,
             harmful=0,
@@ -228,7 +237,10 @@ def golden_bullets() -> list[Bullet]:
         Bullet(
             id="strat-golden-003",
             section="strategies",
-            content="Expose MCP tools: ace.retrieve, ace.reflect, ace.curate, ace.commit, ace.refine. Use stdio transport.",
+            content=(
+                "Expose MCP tools: ace.retrieve, ace.reflect, ace.curate, "
+                "ace.commit, ace.refine. Use stdio transport."
+            ),
             tags=["topic:mcp", "tool:server", "stack:python"],
             helpful=6,
             harmful=0,
@@ -236,7 +248,10 @@ def golden_bullets() -> list[Bullet]:
         Bullet(
             id="trbl-golden-002",
             section="troubleshooting",
-            content="MCP JSON parse error: strip markdown fencing (```json) before json.loads(); retry once.",
+            content=(
+                "MCP JSON parse error: strip markdown fencing (```json) "
+                "before json.loads(); retry once."
+            ),
             tags=["topic:mcp", "topic:parsing", "error:json"],
             helpful=7,
             harmful=0,
@@ -245,7 +260,10 @@ def golden_bullets() -> list[Bullet]:
         Bullet(
             id="tmpl-golden-001",
             section="templates",
-            content="Integration test pattern: setup fixture → act (call API/tool) → assert expected delta/state → teardown.",
+            content=(
+                "Integration test pattern: setup fixture → act (call API/tool) → "
+                "assert expected delta/state → teardown."
+            ),
             tags=["topic:testing", "pattern:integration"],
             helpful=3,
             harmful=0,
@@ -253,7 +271,10 @@ def golden_bullets() -> list[Bullet]:
         Bullet(
             id="strat-golden-004",
             section="strategies",
-            content="CI stages: lint→typecheck→unit→integration→refine-dry-run. Block merge on failures.",
+            content=(
+                "CI stages: lint→typecheck→unit→integration→refine-dry-run. "
+                "Block merge on failures."
+            ),
             tags=["topic:ci", "policy", "testing"],
             helpful=5,
             harmful=0,
@@ -262,7 +283,10 @@ def golden_bullets() -> list[Bullet]:
         Bullet(
             id="code-golden-002",
             section="code_snippets",
-            content="with store.db.begin(): store.bullet_store.create_bullet(bullet); ensures atomic commit.",
+            content=(
+                "with store.db.begin(): store.bullet_store.create_bullet(bullet); "
+                "ensures atomic commit."
+            ),
             tags=["stack:python", "db:sqlite", "pattern:transaction"],
             helpful=2,
             harmful=0,
@@ -271,7 +295,10 @@ def golden_bullets() -> list[Bullet]:
         Bullet(
             id="strat-golden-005",
             section="strategies",
-            content="Reflector must emit strict JSON matching schema. No chain-of-thought. Retry on parse error.",
+            content=(
+                "Reflector must emit strict JSON matching schema. "
+                "No chain-of-thought. Retry on parse error."
+            ),
             tags=["topic:reflection", "topic:parsing", "llm"],
             helpful=6,
             harmful=0,
@@ -283,18 +310,18 @@ def golden_bullets() -> list[Bullet]:
 def golden_store(tmp_path, golden_bullets):
     """
     Fixture that provides a HybridStore populated with golden bullets.
-    
+
     Uses real embeddings and FAISS to test the full hybrid retrieval pipeline.
     Ensures proper cleanup via yield pattern to prevent resource leaks.
     """
     db_path = str(tmp_path / "golden.db")
     store = HybridStore(db_path)
-    
+
     for bullet in golden_bullets:
         store.save_bullet(bullet)
-    
+
     yield store
-    
+
     # Cleanup: close DB and FAISS handles
     store.close()
 
@@ -302,13 +329,13 @@ def golden_store(tmp_path, golden_bullets):
 def test_golden_retrieval_pgvector_query(golden_store):
     """
     GOLDEN TEST 1: Query for pgvector troubleshooting should return exact bullet.
-    
+
     Scenario: Developer hits missing pgvector extension error.
     Expected: trbl-golden-001 must be in top-3 results.
     """
     retriever = Retriever(golden_store)
     results = retriever.retrieve("pgvector extension missing error", top_k=3)
-    
+
     result_ids = [b.id for b in results]
     assert "trbl-golden-001" in result_ids, \
         f"Expected trbl-golden-001 in top-3 for pgvector error query, got {result_ids}"
@@ -317,16 +344,16 @@ def test_golden_retrieval_pgvector_query(golden_store):
 def test_golden_retrieval_delta_curation_policy(golden_store):
     """
     GOLDEN TEST 2: Query about delta policies retrieves relevant curation bullets.
-    
+
     Scenario: Agent needs to understand curation delta rules.
-    Expected: strat-golden-002 (delta policy) or code-golden-001 (delta example) 
+    Expected: strat-golden-002 (delta policy) or code-golden-001 (delta example)
               must be in top-3 results.
-    
+
     Note: Retriever ranks by lexical overlap only; it does not use helpful scores.
     """
     retriever = Retriever(golden_store)
     results = retriever.retrieve("curation delta policy add patch deprecate", top_k=3)
-    
+
     assert len(results) > 0, "Should retrieve at least one result for delta policy query"
     result_ids = [b.id for b in results]
     assert "strat-golden-002" in result_ids or "code-golden-001" in result_ids, \
@@ -336,13 +363,13 @@ def test_golden_retrieval_delta_curation_policy(golden_store):
 def test_golden_retrieval_mcp_json_error(golden_store):
     """
     GOLDEN TEST 3: MCP JSON parse error query should retrieve specific troubleshooting.
-    
+
     Scenario: MCP tool returns JSON with markdown fencing, causing parse failure.
     Expected: trbl-golden-002 must be in top-2 results.
     """
     retriever = Retriever(golden_store)
     results = retriever.retrieve("MCP JSON parse error markdown fencing", top_k=2)
-    
+
     result_ids = [b.id for b in results]
     assert "trbl-golden-002" in result_ids, \
         f"Expected trbl-golden-002 in top-2 for MCP JSON error, got {result_ids}"
@@ -351,22 +378,22 @@ def test_golden_retrieval_mcp_json_error(golden_store):
 def test_golden_retrieval_multi_tag_filtering(golden_store):
     """
     GOLDEN TEST 4: Multi-tag query should retrieve bullets with overlapping tags.
-    
+
     Scenario: Query spans multiple domains (retrieval + database).
     Expected: Results should include bullets tagged with both topic:retrieval AND db:*.
     """
     retriever = Retriever(golden_store)
     results = retriever.retrieve("retrieval database pgvector faiss", top_k=5)
-    
+
     # Should retrieve strat-golden-001 and trbl-golden-001 (both have retrieval+db tags)
     result_ids = [b.id for b in results]
     assert "strat-golden-001" in result_ids or "trbl-golden-001" in result_ids, \
         f"Expected retrieval+db tagged bullets in results, got {result_ids}"
-    
+
     # Check tag overlap
     retrieval_and_db_bullets = [
-        b for b in results 
-        if any("topic:retrieval" in tag for tag in b.tags) 
+        b for b in results
+        if any("topic:retrieval" in tag for tag in b.tags)
         and any(tag.startswith("db:") for tag in b.tags)
     ]
     assert len(retrieval_and_db_bullets) > 0, \
@@ -376,21 +403,22 @@ def test_golden_retrieval_multi_tag_filtering(golden_store):
 def test_golden_retrieval_lexical_rerank_precision(golden_store):
     """
     GOLDEN TEST 5: Lexical overlap reranking should prioritize high-overlap bullets.
-    
+
     Scenario: Query with specific terms that match bullet content precisely.
     Expected: Bullets with more lexical overlap rank higher.
-    
+
     Note: Current retriever uses lexical overlap only (not helpful/harmful scores).
     This test validates actual reranking behavior.
     """
     retriever = Retriever(golden_store)
     # Query designed to match strat-golden-002 very well (many matching terms)
     results = retriever.retrieve("playbook wholesale ADD PATCH DEPRECATE ops refine", top_k=5)
-    
+
     assert len(results) >= 1, "Should retrieve at least one result"
-    
+
     # The bullet with highest lexical overlap should rank near the top
-    # strat-golden-002 content: "Never rewrite playbook wholesale. Only emit ADD/PATCH/DEPRECATE ops. Run refine weekly."
+    # strat-golden-002 content: "Never rewrite playbook wholesale.
+    # Only emit ADD/PATCH/DEPRECATE ops. Run refine weekly."
     result_ids = [b.id for b in results[:3]]
     assert "strat-golden-002" in result_ids, \
         f"Expected strat-golden-002 in top-3 due to lexical overlap, got {result_ids}"
