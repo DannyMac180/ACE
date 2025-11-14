@@ -1,246 +1,212 @@
-"""Tests for evaluation metrics."""
+# tests/test_metrics.py
+"""Tests for schema validation metrics tracking."""
+import json
 
 import pytest
 
-from ace.eval.metrics import mean_reciprocal_rank, precision_at_k, recall_at_k
+from ace.core.metrics import ValidationMetrics, get_tracker
+from ace.reflector.parser import ReflectionParseError, parse_reflection
 
 
-class TestMeanReciprocalRank:
-    def test_perfect_ranking(self):
-        """Test MRR when relevant item is always first."""
-        ranked = [["doc1", "doc2", "doc3"], ["doc4", "doc5", "doc6"]]
-        relevant = [{"doc1"}, {"doc4"}]
-        assert mean_reciprocal_rank(ranked, relevant) == 1.0
+class TestMetricsTracker:
+    """Test metrics tracker functionality."""
 
-    def test_second_position(self):
-        """Test MRR when relevant item is at second position."""
-        ranked = [["doc1", "doc2", "doc3"]]
-        relevant = [{"doc2"}]
-        assert mean_reciprocal_rank(ranked, relevant) == 0.5
+    def setup_method(self):
+        """Reset tracker before each test."""
+        tracker = get_tracker()
+        tracker.reset()
 
-    def test_mixed_positions(self):
-        """Test MRR with different positions."""
-        ranked = [["doc1", "doc2", "doc3"], ["doc4", "doc5", "doc6"]]
-        relevant = [{"doc2"}, {"doc4"}]
-        mrr = mean_reciprocal_rank(ranked, relevant)
-        assert mrr == pytest.approx(0.75)  # (1/2 + 1/1) / 2
+    def test_singleton_pattern(self):
+        """MetricsTracker should be a singleton."""
+        tracker1 = get_tracker()
+        tracker2 = get_tracker()
+        assert tracker1 is tracker2
 
-    def test_no_relevant_found(self):
-        """Test MRR when no relevant items are found."""
-        ranked = [["doc1", "doc2", "doc3"]]
-        relevant = [{"doc99"}]
-        assert mean_reciprocal_rank(ranked, relevant) == 0.0
+    def test_record_successful_parse(self):
+        """Track successful parse attempts."""
+        tracker = get_tracker()
+        tracker.record_attempt(success=True, schema_type="reflection")
 
-    def test_partial_hits(self):
-        """Test MRR when only some queries have hits."""
-        ranked = [["doc1", "doc2"], ["doc3", "doc4"], ["doc5", "doc6"]]
-        relevant = [{"doc2"}, {"doc99"}, {"doc5"}]
-        mrr = mean_reciprocal_rank(ranked, relevant)
-        assert mrr == pytest.approx(0.5)  # (1/2 + 0 + 1/1) / 3
+        metrics = tracker.get_metrics()
+        assert metrics.total_attempts == 1
+        assert metrics.successful_parses == 1
+        assert metrics.failed_parses == 0
+        assert metrics.success_rate == 1.0
 
-    def test_empty_input(self):
-        """Test MRR with empty input."""
-        assert mean_reciprocal_rank([], []) == 0.0
+    def test_record_json_decode_error(self):
+        """Track JSON decode errors."""
+        tracker = get_tracker()
+        tracker.record_attempt(
+            success=False,
+            error_type="JSONDecodeError",
+            error_message="Expecting value: line 1 column 1 (char 0)",
+            schema_type="reflection",
+        )
 
-    def test_multiple_relevant_takes_first(self):
-        """Test MRR takes rank of first relevant item when multiple exist."""
-        ranked = [["doc1", "doc2", "doc3", "doc4"]]
-        relevant = [{"doc2", "doc4"}]
-        assert mean_reciprocal_rank(ranked, relevant) == 0.5  # Takes doc2 at position 2
+        metrics = tracker.get_metrics()
+        assert metrics.total_attempts == 1
+        assert metrics.successful_parses == 0
+        assert metrics.failed_parses == 1
+        assert metrics.json_decode_errors == 1
+        assert metrics.schema_validation_errors == 0
+        assert "JSONDecodeError" in metrics.error_breakdown
 
-    def test_length_mismatch_raises_error(self):
-        """Test that mismatched input lengths raise ValueError."""
-        ranked = [["doc1"], ["doc2"]]
-        relevant = [{"doc1"}]
-        with pytest.raises(ValueError, match="must have same length"):
-            mean_reciprocal_rank(ranked, relevant)
+    def test_record_schema_validation_error(self):
+        """Track schema validation errors."""
+        tracker = get_tracker()
+        tracker.record_attempt(
+            success=False,
+            error_type="SchemaValidationError",
+            error_message="bullet_tags must be a list",
+            schema_type="reflection",
+        )
 
+        metrics = tracker.get_metrics()
+        assert metrics.schema_validation_errors == 1
+        assert metrics.json_decode_errors == 0
+        assert "SchemaValidationError" in metrics.error_breakdown
 
-class TestRecallAtK:
-    def test_perfect_recall(self):
-        """Test Recall@k when all relevant items are in top-k."""
-        ranked = [["doc1", "doc2", "doc3"]]
-        relevant = [{"doc1", "doc2"}]
-        assert recall_at_k(ranked, relevant, k=3) == 1.0
+    def test_success_rate_calculation(self):
+        """Calculate success rate correctly."""
+        tracker = get_tracker()
+        tracker.record_attempt(success=True, schema_type="reflection")
+        tracker.record_attempt(success=True, schema_type="reflection")
+        tracker.record_attempt(
+            success=False,
+            error_type="JSONDecodeError",
+            schema_type="reflection",
+        )
 
-    def test_partial_recall(self):
-        """Test Recall@k when only some relevant items are in top-k."""
-        ranked = [["doc1", "doc2", "doc3", "doc4"]]
-        relevant = [{"doc2", "doc4", "doc7"}]
-        recall = recall_at_k(ranked, relevant, k=3)
-        assert recall == pytest.approx(0.333333, rel=1e-5)  # 1 out of 3 relevant found
+        metrics = tracker.get_metrics()
+        assert metrics.total_attempts == 3
+        assert metrics.successful_parses == 2
+        assert metrics.failed_parses == 1
+        assert abs(metrics.success_rate - 0.667) < 0.01
 
-    def test_zero_recall(self):
-        """Test Recall@k when no relevant items are in top-k."""
-        ranked = [["doc1", "doc2", "doc3"]]
-        relevant = [{"doc99"}]
-        assert recall_at_k(ranked, relevant, k=3) == 0.0
+    def test_filter_by_schema_type(self):
+        """Filter metrics by schema type."""
+        tracker = get_tracker()
+        tracker.record_attempt(success=True, schema_type="reflection")
+        tracker.record_attempt(success=True, schema_type="delta")
+        tracker.record_attempt(
+            success=False,
+            error_type="JSONDecodeError",
+            schema_type="reflection",
+        )
 
-    def test_multiple_queries(self):
-        """Test Recall@k with multiple queries."""
-        ranked = [
-            ["doc1", "doc2", "doc3", "doc4"],
-            ["doc5", "doc6", "doc7", "doc8"]
-        ]
-        relevant = [
-            {"doc2", "doc4", "doc9"},  # 1/3 found in top-3 (doc2)
-            {"doc5", "doc6"}            # 2/2 found in top-3
-        ]
-        recall = recall_at_k(ranked, relevant, k=3)
-        assert recall == pytest.approx(0.666667, rel=1e-5)  # (1/3 + 2/2) / 2
+        reflection_metrics = tracker.get_metrics(schema_type="reflection")
+        assert reflection_metrics.total_attempts == 2
+        assert reflection_metrics.successful_parses == 1
 
-    def test_k_larger_than_results(self):
-        """Test Recall@k when k is larger than result list."""
-        ranked = [["doc1", "doc2"]]
-        relevant = [{"doc1", "doc2", "doc3"}]
-        recall = recall_at_k(ranked, relevant, k=10)
-        assert recall == pytest.approx(0.666667, rel=1e-5)  # 2/3
-
-    def test_empty_input(self):
-        """Test Recall@k with empty input."""
-        assert recall_at_k([], [], k=5) == 0.0
-
-    def test_empty_relevant_set(self):
-        """Test Recall@k skips queries with no relevant items."""
-        ranked = [["doc1"], ["doc2"]]
-        relevant = [set(), {"doc2"}]
-        assert recall_at_k(ranked, relevant, k=1) == 1.0  # Only second query counted
-
-    def test_length_mismatch_raises_error(self):
-        """Test that mismatched input lengths raise ValueError."""
-        ranked = [["doc1"], ["doc2"]]
-        relevant = [{"doc1"}]
-        with pytest.raises(ValueError, match="must have same length"):
-            recall_at_k(ranked, relevant, k=5)
-
-    def test_negative_k_raises_error(self):
-        """Test that negative k raises ValueError."""
-        ranked = [["doc1", "doc2"]]
-        relevant = [{"doc1"}]
-        with pytest.raises(ValueError, match="k must be positive"):
-            recall_at_k(ranked, relevant, k=-1)
-
-    def test_zero_k_raises_error(self):
-        """Test that k=0 raises ValueError."""
-        ranked = [["doc1", "doc2"]]
-        relevant = [{"doc1"}]
-        with pytest.raises(ValueError, match="k must be positive"):
-            recall_at_k(ranked, relevant, k=0)
+        delta_metrics = tracker.get_metrics(schema_type="delta")
+        assert delta_metrics.total_attempts == 1
+        assert delta_metrics.successful_parses == 1
 
 
-class TestPrecisionAtK:
-    def test_perfect_precision(self):
-        """Test Precision@k when all top-k items are relevant."""
-        ranked = [["doc1", "doc2", "doc3"]]
-        relevant = [{"doc1", "doc2", "doc3"}]
-        assert precision_at_k(ranked, relevant, k=3) == 1.0
+class TestParserIntegration:
+    """Test metrics integration with parser."""
 
-    def test_partial_precision(self):
-        """Test Precision@k when only some top-k items are relevant."""
-        ranked = [["doc1", "doc2", "doc3"]]
-        relevant = [{"doc2", "doc3"}]
-        precision = precision_at_k(ranked, relevant, k=3)
-        assert precision == pytest.approx(0.666667, rel=1e-5)  # 2/3
+    def setup_method(self):
+        """Reset tracker before each test."""
+        tracker = get_tracker()
+        tracker.reset()
 
-    def test_zero_precision(self):
-        """Test Precision@k when no top-k items are relevant."""
-        ranked = [["doc1", "doc2", "doc3"]]
-        relevant = [{"doc99"}]
-        assert precision_at_k(ranked, relevant, k=3) == 0.0
+    def test_successful_parse_records_metric(self):
+        """Successful parse should record metric."""
+        valid_json = json.dumps({
+            "error_identification": "Test error",
+            "bullet_tags": [{"id": "strat-001", "tag": "helpful"}],
+            "candidate_bullets": [
+                {"section": "strategies", "content": "test", "tags": ["test"]}
+            ]
+        })
 
-    def test_multiple_queries(self):
-        """Test Precision@k with multiple queries."""
-        ranked = [
-            ["doc1", "doc2", "doc3"],
-            ["doc4", "doc5", "doc6"]
-        ]
-        relevant = [
-            {"doc2", "doc3"},  # 2/3
-            {"doc4"}           # 1/3
-        ]
-        precision = precision_at_k(ranked, relevant, k=3)
-        assert precision == pytest.approx(0.5, rel=1e-5)  # (2/3 + 1/3) / 2
+        parse_reflection(valid_json)
 
-    def test_k_smaller_than_relevant(self):
-        """Test Precision@k when k is smaller than number of relevant items."""
-        ranked = [["doc1", "doc2", "doc3", "doc4", "doc5"]]
-        relevant = [{"doc1", "doc2", "doc3", "doc4", "doc5"}]
-        assert precision_at_k(ranked, relevant, k=2) == 1.0  # 2/2
+        tracker = get_tracker()
+        metrics = tracker.get_metrics()
+        assert metrics.total_attempts == 1
+        assert metrics.successful_parses == 1
 
-    def test_empty_input(self):
-        """Test Precision@k with empty input."""
-        assert precision_at_k([], [], k=5) == 0.0
+    def test_json_decode_error_records_metric(self):
+        """JSON decode error should record metric."""
+        invalid_json = "not json at all"
 
-    def test_length_mismatch_raises_error(self):
-        """Test that mismatched input lengths raise ValueError."""
-        ranked = [["doc1"], ["doc2"]]
-        relevant = [{"doc1"}]
-        with pytest.raises(ValueError, match="must have same length"):
-            precision_at_k(ranked, relevant, k=5)
+        with pytest.raises(ReflectionParseError):
+            parse_reflection(invalid_json)
 
-    def test_empty_results_contribute_zero(self):
-        """Test that empty result lists contribute 0.0 to precision."""
-        ranked = [[], ["doc1"]]
-        relevant = [{"docX"}, {"doc1"}]
-        precision = precision_at_k(ranked, relevant, k=1)
-        assert precision == pytest.approx(0.5, rel=1e-5)  # (0 + 1) / 2
+        tracker = get_tracker()
+        metrics = tracker.get_metrics()
+        assert metrics.total_attempts == 1
+        assert metrics.failed_parses == 1
+        assert metrics.json_decode_errors == 1
 
-    def test_mixed_empty_and_nonempty_results(self):
-        """Test precision calculation with mixed empty and non-empty results."""
-        ranked = [[], ["doc1", "doc2"], [], ["doc3"]]
-        relevant = [{"doc1"}, {"doc1", "doc2"}, {"doc3"}, {"doc3"}]
-        precision = precision_at_k(ranked, relevant, k=2)
-        # Query 0: empty -> 0.0
-        # Query 1: 2/2 -> 1.0
-        # Query 2: empty -> 0.0
-        # Query 3: 1/1 -> 1.0 (only 1 result, but k=2)
-        # Average: (0 + 1.0 + 0 + 1.0) / 4 = 0.5
-        assert precision == pytest.approx(0.5, rel=1e-5)
+    def test_schema_validation_error_records_metric(self):
+        """Schema validation error should record metric."""
+        invalid_schema = json.dumps({
+            "bullet_tags": "not a list"
+        })
 
-    def test_negative_k_raises_error(self):
-        """Test that negative k raises ValueError."""
-        ranked = [["doc1", "doc2"]]
-        relevant = [{"doc1"}]
-        with pytest.raises(ValueError, match="k must be positive"):
-            precision_at_k(ranked, relevant, k=-1)
+        with pytest.raises(ReflectionParseError):
+            parse_reflection(invalid_schema)
 
-    def test_zero_k_raises_error(self):
-        """Test that k=0 raises ValueError."""
-        ranked = [["doc1", "doc2"]]
-        relevant = [{"doc1"}]
-        with pytest.raises(ValueError, match="k must be positive"):
-            precision_at_k(ranked, relevant, k=0)
+        tracker = get_tracker()
+        metrics = tracker.get_metrics()
+        assert metrics.total_attempts == 1
+        assert metrics.failed_parses == 1
+        assert metrics.schema_validation_errors == 1
+
+    def test_invalid_tag_value_records_metric(self):
+        """Invalid tag value should record metric."""
+        invalid_tag = json.dumps({
+            "bullet_tags": [{"id": "strat-001", "tag": "invalid_value"}]
+        })
+
+        with pytest.raises(ReflectionParseError):
+            parse_reflection(invalid_tag)
+
+        tracker = get_tracker()
+        metrics = tracker.get_metrics()
+        assert metrics.schema_validation_errors == 1
+
+    def test_invalid_section_records_metric(self):
+        """Invalid section should record metric."""
+        invalid_section = json.dumps({
+            "candidate_bullets": [{"section": "invalid_section", "content": "test"}]
+        })
+
+        with pytest.raises(ReflectionParseError):
+            parse_reflection(invalid_section)
+
+        tracker = get_tracker()
+        metrics = tracker.get_metrics()
+        assert metrics.schema_validation_errors == 1
 
 
-class TestMetricsIntegration:
-    def test_realistic_retrieval_scenario(self):
-        """Test metrics with a realistic retrieval scenario."""
-        ranked_results = [
-            ["strat-001", "strat-002", "code-045", "tmpl-012", "strat-003"],
-            ["code-023", "strat-010", "code-045", "fact-099", "tmpl-005"],
-            ["strat-001", "tmpl-001", "code-001", "fact-001", "strat-002"]
-        ]
-        relevant_ids = [
-            {"strat-001", "code-045"},     # Query 1: 2 relevant
-            {"code-023", "code-045"},      # Query 2: 2 relevant
-            {"strat-099", "code-099"}      # Query 3: 0 relevant (not in results)
-        ]
+class TestValidationMetrics:
+    """Test ValidationMetrics dataclass."""
 
-        mrr = mean_reciprocal_rank(ranked_results, relevant_ids)
-        recall_3 = recall_at_k(ranked_results, relevant_ids, k=3)
-        precision_3 = precision_at_k(ranked_results, relevant_ids, k=3)
+    def test_to_dict(self):
+        """ValidationMetrics should convert to dict properly."""
+        metrics = ValidationMetrics(
+            total_attempts=10,
+            successful_parses=8,
+            failed_parses=2,
+            json_decode_errors=1,
+            schema_validation_errors=1,
+            error_breakdown={"JSONDecodeError": 1, "SchemaValidationError": 1},
+        )
 
-        # MRR: (1/1 + 1/1 + 0) / 3 = 0.666...
-        assert mrr == pytest.approx(0.666667, rel=1e-5)
+        result = metrics.to_dict()
+        assert result["total_attempts"] == 10
+        assert result["successful_parses"] == 8
+        assert result["failed_parses"] == 2
+        assert result["success_rate"] == 0.8
+        assert result["json_decode_errors"] == 1
+        assert result["schema_validation_errors"] == 1
+        assert result["error_breakdown"] == {"JSONDecodeError": 1, "SchemaValidationError": 1}
 
-        # Recall@3: (2/2 + 1/2 + 0/2) / 3 = 0.5
-        # Query 1: strat-001 at pos 1, code-045 at pos 3 = 2 found
-        # Query 2: code-023 at pos 1, code-045 at pos 3 = 1 found (code-045 out of top-3)
-        # Query 3: no relevant found
-        assert recall_3 == pytest.approx(0.666667, rel=1e-5)
-
-        # Precision@3: (2/3 + 2/3 + 0/3) / 3 = 0.444...
-        # Query 1: 2 relevant in top-3 (strat-001, code-045)
-        # Query 2: 2 relevant in top-3 (code-023, code-045)
-        # Query 3: 0 relevant in top-3
-        assert precision_3 == pytest.approx(0.444444, rel=1e-5)
+    def test_zero_attempts_success_rate(self):
+        """Success rate should be 0 when no attempts."""
+        metrics = ValidationMetrics()
+        assert metrics.success_rate == 0.0
