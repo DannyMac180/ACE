@@ -18,7 +18,7 @@ import pytest
 
 from ace.reflector.parser import ReflectionParseError
 from ace.reflector.reflector import Reflector
-from ace.reflector.schema import BulletTag, CandidateBullet, Reflection
+from ace.reflector.schema import Reflection
 
 
 @pytest.fixture
@@ -339,7 +339,8 @@ def test_quality_candidate_bullets_are_concise(mock_openai_client):
         # Bullets should be < 200 chars for reusability
         assert len(bullet.content) < 200, \
             f"Bullet too long ({len(bullet.content)} chars): {bullet.content}"
-        # Should not be prose paragraphs (no multiple sentences with "However", "Additionally", etc.)
+        # Should not be prose paragraphs (no multiple sentences with
+        # "However", "Additionally", etc.)
         prose_markers = ["however", "additionally", "furthermore", "therefore"]
         content_lower = bullet.content.lower()
         assert not any(marker in content_lower for marker in prose_markers), \
