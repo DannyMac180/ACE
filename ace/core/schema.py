@@ -27,6 +27,7 @@ class DeltaBullet(BaseModel):
     section: Section
     content: str
     tags: list[str] = Field(default_factory=list)
+    id: str | None = None  # Optional: for idempotent replay
 
 
 class DeltaOp(BaseModel):
