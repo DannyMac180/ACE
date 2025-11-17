@@ -29,7 +29,15 @@ class PlaybookManager:
             if not delta.new_bullet:
                 raise ValueError("'ADD' operation requires new_bullet")
 
-            bullet_id = f"{delta.new_bullet['section'][:4]}-{str(uuid.uuid4())[:5]}"
+            if "id" in delta.new_bullet:
+                bullet_id = delta.new_bullet["id"]
+                for existing_bullet in self.playbook.bullets:
+                    if existing_bullet.id == bullet_id:
+                        # No-op: bullet already exists (idempotent replay)
+                        return
+            else:
+                bullet_id = f"{delta.new_bullet['section'][:4]}-{str(uuid.uuid4())[:5]}"
+
             bullet = Bullet(
                 id=bullet_id,
                 section=delta.new_bullet["section"],
