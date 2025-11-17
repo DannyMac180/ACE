@@ -160,13 +160,13 @@ def test_add_with_id_idempotency():
         new_bullet={"id": "test-id-123", "section": "strategies", "content": "Test", "tags": []},
     )
     manager.apply_delta(delta_add)
-    
+
     version_before = manager.playbook.version
     count_before = len(manager.playbook.bullets)
-    
+
     # Replay the exact same ADD operation
     manager.apply_delta(delta_add)
-    
+
     # Should be no-op: no version bump, no duplicate bullet
     assert manager.playbook.version == version_before
     assert len(manager.playbook.bullets) == count_before
@@ -184,13 +184,13 @@ def test_patch_same_content_idempotency():
 
     delta_patch = DeltaOp(op="PATCH", target_id=bullet_id, patch="Updated")
     manager.apply_delta(delta_patch)
-    
+
     version_before = manager.playbook.version
     content_before = manager.playbook.bullets[0].content
-    
+
     # Apply same patch again
     manager.apply_delta(delta_patch)
-    
+
     # Content unchanged but version bumps (non-idempotent)
     assert manager.playbook.bullets[0].content == content_before
     assert manager.playbook.version == version_before + 1
