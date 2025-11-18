@@ -2,7 +2,7 @@
 """Regression detection for ACE benchmarks and metrics."""
 import json
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
 
@@ -84,7 +84,7 @@ class RegressionDetector:
     ):
         """Record a benchmark result."""
         result = BenchmarkResult(
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             benchmark_name=benchmark_name,
             metric_name=metric_name,
             value=value,
@@ -157,6 +157,7 @@ class RegressionDetector:
         Returns:
             RegressionReport with detection results
         """
+        baseline: float | None
         if static_baseline is not None:
             baseline = static_baseline
         else:

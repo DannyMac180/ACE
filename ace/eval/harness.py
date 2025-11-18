@@ -179,7 +179,7 @@ class EvalRunner:
             for r in regressions:
                 message += f"- {r.message}\n"
 
-            result = {
+            result: dict[str, Any] = {
                 "status": "regression_detected",
                 "regressions": [r.message for r in regressions],
                 "message": message
