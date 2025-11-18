@@ -2,8 +2,9 @@
 
 import json
 from pathlib import Path
-from typing import Any, Literal
-from ace.core.regression import RegressionDetector, RegressionReport
+from typing import Any
+
+from ace.core.regression import RegressionDetector
 
 
 class EvalRunner:
@@ -135,7 +136,7 @@ class EvalRunner:
 
         detector = RegressionDetector()
         regressions = []
-        
+
         # Flatten results summary for comparison
         # Assumes summary contains keys like "retrieval_cases" or "retrieval.mrr"
         # If metrics are nested in details, we might need to flatten them too
@@ -145,11 +146,11 @@ class EvalRunner:
         for metric_key, current_value in metrics_to_check.items():
             if not isinstance(current_value, (int, float)):
                 continue
-                
+
             # If strict matching against baseline file is desired:
             if metric_key in baseline_data:
                 baseline_value = baseline_data[metric_key]
-                
+
                 # Infer benchmark/metric names from key (e.g. "retrieval.mrr")
                 if "." in metric_key:
                     bench_name, metric_name = metric_key.split(".", 1)
@@ -158,7 +159,8 @@ class EvalRunner:
 
                 # Infer direction
                 higher_is_better = True
-                if any(x in metric_name.lower() for x in ["latency", "time", "duration", "seconds", "ms"]):
+                lower_is_better_keywords = ["latency", "time", "duration", "seconds", "ms"]
+                if any(x in metric_name.lower() for x in lower_is_better_keywords):
                     higher_is_better = False
 
                 report = detector.detect_regression(
@@ -176,19 +178,19 @@ class EvalRunner:
             message = f"Found {len(regressions)} regressions:\n"
             for r in regressions:
                 message += f"- {r.message}\n"
-            
+
             result = {
                 "status": "regression_detected",
                 "regressions": [r.message for r in regressions],
                 "message": message
             }
-            
+
             if fail_on_regression:
                 # We return specific status so caller can decide to exit(1)
                 # But harness just returns dict. The CLI uses this.
                 # We add a specific flag for CLI to check.
                 result["failed"] = True
-            
+
             return result
 
         return {"status": "no_regression", "baseline_loaded": True}
