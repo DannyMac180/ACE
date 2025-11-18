@@ -2,7 +2,7 @@
 """Schema validation metrics tracking for ACE."""
 import json
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Literal, Optional
 
@@ -96,7 +96,7 @@ class MetricsTracker:
     ):
         """Record a validation attempt."""
         attempt = ValidationAttempt(
-            timestamp=datetime.now(datetime.UTC) if hasattr(datetime, 'UTC') else datetime.utcnow(),
+            timestamp=datetime.now(UTC),
             success=success,
             error_type=error_type,
             error_message=error_message,
