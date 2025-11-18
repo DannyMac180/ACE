@@ -3,8 +3,7 @@
 import json
 from pathlib import Path
 from typing import Any, Literal
-
-SuiteType = Literal["retrieval", "reflection", "e2e", "all"]
+from ace.core.regression import RegressionDetector, RegressionReport
 
 
 class EvalRunner:
@@ -127,12 +126,72 @@ class EvalRunner:
         """Check for regression against baseline"""
         try:
             with open(baseline_path) as f:
-                _baseline = json.load(f)
-            # Stub: actual regression logic would compare metrics
-            # TODO: Compare results against _baseline metrics
-            return {"status": "no_regression", "baseline_loaded": True}
+                baseline_data = json.load(f)
         except Exception as e:
-            return {"status": "error", "message": str(e)}
+            return {
+                "status": "error",
+                "message": f"Failed to load baseline from {baseline_path}: {e}"
+            }
+
+        detector = RegressionDetector()
+        regressions = []
+        
+        # Flatten results summary for comparison
+        # Assumes summary contains keys like "retrieval_cases" or "retrieval.mrr"
+        # If metrics are nested in details, we might need to flatten them too
+        # For now, check summary items
+        metrics_to_check = results.get("summary", {})
+
+        for metric_key, current_value in metrics_to_check.items():
+            if not isinstance(current_value, (int, float)):
+                continue
+                
+            # If strict matching against baseline file is desired:
+            if metric_key in baseline_data:
+                baseline_value = baseline_data[metric_key]
+                
+                # Infer benchmark/metric names from key (e.g. "retrieval.mrr")
+                if "." in metric_key:
+                    bench_name, metric_name = metric_key.split(".", 1)
+                else:
+                    bench_name, metric_name = "global", metric_key
+
+                # Infer direction
+                higher_is_better = True
+                if any(x in metric_name.lower() for x in ["latency", "time", "duration", "seconds", "ms"]):
+                    higher_is_better = False
+
+                report = detector.detect_regression(
+                    benchmark_name=bench_name,
+                    metric_name=metric_name,
+                    current_value=float(current_value),
+                    higher_is_better=higher_is_better,
+                    static_baseline=float(baseline_value),
+                )
+
+                if report.detected:
+                    regressions.append(report)
+
+        if regressions:
+            message = f"Found {len(regressions)} regressions:\n"
+            for r in regressions:
+                message += f"- {r.message}\n"
+            
+            result = {
+                "status": "regression_detected",
+                "regressions": [r.message for r in regressions],
+                "message": message
+            }
+            
+            if fail_on_regression:
+                # We return specific status so caller can decide to exit(1)
+                # But harness just returns dict. The CLI uses this.
+                # We add a specific flag for CLI to check.
+                result["failed"] = True
+            
+            return result
+
+        return {"status": "no_regression", "baseline_loaded": True}
 
     def format_markdown(self, results: dict[str, Any]) -> str:
         """Format results as markdown report"""
