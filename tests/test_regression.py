@@ -1,6 +1,6 @@
 # tests/test_regression.py
 """Tests for regression detection."""
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
@@ -72,7 +72,7 @@ def test_get_baseline_median_calculation(detector):
 
 def test_get_baseline_recent_samples(detector):
     """Baseline uses only N most recent samples."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     for i, val in enumerate([0.70, 0.75, 0.80, 0.85, 0.90]):
         result = BenchmarkResult(
             timestamp=now - timedelta(days=5-i),
@@ -227,7 +227,7 @@ def test_static_baseline(detector):
     # Historical baseline
     for val in [0.90] * 5:
         detector.record_result("bench", "metric", val)
-    
+
     # Should use static baseline (0.80) instead of historical (0.90)
     # Current 0.75 is a 6% drop from 0.80, which is > 5% default threshold
     report = detector.detect_regression(
@@ -239,19 +239,19 @@ def test_static_baseline(detector):
 
     assert report.detected
     assert report.baseline_value == 0.80
-    
+
     # Using historical (0.90), 0.75 would be ~16% drop (detected)
     # But let's test a case where static passes but historical fails
     # Historical 0.90. Current 0.88. Drop 2%.
     # Static 0.85. Current 0.88. Increase.
-    
+
     report2 = detector.detect_regression(
         benchmark_name="bench",
         metric_name="metric",
         current_value=0.88,
         static_baseline=0.85
     )
-    
+
     assert not report2.detected
     assert report2.baseline_value == 0.85
 
