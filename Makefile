@@ -22,4 +22,4 @@ refine:
 	python3 -m ace.refine.run --threshold 0.90
 
 bench:
-	pytest -q eval/test_bench_smoke.py -q
+	pytest -o "addopts=-v" -m benchmark eval/test_reflection_bench.py eval/test_retrieval_bench.py
