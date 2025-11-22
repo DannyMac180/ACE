@@ -50,7 +50,7 @@ class RefineRunner:
         delta = curate(reflection)
 
         # Stage 2: Deduplication - find near-duplicates
-        merge_ops = self._deduplicate(delta)
+        merge_ops = self.deduplicate(delta)
 
         # Stage 3: Consolidation (stubbed)
         self._consolidate(merge_ops)
@@ -65,7 +65,7 @@ class RefineRunner:
 
         return result
 
-    def _deduplicate(self, delta: Delta) -> list[RefineOp]:
+    def deduplicate(self, delta: Delta) -> list[RefineOp]:
         """
         Find near-duplicate bullets using embedding cosine similarity and minhash.
 
