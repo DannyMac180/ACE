@@ -64,7 +64,7 @@ def recall_at_k(ranked_results: list[list[str]], relevant_ids: list[set[str]], k
         >>> ranked = [["doc1", "doc2", "doc3", "doc4"], ["doc5", "doc6"]]
         >>> relevant = [{"doc2", "doc4", "doc7"}, {"doc5"}]
         >>> recall_at_k(ranked, relevant, k=3)
-        0.75  # (2/3 + 1/1) / 2
+        0.6666666666666666  # (1/3 + 1/1) / 2
     """
     if k <= 0:
         raise ValueError(f"k must be positive, got {k}")

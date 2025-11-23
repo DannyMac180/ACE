@@ -1,0 +1,62 @@
+name: PR Checklist
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  checklist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const checklistBody = `## PR Checklist
+
+            - [ ] Tests added/updated and green
+            - [ ] Playbook delta posted (ops count, new ids)
+            - [ ] No JSON parser errors in Reflect/Curate
+            - [ ] Refine dry-run shows ≤ 10% near-dups`;
+
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+
+            // List comments to check for duplicates
+            const comments = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number,
+            });
+
+            // Look for a comment that looks like our checklist
+            const existingComment = comments.data.find(comment => 
+              comment.body.includes('## PR Checklist')
+            );
+
+            if (!existingComment) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body: checklistBody,
+              });
+              console.log("Checklist comment created.");
+            } else {
+              // Update existing comment if content changes (ignoring checkbox state)
+              const normalize = (str) => str.replace(/\[x\]/g, '[ ]').trim();
+              if (normalize(existingComment.body) !== normalize(checklistBody)) {
+                 await github.rest.issues.updateComment({
+                    owner,
+                    repo,
+                    comment_id: existingComment.id,
+                    body: checklistBody
+                 });
+                 console.log("Checklist comment updated.");
+              } else {
+                 console.log("Checklist comment matches (ignoring checks).");
+              }
+            }
