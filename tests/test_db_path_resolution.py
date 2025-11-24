@@ -1,5 +1,3 @@
-import os
-
 from ace.core.storage.db import DatabaseConnection
 
 

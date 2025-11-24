@@ -16,11 +16,11 @@ class DatabaseConnection:
         """Return a usable SQLite file path from a URL."""
         parsed = urlparse(self.db_url)
 
-        # Absolute paths should use four slashes (sqlite:////tmp/ace.db); keep the leading slash.
+        # Absolute paths use four slashes (sqlite:////tmp/ace.db); keep the leading slash.
         if self.db_url.startswith("sqlite:////"):
             db_path = parsed.path
         else:
-            # Treat three-slash URLs (sqlite:///ace.db) as relative to the current working directory.
+            # Three-slash URLs (sqlite:///ace.db) resolve relative to the current working directory.
             db_path = parsed.path.lstrip("/") if parsed.path else ""
             if not db_path and parsed.netloc:
                 db_path = parsed.netloc
