@@ -13,7 +13,7 @@ def test_sqlite_relative_url_uses_cwd(tmp_path, monkeypatch):
 
 def test_sqlite_absolute_url_preserves_path(tmp_path):
     db_path = tmp_path / "nested" / "ace.db"
-    url = f"sqlite:////{db_path.as_posix().lstrip('/')}"
+    url = f"sqlite:///{db_path.as_posix()}"
     db = DatabaseConnection(url)
     db.connect()
     try:
