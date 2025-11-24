@@ -34,7 +34,7 @@ jobs:
       run: pytest -q -m retrieval_regression
 
     - name: Refine dry-run
-      run: python3 -m ace.refine.run --threshold 0.90 --dry-run || true
+      run: python3 -m ace.cli refine --threshold 0.90 --dry-run
 
   benchmark:
     runs-on: ubuntu-latest

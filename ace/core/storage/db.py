@@ -10,10 +10,33 @@ class DatabaseConnection:
         self.db_url: str = resolved_url
         self.conn: Any | None = None
         self.is_sqlite = self.db_url.startswith("sqlite://")
+        self._sqlite_path: str | None = None
+
+    def _resolve_sqlite_path(self) -> str:
+        """Return a usable SQLite file path from a URL."""
+        parsed = urlparse(self.db_url)
+
+        # Absolute paths use four slashes (sqlite:////tmp/ace.db); keep the leading slash.
+        if self.db_url.startswith("sqlite:////"):
+            db_path = parsed.path
+        else:
+            # Three-slash URLs (sqlite:///ace.db) resolve relative to the current working directory.
+            db_path = parsed.path.lstrip("/") if parsed.path else ""
+            if not db_path and parsed.netloc:
+                db_path = parsed.netloc
+            if not db_path:
+                db_path = "ace.db"
+
+        db_path = os.path.expanduser(db_path)
+        directory = os.path.dirname(db_path)
+        if directory:
+            os.makedirs(directory, exist_ok=True)
+        return db_path
 
     def connect(self):
         if self.is_sqlite:
-            db_path = self.db_url.replace("sqlite://", "")
+            db_path = self._resolve_sqlite_path()
+            self._sqlite_path = db_path
             self.conn = sqlite3.connect(db_path)
             self.conn.execute("PRAGMA foreign_keys = ON")
         else:
