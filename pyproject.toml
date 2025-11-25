@@ -18,6 +18,8 @@ dependencies = [
     "fastmcp>=0.1.0",
     "openai>=1.0.0",
     "datasketch>=1.5.0",
+    "fastapi>=0.100.0",
+    "uvicorn>=0.20.0",
 ]
 
 [project.scripts]
@@ -31,6 +33,7 @@ dev = [
     "mypy>=1.0.0",
     "types-requests",
     "types-psycopg2",
+    "httpx>=0.24.0",
 ]
 
 [tool.setuptools.packages.find]
