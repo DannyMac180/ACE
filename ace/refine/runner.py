@@ -17,18 +17,30 @@ class RefineRunner:
     refined playbook updates.
     """
 
-    def __init__(self, playbook: Playbook, threshold: float = 0.90, archive_ratio: float = 0.75):
+    def __init__(
+        self,
+        playbook: Playbook,
+        threshold: float = 0.90,
+        archive_ratio: float = 0.75,
+        curator_threshold: float | None = None,
+    ):
         """
         Initialize the RefineRunner.
 
         Args:
             playbook: The current Playbook to refine against
-            threshold: Similarity threshold for deduplication (default: 0.90)
+            threshold: Similarity threshold for deduplication stage (default: 0.90)
             archive_ratio: Harmful ratio threshold for archival (default: 0.75)
+            curator_threshold: Similarity threshold for curator's semantic dedup.
+                             If None, defaults to 0.90. Set to None or a high value
+                             to enable semantic dedup; the curator only checks for
+                             duplicates when this is >= 0.5 (otherwise all candidates
+                             become ADD ops without dedup checking).
         """
         self.playbook = playbook
         self.threshold = threshold
         self.archive_ratio = archive_ratio
+        self.curator_threshold = curator_threshold if curator_threshold is not None else 0.90
 
     def run(self, reflection: Reflection) -> RefineResult:
         """
@@ -46,11 +58,25 @@ class RefineRunner:
         Returns:
             RefineResult: Summary of merge and archive operations
         """
-        # Stage 1: Curator - convert reflection to delta with semantic dedup
-        delta = curate(reflection, existing_bullets=self.playbook.bullets, threshold=self.threshold)
+        # Stage 1: Curator - convert reflection to delta
+        # Only enable semantic dedup when curator_threshold is reasonable (>= 0.5)
+        # This prevents low thresholds from treating all candidates as duplicates
+        if self.curator_threshold >= 0.5:
+            delta = curate(
+                reflection,
+                existing_bullets=self.playbook.bullets,
+                threshold=self.curator_threshold,
+            )
+        else:
+            # Skip semantic dedup - all candidates become ADD ops
+            delta = curate(reflection)
 
         # Stage 2: Deduplication - find near-duplicates
-        merge_ops = self.deduplicate(delta)
+        # Skip deduplication when threshold is very low (caller wants to disable dedup)
+        if self.threshold >= 0.5:
+            merge_ops = self.deduplicate(delta)
+        else:
+            merge_ops = []
 
         # Stage 3: Consolidation (stubbed)
         self._consolidate(merge_ops)
@@ -203,7 +229,11 @@ class RefineRunner:
 
 
 def refine(
-    reflection: Reflection, playbook: Playbook, threshold: float = 0.90, archive_ratio: float = 0.75
+    reflection: Reflection,
+    playbook: Playbook,
+    threshold: float = 0.90,
+    archive_ratio: float = 0.75,
+    curator_threshold: float | None = None,
 ) -> RefineResult:
     """
     Main entry point for the refinement pipeline.
@@ -213,11 +243,19 @@ def refine(
     Args:
         reflection: A Reflection object from the Reflector
         playbook: The current Playbook to refine against
-        threshold: Similarity threshold for deduplication (default: 0.90)
+        threshold: Similarity threshold for deduplication stage (default: 0.90)
         archive_ratio: Harmful ratio threshold for archival (default: 0.75)
+        curator_threshold: Similarity threshold for curator's semantic dedup.
+                          If None, defaults to 0.90. When < 0.5, semantic dedup
+                          is disabled and all candidates become ADD ops.
 
     Returns:
         RefineResult: Summary of operations performed (merged count, archived count, ops)
     """
-    runner = RefineRunner(playbook=playbook, threshold=threshold, archive_ratio=archive_ratio)
+    runner = RefineRunner(
+        playbook=playbook,
+        threshold=threshold,
+        archive_ratio=archive_ratio,
+        curator_threshold=curator_threshold,
+    )
     return runner.run(reflection)

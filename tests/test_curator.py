@@ -304,7 +304,9 @@ def test_curate_legacy_behavior_without_existing_bullets():
 def test_curate_tags_processed_before_semantic_check():
     """Test that bullet_tags (INCR_HELPFUL/HARMFUL) are processed regardless of dedup."""
     existing_bullets = [
-        _make_bullet("strat-001", "Use hybrid retrieval with BM25 and vector search for better results"),
+        _make_bullet(
+            "strat-001", "Use hybrid retrieval with BM25 and vector search for better results"
+        ),
     ]
 
     reflection = Reflection(
@@ -314,7 +316,7 @@ def test_curate_tags_processed_before_semantic_check():
         candidate_bullets=[
             CandidateBullet(
                 section="strategies",
-                content="Use hybrid retrieval combining BM25 and vector search for improved results",  # Near-dup
+                content="Use hybrid retrieval combining BM25 and vector search for better results",
                 tags=["topic:retrieval"],
             ),
         ],

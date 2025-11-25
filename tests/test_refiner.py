@@ -69,6 +69,56 @@ def test_refine_runner_initialization():
 
     assert runner.playbook == playbook
     assert runner.threshold == 0.92
+    assert runner.curator_threshold == 0.90  # Default value
+
+
+def test_refine_runner_with_custom_curator_threshold():
+    """Test RefineRunner accepts separate curator_threshold."""
+    from ace.refine.runner import RefineRunner
+
+    playbook = Playbook(version=1, bullets=[])
+    runner = RefineRunner(playbook=playbook, threshold=0.0, curator_threshold=0.85)
+
+    assert runner.threshold == 0.0
+    assert runner.curator_threshold == 0.85
+
+
+def test_refine_with_zero_threshold_still_adds_bullets():
+    """Test that threshold=0.0 for dedup doesn't break curator ADD ops.
+
+    This is a regression test for ACE-104: when callers set threshold=0.0
+    to disable deduplication, curator should still emit ADD ops for new bullets
+    (not PATCH ops that clobber existing content).
+    """
+
+    playbook = Playbook(
+        version=1,
+        bullets=[
+            Bullet(
+                id="strat-00001",
+                section="strategies",
+                content="Existing strategy about retrieval",
+                tags=["topic:retrieval"],
+            )
+        ],
+    )
+
+    reflection = Reflection(
+        candidate_bullets=[
+            CandidateBullet(
+                section="strategies",
+                content="New strategy about validation",
+                tags=["topic:validation"],
+            )
+        ]
+    )
+
+    # When threshold=0.0, curator should NOT be passed bullets (semantic dedup disabled)
+    result = refine(reflection, playbook, threshold=0.0, archive_ratio=1.0)
+
+    # The refine call with threshold=0.0 should use default curator_threshold (0.90)
+    # and the new bullet content should result in ADD (distinct from existing)
+    assert result.merged == 0  # No merge ops since content is different
 
 
 def test_refine_runner_run_returns_result():
@@ -113,9 +163,9 @@ def test_refine_orchestration_stages():
 
         runner.run(reflection)
 
-        # Curator should be invoked with existing bullets and threshold
+        # Curator should be invoked with existing bullets and curator_threshold
         mock_curate.assert_called_once_with(
-            reflection, existing_bullets=playbook.bullets, threshold=runner.threshold
+            reflection, existing_bullets=playbook.bullets, threshold=runner.curator_threshold
         )
 
 
@@ -199,7 +249,8 @@ def test_deduplicate_finds_similar_bullets():
     assert len(delta.ops) == 1
     assert delta.ops[0].op == "PATCH"
     assert delta.ops[0].target_id == "strat-00001"
-    assert delta.ops[0].patch == "Use hybrid retrieval with BM25 and vector embeddings for improved search"
+    expected = "Use hybrid retrieval with BM25 and vector embeddings for improved search"
+    assert delta.ops[0].patch == expected
 
 
 def test_deduplicate_keeps_distinct_bullets():
