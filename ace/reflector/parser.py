@@ -3,7 +3,7 @@ import json
 
 from ace.core.metrics import get_tracker
 
-from .schema import BulletTag, CandidateBullet, Reflection
+from .schema import BulletTag, CandidateBullet, RefinementQuality, Reflection
 
 
 class ReflectionParseError(Exception):
@@ -135,3 +135,59 @@ def parse_reflection(json_str: str) -> Reflection:
             schema_type="reflection",
         )
         raise
+
+
+class QualityParseError(Exception):
+    """Raised when quality evaluation JSON parsing fails."""
+
+    pass
+
+
+def parse_quality(json_str: str) -> RefinementQuality:
+    """Parse JSON string into RefinementQuality object.
+
+    Args:
+        json_str: Raw JSON string from LLM (may contain markdown fencing)
+
+    Returns:
+        RefinementQuality: Validated quality assessment
+
+    Raises:
+        QualityParseError: If JSON is invalid or schema doesn't match
+    """
+    cleaned = json_str.strip()
+    if cleaned.startswith("```"):
+        lines = cleaned.split("\n")
+        start_idx = 1
+        if lines[0].startswith("```json"):
+            start_idx = 1
+        end_idx = len(lines)
+        for i in range(len(lines) - 1, 0, -1):
+            if lines[i].strip() == "```":
+                end_idx = i
+                break
+        cleaned = "\n".join(lines[start_idx:end_idx])
+
+    try:
+        data = json.loads(cleaned)
+    except json.JSONDecodeError as e:
+        raise QualityParseError(f"Invalid JSON: {e}") from None
+
+    if not isinstance(data, dict):
+        raise QualityParseError("JSON must be an object")
+
+    required_fields = ["specificity", "actionability", "redundancy"]
+    for field in required_fields:
+        if field not in data:
+            raise QualityParseError(f"Missing required field: {field}")
+        if not isinstance(data[field], (int, float)):
+            raise QualityParseError(f"Field {field} must be a number")
+        if not 0.0 <= data[field] <= 1.0:
+            raise QualityParseError(f"Field {field} must be between 0.0 and 1.0")
+
+    return RefinementQuality(
+        specificity=float(data["specificity"]),
+        actionability=float(data["actionability"]),
+        redundancy=float(data["redundancy"]),
+        feedback=data.get("feedback", ""),
+    )
