@@ -16,6 +16,7 @@ from ace.curator.curator import curate
 from ace.refine.runner import refine
 from ace.reflector.reflector import Reflector
 from ace.reflector.schema import Reflection
+from ace.train.runner import TrainingRunner
 
 
 def read_json_input(path_or_stdin: str | None) -> dict[str, Any]:
@@ -259,6 +260,56 @@ def cmd_stats(args: argparse.Namespace) -> None:
             print(f"  {section}: {count}")
 
 
+def cmd_train(args: argparse.Namespace) -> None:
+    """Run multi-epoch offline adaptation training."""
+    resume_state = None
+    if args.resume:
+        try:
+            runner = TrainingRunner()
+            resume_state = runner.load_state(args.resume)
+            print(f"Resuming from epoch {resume_state.current_epoch + 1}")
+        except FileNotFoundError:
+            print(f"Warning: Resume state file not found: {args.resume}")
+            print("Starting fresh training run")
+
+    runner = TrainingRunner(
+        refine_after_epoch=not args.no_refine,
+        refine_threshold=args.refine_threshold,
+        shuffle=args.shuffle,
+    )
+
+    print(f"Starting training: {args.epochs} epochs on {args.data}")
+
+    result = runner.train(
+        data_path=args.data,
+        epochs=args.epochs,
+        resume_state=resume_state,
+    )
+
+    if args.save_state:
+        runner.save_state(result.state, args.save_state)
+
+    output = {
+        "epochs_completed": result.epochs_completed,
+        "total_samples_processed": result.total_samples_processed,
+        "total_ops_applied": result.total_ops_applied,
+        "playbook_version_start": result.playbook_version_start,
+        "playbook_version_end": result.playbook_version_end,
+        "duration_seconds": round(result.duration_seconds, 2),
+    }
+
+    if args.json:
+        print_output(output, as_json=True)
+    else:
+        print("\nTraining Complete:")
+        print(f"  Epochs: {output['epochs_completed']}")
+        print(f"  Samples processed: {output['total_samples_processed']}")
+        print(f"  Ops applied: {output['total_ops_applied']}")
+        v_start, v_end = output['playbook_version_start'], output['playbook_version_end']
+        print(f"  Playbook version: {v_start} → {v_end}")
+        print(f"  Duration: {output['duration_seconds']}s")
+
+
 def cmd_eval_run(args: argparse.Namespace) -> None:
     """Run evaluation benchmarks."""
     try:
@@ -373,6 +424,47 @@ def main() -> NoReturn:
     stats_parser = subparsers.add_parser("stats", help="Show playbook statistics")
     stats_parser.add_argument("--json", action="store_true", help="Output as JSON")
     stats_parser.set_defaults(func=cmd_stats)
+
+    train_parser = subparsers.add_parser(
+        "train", help="Run multi-epoch offline adaptation training"
+    )
+    train_parser.add_argument(
+        "--data",
+        required=True,
+        help="Path to JSONL file with training samples",
+    )
+    train_parser.add_argument(
+        "--epochs",
+        type=int,
+        default=1,
+        help="Number of training epochs (default: 1)",
+    )
+    train_parser.add_argument(
+        "--shuffle",
+        action="store_true",
+        help="Shuffle samples at each epoch",
+    )
+    train_parser.add_argument(
+        "--no-refine",
+        action="store_true",
+        help="Skip refine step after each epoch",
+    )
+    train_parser.add_argument(
+        "--refine-threshold",
+        type=float,
+        default=0.90,
+        help="Similarity threshold for refine deduplication (default: 0.90)",
+    )
+    train_parser.add_argument(
+        "--resume",
+        help="Path to training state file to resume from",
+    )
+    train_parser.add_argument(
+        "--save-state",
+        help="Path to save training state for resumption",
+    )
+    train_parser.add_argument("--json", action="store_true", help="Output as JSON")
+    train_parser.set_defaults(func=cmd_train)
 
     eval_parser = subparsers.add_parser("eval", help="Run evaluation benchmarks")
     eval_subparsers = eval_parser.add_subparsers(dest="eval_cmd", required=True)
