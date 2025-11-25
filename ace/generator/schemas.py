@@ -28,6 +28,13 @@ class Trajectory(BaseModel):
         default_factory=datetime.utcnow, description="When execution started"
     )
     completed_at: datetime | None = Field(default=None, description="When execution completed")
+    used_bullet_ids: list[str] = Field(
+        default_factory=list, description="Bullet IDs retrieved and used during generation"
+    )
+    bullet_feedback: dict[str, str] = Field(
+        default_factory=dict,
+        description="Feedback on bullets used: bullet_id -> 'helpful' | 'harmful'",
+    )
 
     def model_post_init(self, __context):
         """Auto-calculate total_steps from steps list."""
