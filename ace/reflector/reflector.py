@@ -1,11 +1,15 @@
 # ace/reflector/reflector.py
 import os
+from typing import TYPE_CHECKING
 
 from openai import OpenAI
 
 from .parser import ReflectionParseError, parse_reflection
 from .prompts import format_reflector_prompt
 from .schema import Reflection
+
+if TYPE_CHECKING:
+    from ace.generator.schemas import Trajectory
 
 
 class Reflector:
@@ -99,3 +103,85 @@ class Reflector:
 
         # Should never reach here, but just in case
         raise ReflectionParseError(f"Unexpected error: {last_error}")
+
+    def reflect_on_trajectory(self, trajectory: "Trajectory") -> Reflection:
+        """Generate a Reflection from a complete Trajectory.
+
+        This is a trajectory-aware helper that extracts code_diff, test_output, and logs
+        from trajectory steps and automatically passes used_bullet_ids.
+
+        Args:
+            trajectory: The complete execution trajectory
+
+        Returns:
+            Reflection: Parsed reflection object
+        """
+        code_diff, test_output, logs = self._extract_trajectory_context(trajectory)
+
+        return self.reflect(
+            query=trajectory.initial_goal,
+            retrieved_bullet_ids=trajectory.used_bullet_ids,
+            code_diff=code_diff,
+            test_output=test_output,
+            logs=logs,
+            env_meta={
+                "final_status": trajectory.final_status,
+                "total_steps": trajectory.total_steps,
+                "bullet_feedback": trajectory.bullet_feedback,
+            },
+        )
+
+    def _extract_trajectory_context(
+        self, trajectory: "Trajectory"
+    ) -> tuple[str, str, str]:
+        """Extract code_diff, test_output, and logs from trajectory steps.
+
+        Scans step observations and actions for patterns indicating:
+        - Code changes (diffs, file modifications)
+        - Test results (pass/fail patterns, pytest output)
+        - Logs (error messages, stack traces)
+
+        Args:
+            trajectory: The trajectory to extract context from
+
+        Returns:
+            Tuple of (code_diff, test_output, logs)
+        """
+        code_diffs: list[str] = []
+        test_outputs: list[str] = []
+        logs: list[str] = []
+
+        for step in trajectory.steps:
+            obs = step.observation.lower()
+
+            if any(
+                pattern in obs
+                for pattern in ["diff", "+++", "---", "@@", "modified", "created file"]
+            ):
+                code_diffs.append(f"Step: {step.action}\n{step.observation}")
+
+            if any(
+                pattern in obs
+                for pattern in [
+                    "passed",
+                    "failed",
+                    "error",
+                    "pytest",
+                    "test_",
+                    "assert",
+                    "traceback",
+                ]
+            ):
+                test_outputs.append(f"Step: {step.action}\n{step.observation}")
+
+            if any(
+                pattern in obs
+                for pattern in ["exception", "error:", "warning:", "log:", "stderr"]
+            ):
+                logs.append(f"Step: {step.action}\n{step.observation}")
+
+        return (
+            "\n\n".join(code_diffs) if code_diffs else "",
+            "\n\n".join(test_outputs) if test_outputs else "",
+            "\n\n".join(logs) if logs else "",
+        )

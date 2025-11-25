@@ -174,3 +174,205 @@ def test_reflection_creation():
     assert reflection.error_identification == "Error"
     assert len(reflection.bullet_tags) == 1
     assert len(reflection.candidate_bullets) == 1
+
+
+# --- Tests for reflect_on_trajectory ---
+
+from unittest.mock import MagicMock, patch
+
+from ace.generator.schemas import Step, Trajectory
+from ace.reflector import Reflector
+
+
+class TestExtractTrajectoryContext:
+    """Tests for _extract_trajectory_context helper."""
+
+    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
+    def test_extract_code_diff(self):
+        """Test extraction of code diffs from trajectory."""
+        trajectory = Trajectory(
+            initial_goal="Fix bug",
+            final_status="success",
+            steps=[
+                Step(
+                    action="edit file",
+                    observation="--- a/file.py\n+++ b/file.py\n@@ -1,2 +1,3 @@",
+                    thought="Need to fix import",
+                ),
+                Step(
+                    action="run tests",
+                    observation="All tests passed",
+                    thought="Verify fix",
+                ),
+            ],
+        )
+
+        reflector = Reflector()
+        code_diff, test_output, logs = reflector._extract_trajectory_context(trajectory)
+
+        assert "---" in code_diff
+        assert "+++" in code_diff
+        assert code_diff != ""
+
+    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
+    def test_extract_test_output(self):
+        """Test extraction of test output from trajectory."""
+        trajectory = Trajectory(
+            initial_goal="Run tests",
+            final_status="failure",
+            steps=[
+                Step(
+                    action="pytest",
+                    observation="FAILED test_example.py::test_add - AssertionError",
+                    thought="Test failed",
+                ),
+            ],
+        )
+
+        reflector = Reflector()
+        code_diff, test_output, logs = reflector._extract_trajectory_context(trajectory)
+
+        assert "FAILED" in test_output
+        assert "AssertionError" in test_output
+
+    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
+    def test_extract_logs(self):
+        """Test extraction of logs from trajectory."""
+        trajectory = Trajectory(
+            initial_goal="Debug issue",
+            final_status="failure",
+            steps=[
+                Step(
+                    action="run script",
+                    observation="ERROR: Connection refused\nstderr: timeout",
+                    thought="Connection issue",
+                ),
+            ],
+        )
+
+        reflector = Reflector()
+        code_diff, test_output, logs = reflector._extract_trajectory_context(trajectory)
+
+        assert "ERROR:" in logs
+        assert "stderr:" in logs
+
+    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
+    def test_extract_empty_trajectory(self):
+        """Test extraction from trajectory with no matching patterns."""
+        trajectory = Trajectory(
+            initial_goal="Simple task",
+            final_status="success",
+            steps=[
+                Step(
+                    action="ls",
+                    observation="file1.txt file2.txt",
+                    thought="List files",
+                ),
+            ],
+        )
+
+        reflector = Reflector()
+        code_diff, test_output, logs = reflector._extract_trajectory_context(trajectory)
+
+        assert code_diff == ""
+        assert test_output == ""
+        assert logs == ""
+
+    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
+    def test_extract_multiple_steps(self):
+        """Test extraction combines multiple relevant steps."""
+        trajectory = Trajectory(
+            initial_goal="Complex task",
+            final_status="partial",
+            steps=[
+                Step(
+                    action="edit",
+                    observation="modified file.py",
+                    thought="Change code",
+                ),
+                Step(
+                    action="test",
+                    observation="pytest: 2 passed, 1 failed",
+                    thought="Run tests",
+                ),
+                Step(
+                    action="edit again",
+                    observation="created file new.py",
+                    thought="Add new file",
+                ),
+            ],
+        )
+
+        reflector = Reflector()
+        code_diff, test_output, logs = reflector._extract_trajectory_context(trajectory)
+
+        assert "modified" in code_diff
+        assert "created file" in code_diff
+        assert "pytest" in test_output
+
+
+class TestReflectOnTrajectory:
+    """Tests for reflect_on_trajectory method."""
+
+    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
+    def test_passes_used_bullet_ids(self):
+        """Test that used_bullet_ids from trajectory are passed to reflect."""
+        reflector = Reflector()
+        reflector.reflect = MagicMock(
+            return_value=Reflection(
+                key_insight="Test insight",
+                bullet_tags=[],
+                candidate_bullets=[],
+            )
+        )
+
+        trajectory = Trajectory(
+            initial_goal="Test task",
+            final_status="success",
+            used_bullet_ids=["strat-001", "tmpl-002"],
+            steps=[],
+        )
+
+        reflector.reflect_on_trajectory(trajectory)
+
+        reflector.reflect.assert_called_once()
+        call_args = reflector.reflect.call_args
+        assert call_args.kwargs["retrieved_bullet_ids"] == ["strat-001", "tmpl-002"]
+
+    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
+    def test_passes_initial_goal_as_query(self):
+        """Test that initial_goal is passed as query."""
+        reflector = Reflector()
+        reflector.reflect = MagicMock(return_value=Reflection())
+
+        trajectory = Trajectory(
+            initial_goal="Implement feature X",
+            final_status="success",
+            steps=[],
+        )
+
+        reflector.reflect_on_trajectory(trajectory)
+
+        call_args = reflector.reflect.call_args
+        assert call_args.kwargs["query"] == "Implement feature X"
+
+    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
+    def test_passes_env_meta(self):
+        """Test that trajectory metadata is passed as env_meta."""
+        reflector = Reflector()
+        reflector.reflect = MagicMock(return_value=Reflection())
+
+        trajectory = Trajectory(
+            initial_goal="Task",
+            final_status="failure",
+            steps=[Step(action="a", observation="o", thought="t")],
+            bullet_feedback={"strat-001": "helpful"},
+        )
+
+        reflector.reflect_on_trajectory(trajectory)
+
+        call_args = reflector.reflect.call_args
+        env_meta = call_args.kwargs["env_meta"]
+        assert env_meta["final_status"] == "failure"
+        assert env_meta["total_steps"] == 1
+        assert env_meta["bullet_feedback"] == {"strat-001": "helpful"}
