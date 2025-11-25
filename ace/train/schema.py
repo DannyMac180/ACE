@@ -108,6 +108,20 @@ class TrainingState(BaseModel):
                 meta.playbook_version_end = playbook_version
                 break
 
+    def is_epoch_in_progress(self, epoch: int) -> bool:
+        """Check if an epoch was started but not completed."""
+        for meta in self.epochs:
+            if meta.epoch == epoch:
+                return meta.completed_at is None
+        return False
+
+    def is_epoch_completed(self, epoch: int) -> bool:
+        """Check if an epoch was completed."""
+        for meta in self.epochs:
+            if meta.epoch == epoch:
+                return meta.completed_at is not None
+        return False
+
 
 class TrainingResult(BaseModel):
     """Result of a training run."""

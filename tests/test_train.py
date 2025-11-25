@@ -108,6 +108,30 @@ class TestTrainingState:
         assert state.epochs[0].playbook_version_end == 12
         assert state.epochs[0].completed_at is not None
 
+    def test_is_epoch_in_progress(self):
+        state = TrainingState()
+
+        assert state.is_epoch_in_progress(1) is False
+
+        state.start_epoch(1, 10)
+        assert state.is_epoch_in_progress(1) is True
+        assert state.is_epoch_in_progress(2) is False
+
+        state.complete_epoch(1, 5, 10, 12)
+        assert state.is_epoch_in_progress(1) is False
+
+    def test_is_epoch_completed(self):
+        state = TrainingState()
+
+        assert state.is_epoch_completed(1) is False
+
+        state.start_epoch(1, 10)
+        assert state.is_epoch_completed(1) is False
+
+        state.complete_epoch(1, 5, 10, 12)
+        assert state.is_epoch_completed(1) is True
+        assert state.is_epoch_completed(2) is False
+
 
 class TestTrainingRunner:
     """Tests for TrainingRunner."""
@@ -288,7 +312,10 @@ class TestTrainingRunner:
         assert len(loaded.sample_records) == 1
 
     @patch("ace.train.runner.curate")
-    def test_train_resume(self, mock_curate, mock_store, mock_reflector, sample_jsonl):
+    def test_train_resume_after_completed_epoch(
+        self, mock_curate, mock_store, mock_reflector, sample_jsonl
+    ):
+        """Resume after epoch 1 is fully completed should start at epoch 2."""
         mock_curate.return_value = Delta(ops=[])
 
         resume_state = TrainingState(total_epochs=3)
@@ -307,7 +334,31 @@ class TestTrainingRunner:
             result = runner.train(sample_jsonl, epochs=3, resume_state=resume_state)
 
         assert result.epochs_completed == 3
-        assert result.total_samples_processed == 9
+        assert result.total_samples_processed == 6
+        assert mock_reflector.reflect.call_count == 6
+
+    @patch("ace.train.runner.curate")
+    def test_train_resume_mid_epoch(
+        self, mock_curate, mock_store, mock_reflector, sample_jsonl
+    ):
+        """Resume mid-epoch should continue processing remaining samples."""
+        mock_curate.return_value = Delta(ops=[])
+
+        resume_state = TrainingState(total_epochs=3)
+        resume_state.start_epoch(1, 1)
+        resume_state.record_sample("s1", 1, 0, 1, 1)
+
+        with patch("ace.train.runner.refine"):
+            runner = TrainingRunner(
+                store=mock_store,
+                reflector=mock_reflector,
+                refine_after_epoch=False,
+            )
+            result = runner.train(sample_jsonl, epochs=3, resume_state=resume_state)
+
+        assert result.epochs_completed == 3
+        assert result.total_samples_processed == 8
+        assert mock_reflector.reflect.call_count == 8
 
     @patch("ace.train.runner.curate")
     def test_train_no_ops_generated(

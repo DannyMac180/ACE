@@ -133,17 +133,24 @@ class TrainingRunner:
         playbook = self.store.load_playbook()
         version_start = playbook.version
         total_ops = 0
+        total_samples = 0
 
-        start_epoch = state.current_epoch
-        for epoch in range(start_epoch, epochs):
-            epoch_num = epoch + 1
-            logger.info(f"Starting epoch {epoch_num}/{epochs}")
+        start_epoch_num = max(1, state.current_epoch)
+        if state.is_epoch_completed(start_epoch_num):
+            start_epoch_num += 1
 
-            playbook = self.store.load_playbook()
-            state.start_epoch(epoch_num, playbook.version)
+        for epoch_num in range(start_epoch_num, epochs + 1):
+            is_resuming = state.is_epoch_in_progress(epoch_num)
+
+            if is_resuming:
+                logger.info(f"Resuming epoch {epoch_num}/{epochs}")
+            else:
+                logger.info(f"Starting epoch {epoch_num}/{epochs}")
+                playbook = self.store.load_playbook()
+                state.start_epoch(epoch_num, playbook.version)
 
             epoch_samples = list(samples)
-            if self.shuffle:
+            if self.shuffle and not is_resuming:
                 import random
 
                 random.shuffle(epoch_samples)
@@ -165,6 +172,7 @@ class TrainingRunner:
                 playbook = self.store.load_playbook()
 
             total_ops += epoch_ops
+            total_samples += len(samples_to_process)
 
             if self.refine_after_epoch:
                 self._run_refine()
@@ -188,7 +196,7 @@ class TrainingRunner:
         duration = time.time() - start_time
         return TrainingResult(
             epochs_completed=epochs,
-            total_samples_processed=sum(e.samples_processed for e in state.epochs),
+            total_samples_processed=total_samples,
             total_ops_applied=total_ops,
             playbook_version_start=version_start,
             playbook_version_end=playbook.version,
