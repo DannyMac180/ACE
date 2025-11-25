@@ -16,6 +16,7 @@ from ace.curator.curator import curate
 from ace.refine.runner import refine
 from ace.reflector.reflector import Reflector
 from ace.reflector.schema import Reflection
+from ace.serve.runner import run_server as run_online_server
 from ace.train.runner import TrainingRunner
 
 
@@ -260,6 +261,20 @@ def cmd_stats(args: argparse.Namespace) -> None:
             print(f"  {section}: {count}")
 
 
+def cmd_serve(args: argparse.Namespace) -> None:
+    """Start the online serving server for test-time adaptation."""
+    print(f"Starting ACE online server on {args.host}:{args.port}")
+    print(f"  Mode: {'online' if args.online else 'offline'}")
+    print(f"  Auto-adapt: {not args.no_adapt}")
+
+    run_online_server(
+        host=args.host,
+        port=args.port,
+        auto_adapt=not args.no_adapt,
+        reload=args.reload,
+    )
+
+
 def cmd_train(args: argparse.Namespace) -> None:
     """Run multi-epoch offline adaptation training."""
     resume_state = None
@@ -424,6 +439,38 @@ def main() -> NoReturn:
     stats_parser = subparsers.add_parser("stats", help="Show playbook statistics")
     stats_parser.add_argument("--json", action="store_true", help="Output as JSON")
     stats_parser.set_defaults(func=cmd_stats)
+
+    serve_parser = subparsers.add_parser(
+        "serve", help="Start online server for test-time sequential adaptation"
+    )
+    serve_parser.add_argument(
+        "--host",
+        default="127.0.0.1",
+        help="Host to bind to (default: 127.0.0.1)",
+    )
+    serve_parser.add_argument(
+        "--port",
+        type=int,
+        default=8000,
+        help="Port to bind to (default: 8000)",
+    )
+    serve_parser.add_argument(
+        "--online",
+        action="store_true",
+        default=True,
+        help="Run in online mode (test-time adaptation with execution feedback only)",
+    )
+    serve_parser.add_argument(
+        "--no-adapt",
+        action="store_true",
+        help="Disable automatic adaptation (retrieve only)",
+    )
+    serve_parser.add_argument(
+        "--reload",
+        action="store_true",
+        help="Enable hot reload for development",
+    )
+    serve_parser.set_defaults(func=cmd_serve)
 
     train_parser = subparsers.add_parser(
         "train", help="Run multi-epoch offline adaptation training"
