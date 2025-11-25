@@ -7,9 +7,12 @@ from ace.generator.schemas import Step, Trajectory
 from ace.reflector import (
     BulletTag,
     CandidateBullet,
+    QualityParseError,
+    RefinementQuality,
     Reflection,
     ReflectionParseError,
     Reflector,
+    parse_quality,
     parse_reflection,
 )
 
@@ -375,3 +378,217 @@ class TestReflectOnTrajectory:
         assert env_meta["final_status"] == "failure"
         assert env_meta["total_steps"] == 1
         assert env_meta["bullet_feedback"] == {"strat-001": "helpful"}
+
+
+# --- Tests for RefinementQuality and parse_quality ---
+
+
+class TestRefinementQuality:
+    """Tests for RefinementQuality dataclass."""
+
+    def test_creation_and_overall_score(self):
+        """Test RefinementQuality computes overall_score correctly."""
+        quality = RefinementQuality(
+            specificity=0.8,
+            actionability=0.6,
+            redundancy=0.2,  # low redundancy is good
+        )
+        # (0.8 + 0.6 + (1 - 0.2)) / 3 = (0.8 + 0.6 + 0.8) / 3 = 0.733...
+        assert abs(quality.overall_score - 0.7333) < 0.01
+
+    def test_with_feedback(self):
+        """Test RefinementQuality with feedback."""
+        quality = RefinementQuality(
+            specificity=0.5,
+            actionability=0.5,
+            redundancy=0.5,
+            feedback="Needs more specific insights",
+        )
+        assert quality.feedback == "Needs more specific insights"
+        assert quality.overall_score == 0.5
+
+
+class TestParseQuality:
+    """Tests for parse_quality function."""
+
+    def test_valid_quality_json(self):
+        """Test parsing valid quality JSON."""
+        json_str = """
+        {
+          "specificity": 0.85,
+          "actionability": 0.7,
+          "redundancy": 0.15,
+          "feedback": "Good insights"
+        }
+        """
+        quality = parse_quality(json_str)
+        assert quality.specificity == 0.85
+        assert quality.actionability == 0.7
+        assert quality.redundancy == 0.15
+        assert quality.feedback == "Good insights"
+
+    def test_quality_with_markdown_fencing(self):
+        """Test parsing quality with markdown code fencing."""
+        json_str = """```json
+        {
+          "specificity": 0.9,
+          "actionability": 0.8,
+          "redundancy": 0.1
+        }
+        ```"""
+        quality = parse_quality(json_str)
+        assert quality.specificity == 0.9
+        assert quality.feedback == ""
+
+    def test_quality_missing_field(self):
+        """Test that missing field raises error."""
+        json_str = """{"specificity": 0.8, "actionability": 0.7}"""
+        with pytest.raises(QualityParseError, match="Missing required field"):
+            parse_quality(json_str)
+
+    def test_quality_out_of_range(self):
+        """Test that out-of-range value raises error."""
+        json_str = """{"specificity": 1.5, "actionability": 0.7, "redundancy": 0.3}"""
+        with pytest.raises(QualityParseError, match="must be between"):
+            parse_quality(json_str)
+
+    def test_quality_invalid_json(self):
+        """Test that invalid JSON raises error."""
+        with pytest.raises(QualityParseError, match="Invalid JSON"):
+            parse_quality("{ not valid }")
+
+
+# --- Tests for iterative refinement ---
+
+
+class TestIterativeRefinement:
+    """Tests for iterative refinement in Reflector."""
+
+    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
+    def test_refinement_rounds_default(self):
+        """Test default refinement_rounds is 1 (no refinement)."""
+        reflector = Reflector()
+        reflector.refinement_rounds = 1
+        reflector.quality_threshold = 0.7
+        reflector.max_retries = 3
+        reflector.model = "gpt-4o-mini"
+        reflector.temperature = 0.3
+        reflector.client = MagicMock()
+
+        mock_response = MagicMock()
+        mock_response.choices[0].message.content = """
+        {
+          "error_identification": "Test error",
+          "bullet_tags": [],
+          "candidate_bullets": []
+        }
+        """
+        reflector.client.chat.completions.create.return_value = mock_response
+
+        reflection = reflector.reflect(
+            query="test query",
+            retrieved_bullet_ids=[],
+        )
+
+        assert reflection.error_identification == "Test error"
+        # Only 1 call since refinement_rounds=1
+        assert reflector.client.chat.completions.create.call_count == 1
+
+    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
+    def test_refinement_stops_when_quality_threshold_met(self):
+        """Test refinement stops early when quality threshold is met."""
+        reflector = Reflector()
+        reflector.refinement_rounds = 3
+        reflector.quality_threshold = 0.7
+        reflector.max_retries = 3
+        reflector.model = "gpt-4o-mini"
+        reflector.temperature = 0.3
+        reflector.client = MagicMock()
+
+        # First call: initial reflection
+        initial_response = MagicMock()
+        initial_response.choices[0].message.content = """
+        {"error_identification": "Initial", "bullet_tags": [], "candidate_bullets": []}
+        """
+
+        # Second call: quality eval (high quality, should stop)
+        quality_response = MagicMock()
+        quality_response.choices[0].message.content = """
+        {"specificity": 0.9, "actionability": 0.8, "redundancy": 0.1, "feedback": ""}
+        """
+
+        reflector.client.chat.completions.create.side_effect = [
+            initial_response,
+            quality_response,
+        ]
+
+        reflection = reflector.reflect(
+            query="test query",
+            retrieved_bullet_ids=[],
+        )
+
+        assert reflection.error_identification == "Initial"
+        # 1 for initial + 1 for quality eval = 2 calls
+        assert reflector.client.chat.completions.create.call_count == 2
+
+    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
+    def test_refinement_iterates_until_max_rounds(self):
+        """Test refinement continues until max rounds when quality is low."""
+        reflector = Reflector()
+        reflector.refinement_rounds = 2
+        reflector.quality_threshold = 0.9  # High threshold
+        reflector.max_retries = 3
+        reflector.model = "gpt-4o-mini"
+        reflector.temperature = 0.3
+        reflector.client = MagicMock()
+
+        # Initial reflection
+        initial_response = MagicMock()
+        initial_response.choices[0].message.content = """
+        {"error_identification": "V1", "bullet_tags": [], "candidate_bullets": []}
+        """
+
+        # Quality eval: low quality
+        quality_response = MagicMock()
+        quality_response.choices[0].message.content = (
+            '{"specificity": 0.4, "actionability": 0.5, '
+            '"redundancy": 0.6, "feedback": "Be more specific"}'
+        )
+
+        # Refined reflection
+        refined_response = MagicMock()
+        refined_response.choices[0].message.content = """
+        {"error_identification": "V2 - refined", "bullet_tags": [], "candidate_bullets": []}
+        """
+
+        reflector.client.chat.completions.create.side_effect = [
+            initial_response,
+            quality_response,
+            refined_response,
+        ]
+
+        reflection = reflector.reflect(
+            query="test query",
+            retrieved_bullet_ids=[],
+        )
+
+        # Should get the refined version
+        assert reflection.error_identification == "V2 - refined"
+        # 1 initial + 1 quality + 1 refinement = 3 calls
+        assert reflector.client.chat.completions.create.call_count == 3
+
+    def test_reflector_init_with_refinement_params(self):
+        """Test Reflector can be initialized with refinement parameters."""
+        with patch("ace.reflector.reflector.OpenAI"):
+            reflector = Reflector(refinement_rounds=3, quality_threshold=0.8)
+            assert reflector.refinement_rounds == 3
+            assert reflector.quality_threshold == 0.8
+
+    def test_refinement_rounds_minimum_is_one(self):
+        """Test that refinement_rounds is at least 1."""
+        with patch("ace.reflector.reflector.OpenAI"):
+            reflector = Reflector(refinement_rounds=0)
+            assert reflector.refinement_rounds == 1
+
+            reflector2 = Reflector(refinement_rounds=-5)
+            assert reflector2.refinement_rounds == 1

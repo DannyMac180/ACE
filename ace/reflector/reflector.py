@@ -4,9 +4,9 @@ from typing import TYPE_CHECKING
 
 from openai import OpenAI
 
-from .parser import ReflectionParseError, parse_reflection
-from .prompts import format_reflector_prompt
-from .schema import Reflection
+from .parser import QualityParseError, ReflectionParseError, parse_quality, parse_reflection
+from .prompts import format_quality_eval_prompt, format_refinement_prompt, format_reflector_prompt
+from .schema import RefinementQuality, Reflection
 
 if TYPE_CHECKING:
     from ace.generator.schemas import Trajectory
@@ -20,6 +20,8 @@ class Reflector:
         model: str = "gpt-4o-mini",
         max_retries: int = 3,
         temperature: float = 0.3,
+        refinement_rounds: int = 1,
+        quality_threshold: float = 0.7,
     ):
         """Initialize Reflector.
 
@@ -27,10 +29,14 @@ class Reflector:
             model: OpenAI model to use
             max_retries: Maximum retry attempts on parse errors
             temperature: LLM temperature (lower = more deterministic)
+            refinement_rounds: Maximum refinement iterations (1 = no refinement)
+            quality_threshold: Quality score threshold (0-1) to stop early
         """
         self.model = model
         self.max_retries = max_retries
         self.temperature = temperature
+        self.refinement_rounds = max(1, refinement_rounds)
+        self.quality_threshold = quality_threshold
         self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
     def reflect(
@@ -42,7 +48,10 @@ class Reflector:
         logs: str = "",
         env_meta: dict | None = None,
     ) -> Reflection:
-        """Generate a Reflection from task execution data.
+        """Generate a Reflection from task execution data with optional iterative refinement.
+
+        If refinement_rounds > 1, the reflection will be evaluated for quality
+        and refined until the quality threshold is met or max rounds reached.
 
         Args:
             query: The task or query that was executed
@@ -58,6 +67,41 @@ class Reflector:
         Raises:
             ReflectionParseError: If parsing fails after max_retries
         """
+        reflection = self._generate_initial_reflection(
+            query=query,
+            retrieved_bullet_ids=retrieved_bullet_ids,
+            code_diff=code_diff,
+            test_output=test_output,
+            logs=logs,
+            env_meta=env_meta,
+        )
+
+        if self.refinement_rounds <= 1:
+            return reflection
+
+        for _round_num in range(1, self.refinement_rounds):
+            quality = self._evaluate_quality(query, retrieved_bullet_ids, reflection)
+
+            if quality.overall_score >= self.quality_threshold:
+                break
+
+            if not quality.feedback:
+                break
+
+            reflection = self._refine_reflection(query, reflection, quality.feedback)
+
+        return reflection
+
+    def _generate_initial_reflection(
+        self,
+        query: str,
+        retrieved_bullet_ids: list[str],
+        code_diff: str = "",
+        test_output: str = "",
+        logs: str = "",
+        env_meta: dict | None = None,
+    ) -> Reflection:
+        """Generate the initial reflection (with parse retries)."""
         system_prompt, user_prompt = format_reflector_prompt(
             query=query,
             retrieved_bullet_ids=retrieved_bullet_ids,
@@ -83,13 +127,11 @@ class Reflector:
                 if not json_str:
                     raise ReflectionParseError("Empty response from LLM")
 
-                reflection = parse_reflection(json_str)
-                return reflection
+                return parse_reflection(json_str)
 
             except ReflectionParseError as e:
                 last_error = e
                 if attempt < self.max_retries - 1:
-                    # Add guidance for retry
                     user_prompt += (
                         f"\n\nPrevious attempt failed: {e}. "
                         "Please output ONLY valid JSON without markdown fencing."
@@ -101,8 +143,119 @@ class Reflector:
                         f"attempts. Last error: {e}"
                     ) from None
 
-        # Should never reach here, but just in case
         raise ReflectionParseError(f"Unexpected error: {last_error}")
+
+    def _evaluate_quality(
+        self,
+        query: str,
+        retrieved_bullet_ids: list[str],
+        reflection: Reflection,
+    ) -> RefinementQuality:
+        """Evaluate quality of a reflection."""
+        reflection_json = self._reflection_to_json(reflection)
+        system_prompt, user_prompt = format_quality_eval_prompt(
+            query=query,
+            retrieved_bullet_ids=retrieved_bullet_ids,
+            reflection_json=reflection_json,
+        )
+
+        for attempt in range(self.max_retries):
+            try:
+                response = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    temperature=self.temperature,
+                )
+
+                json_str = response.choices[0].message.content
+                if not json_str:
+                    raise QualityParseError("Empty response from LLM")
+
+                return parse_quality(json_str)
+
+            except QualityParseError as e:
+                if attempt < self.max_retries - 1:
+                    user_prompt += (
+                        f"\n\nPrevious attempt failed: {e}. "
+                        "Please output ONLY valid JSON without markdown fencing."
+                    )
+                    continue
+                else:
+                    return RefinementQuality(
+                        specificity=0.5,
+                        actionability=0.5,
+                        redundancy=0.5,
+                        feedback="Quality evaluation failed; using defaults.",
+                    )
+
+        return RefinementQuality(
+            specificity=0.5, actionability=0.5, redundancy=0.5, feedback=""
+        )
+
+    def _refine_reflection(
+        self,
+        query: str,
+        reflection: Reflection,
+        feedback: str,
+    ) -> Reflection:
+        """Refine a reflection based on quality feedback."""
+        reflection_json = self._reflection_to_json(reflection)
+        system_prompt, user_prompt = format_refinement_prompt(
+            query=query,
+            reflection_json=reflection_json,
+            feedback=feedback,
+        )
+
+        for attempt in range(self.max_retries):
+            try:
+                response = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    temperature=self.temperature,
+                )
+
+                json_str = response.choices[0].message.content
+                if not json_str:
+                    raise ReflectionParseError("Empty response from LLM")
+
+                return parse_reflection(json_str)
+
+            except ReflectionParseError as e:
+                if attempt < self.max_retries - 1:
+                    user_prompt += (
+                        f"\n\nPrevious attempt failed: {e}. "
+                        "Please output ONLY valid JSON without markdown fencing."
+                    )
+                    continue
+                else:
+                    return reflection
+
+        return reflection
+
+    def _reflection_to_json(self, reflection: Reflection) -> str:
+        """Convert Reflection to JSON string."""
+        import json
+
+        data = {
+            "error_identification": reflection.error_identification,
+            "root_cause_analysis": reflection.root_cause_analysis,
+            "correct_approach": reflection.correct_approach,
+            "key_insight": reflection.key_insight,
+            "bullet_tags": [
+                {"id": bt.id, "tag": bt.tag} for bt in reflection.bullet_tags
+            ],
+            "candidate_bullets": [
+                {"section": cb.section, "content": cb.content, "tags": cb.tags}
+                for cb in reflection.candidate_bullets
+            ],
+        }
+        return json.dumps(data, indent=2)
 
     def reflect_on_trajectory(self, trajectory: "Trajectory") -> Reflection:
         """Generate a Reflection from a complete Trajectory.
