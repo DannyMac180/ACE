@@ -113,8 +113,10 @@ def test_refine_orchestration_stages():
 
         runner.run(reflection)
 
-        # Curator should be invoked
-        mock_curate.assert_called_once_with(reflection)
+        # Curator should be invoked with existing bullets and threshold
+        mock_curate.assert_called_once_with(
+            reflection, existing_bullets=playbook.bullets, threshold=runner.threshold
+        )
 
 
 def test_refine_with_helpful_and_harmful_tags():
@@ -157,7 +159,13 @@ def test_refine_with_helpful_and_harmful_tags():
 
 
 def test_deduplicate_finds_similar_bullets():
-    """Test that deduplication correctly identifies near-duplicate bullets."""
+    """Test that semantic dedup in curator correctly identifies near-duplicate bullets.
+
+    With ACE-104, semantic dedup now happens in the curator stage (emitting PATCH
+    instead of ADD for duplicates), rather than in the refiner's deduplicate stage.
+    """
+    from ace.curator import curate
+
     playbook = Playbook(
         version=1,
         bullets=[
@@ -184,20 +192,14 @@ def test_deduplicate_finds_similar_bullets():
         ]
     )
 
-    result = refine(reflection, playbook, threshold=0.90)
+    # Test the curator directly - it should emit PATCH instead of ADD
+    delta = curate(reflection, existing_bullets=playbook.bullets, threshold=0.90)
 
-    # Should detect the duplicate and create a MERGE operation
-    assert result.merged > 0
-    assert len(result.ops) > 0
-
-    # Find the MERGE operation
-    merge_ops = [op for op in result.ops if op.op == "MERGE"]
-    assert len(merge_ops) > 0
-
-    # Verify the survivor is the existing bullet
-    merge_op = merge_ops[0]
-    assert merge_op.survivor_id == "strat-00001"
-    assert len(merge_op.target_ids) > 0
+    # Should detect the duplicate and create a PATCH operation (not ADD)
+    assert len(delta.ops) == 1
+    assert delta.ops[0].op == "PATCH"
+    assert delta.ops[0].target_id == "strat-00001"
+    assert delta.ops[0].patch == "Use hybrid retrieval with BM25 and vector embeddings for improved search"
 
 
 def test_deduplicate_keeps_distinct_bullets():

@@ -46,8 +46,8 @@ class RefineRunner:
         Returns:
             RefineResult: Summary of merge and archive operations
         """
-        # Stage 1: Curator - convert reflection to delta
-        delta = curate(reflection)
+        # Stage 1: Curator - convert reflection to delta with semantic dedup
+        delta = curate(reflection, existing_bullets=self.playbook.bullets, threshold=self.threshold)
 
         # Stage 2: Deduplication - find near-duplicates
         merge_ops = self.deduplicate(delta)
