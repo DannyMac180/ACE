@@ -1,11 +1,15 @@
 # tests/test_reflector.py
+from unittest.mock import MagicMock, patch
+
 import pytest
 
+from ace.generator.schemas import Step, Trajectory
 from ace.reflector import (
     BulletTag,
     CandidateBullet,
     Reflection,
     ReflectionParseError,
+    Reflector,
     parse_reflection,
 )
 
@@ -177,11 +181,6 @@ def test_reflection_creation():
 
 
 # --- Tests for reflect_on_trajectory ---
-
-from unittest.mock import MagicMock, patch
-
-from ace.generator.schemas import Step, Trajectory
-from ace.reflector import Reflector
 
 
 class TestExtractTrajectoryContext:
