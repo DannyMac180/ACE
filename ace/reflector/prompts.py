@@ -91,7 +91,8 @@ QUALITY_EVAL_USER_TEMPLATE = """Evaluate this Reflection for quality:
 
 **Original Query:** {query}
 
-**Retrieved Bullet IDs:** {retrieved_bullet_ids}
+**Retrieved Bullets (for redundancy comparison):**
+{retrieved_bullets}
 
 **Reflection:**
 {reflection_json}
@@ -132,16 +133,27 @@ Generate an improved Reflection JSON:"""
 
 def format_quality_eval_prompt(
     query: str,
-    retrieved_bullet_ids: list[str],
+    retrieved_bullets: list[dict[str, str]],
     reflection_json: str,
 ) -> tuple[str, str]:
-    """Format the quality evaluation prompt."""
-    bullet_ids_str = ", ".join(retrieved_bullet_ids) if retrieved_bullet_ids else "None"
+    """Format the quality evaluation prompt.
+
+    Args:
+        query: The original task query
+        retrieved_bullets: List of dicts with 'id' and 'content' keys
+        reflection_json: JSON string of the reflection to evaluate
+    """
+    if retrieved_bullets:
+        bullets_str = "\n".join(
+            f"- [{b['id']}]: {b['content']}" for b in retrieved_bullets
+        )
+    else:
+        bullets_str = "None"
     return (
         QUALITY_EVAL_SYSTEM_PROMPT,
         QUALITY_EVAL_USER_TEMPLATE.format(
             query=query,
-            retrieved_bullet_ids=bullet_ids_str,
+            retrieved_bullets=bullets_str,
             reflection_json=reflection_json,
         ),
     )

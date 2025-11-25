@@ -47,6 +47,7 @@ class Reflector:
         test_output: str = "",
         logs: str = "",
         env_meta: dict | None = None,
+        retrieved_bullets: list[dict[str, str]] | None = None,
     ) -> Reflection:
         """Generate a Reflection from task execution data with optional iterative refinement.
 
@@ -60,6 +61,7 @@ class Reflector:
             test_output: Test results or output
             logs: Execution logs
             env_meta: Additional environment metadata
+            retrieved_bullets: List of dicts with 'id' and 'content' for redundancy check
 
         Returns:
             Reflection: Parsed reflection object
@@ -79,8 +81,10 @@ class Reflector:
         if self.refinement_rounds <= 1:
             return reflection
 
+        bullets_for_eval = retrieved_bullets or []
+
         for _round_num in range(1, self.refinement_rounds):
-            quality = self._evaluate_quality(query, retrieved_bullet_ids, reflection)
+            quality = self._evaluate_quality(query, bullets_for_eval, reflection)
 
             if quality.overall_score >= self.quality_threshold:
                 break
@@ -148,14 +152,20 @@ class Reflector:
     def _evaluate_quality(
         self,
         query: str,
-        retrieved_bullet_ids: list[str],
+        retrieved_bullets: list[dict[str, str]],
         reflection: Reflection,
     ) -> RefinementQuality:
-        """Evaluate quality of a reflection."""
+        """Evaluate quality of a reflection.
+
+        Args:
+            query: The original task query
+            retrieved_bullets: List of dicts with 'id' and 'content' for redundancy check
+            reflection: The reflection to evaluate
+        """
         reflection_json = self._reflection_to_json(reflection)
         system_prompt, user_prompt = format_quality_eval_prompt(
             query=query,
-            retrieved_bullet_ids=retrieved_bullet_ids,
+            retrieved_bullets=retrieved_bullets,
             reflection_json=reflection_json,
         )
 
@@ -184,15 +194,16 @@ class Reflector:
                     )
                     continue
                 else:
+                    # Return high score with empty feedback to skip refinement
                     return RefinementQuality(
-                        specificity=0.5,
-                        actionability=0.5,
-                        redundancy=0.5,
-                        feedback="Quality evaluation failed; using defaults.",
+                        specificity=1.0,
+                        actionability=1.0,
+                        redundancy=0.0,
+                        feedback="",
                     )
 
         return RefinementQuality(
-            specificity=0.5, actionability=0.5, redundancy=0.5, feedback=""
+            specificity=1.0, actionability=1.0, redundancy=0.0, feedback=""
         )
 
     def _refine_reflection(
