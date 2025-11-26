@@ -1,7 +1,7 @@
 from datetime import datetime
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, BeforeValidator, Field
 
 Section = Literal[
     "strategies_and_hard_rules",
@@ -10,10 +10,38 @@ Section = Literal[
     "domain_facts_and_references",
 ]
 
+# Backward compatibility: map old section names to new ones
+SECTION_MIGRATION_MAP: dict[str, Section] = {
+    # Old names -> New names
+    "strategies": "strategies_and_hard_rules",
+    "templates": "code_snippets_and_templates",
+    "code_snippets": "code_snippets_and_templates",
+    "troubleshooting": "troubleshooting_and_pitfalls",
+    "facts": "domain_facts_and_references",
+    # New names map to themselves
+    "strategies_and_hard_rules": "strategies_and_hard_rules",
+    "code_snippets_and_templates": "code_snippets_and_templates",
+    "troubleshooting_and_pitfalls": "troubleshooting_and_pitfalls",
+    "domain_facts_and_references": "domain_facts_and_references",
+}
+
+
+def normalize_section(value: str) -> Section:
+    """Normalize section value, mapping old names to new names for backward compatibility."""
+    if value in SECTION_MIGRATION_MAP:
+        return SECTION_MIGRATION_MAP[value]
+    raise ValueError(
+        f"Invalid section: {value}. Must be one of: {list(SECTION_MIGRATION_MAP.keys())}"
+    )
+
+
+# Type that accepts both old and new section names, normalizing to new
+NormalizedSection = Annotated[Section, BeforeValidator(normalize_section)]
+
 
 class Bullet(BaseModel):
     id: str
-    section: Section
+    section: NormalizedSection
     content: str
     tags: list[str] = Field(default_factory=list)
     helpful: int = 0
@@ -29,7 +57,7 @@ class Reflection(BaseModel):
 
 
 class DeltaBullet(BaseModel):
-    section: Section
+    section: NormalizedSection
     content: str
     tags: list[str] = Field(default_factory=list)
     id: str | None = None  # Optional: for idempotent replay
