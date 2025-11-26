@@ -8,24 +8,34 @@ Tests reflection quality and correctness to ensure:
 - Retry logic on parse errors
 - Key insights are actionable and reusable
 
-Uses mocked LLM responses for deterministic, fast testing.
+Uses mocked LLM clients for deterministic, fast testing.
 """
 
 import json
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
+from ace.llm import CompletionResponse, LLMClient
 from ace.reflector.parser import ReflectionParseError
 from ace.reflector.reflector import Reflector
 from ace.reflector.schema import Reflection
 
 
-@pytest.fixture
-def mock_openai_client():
-    """Mock OpenAI client that returns controlled responses."""
-    with patch("ace.reflector.reflector.OpenAI") as mock:
-        yield mock.return_value
+def make_mock_client(response_text: str) -> LLMClient:
+    """Create a mock LLM client that returns the given response."""
+    mock_client = MagicMock(spec=LLMClient)
+    mock_client.complete.return_value = CompletionResponse(text=response_text)
+    return mock_client
+
+
+def make_mock_client_sequence(responses: list[str]) -> LLMClient:
+    """Create a mock LLM client that returns responses in sequence."""
+    mock_client = MagicMock(spec=LLMClient)
+    mock_client.complete.side_effect = [
+        CompletionResponse(text=resp) for resp in responses
+    ]
+    return mock_client
 
 
 @pytest.fixture
@@ -59,14 +69,10 @@ def malformed_json_then_valid(valid_reflection_json) -> list[str]:
     ]
 
 
-def test_reflection_valid_json_parsing(mock_openai_client, valid_reflection_json):
+def test_reflection_valid_json_parsing(valid_reflection_json):
     """Test successful reflection with valid JSON response."""
-    mock_response = MagicMock()
-    mock_response.choices = [MagicMock(message=MagicMock(content=valid_reflection_json))]
-    mock_openai_client.chat.completions.create.return_value = mock_response
-
-    reflector = Reflector(model="gpt-4o-mini")
-    reflector.client = mock_openai_client
+    mock_client = make_mock_client(valid_reflection_json)
+    reflector = Reflector(llm_client=mock_client)
 
     reflection = reflector.reflect(
         query="fix type error",
@@ -81,16 +87,10 @@ def test_reflection_valid_json_parsing(mock_openai_client, valid_reflection_json
     assert len(reflection.candidate_bullets) == 1
 
 
-def test_reflection_retry_on_parse_error(mock_openai_client, malformed_json_then_valid):
+def test_reflection_retry_on_parse_error(malformed_json_then_valid):
     """Test that reflector retries on JSON parse errors."""
-    responses = [
-        MagicMock(choices=[MagicMock(message=MagicMock(content=resp))])
-        for resp in malformed_json_then_valid
-    ]
-    mock_openai_client.chat.completions.create.side_effect = responses
-
-    reflector = Reflector(model="gpt-4o-mini", max_retries=3)
-    reflector.client = mock_openai_client
+    mock_client = make_mock_client_sequence(malformed_json_then_valid)
+    reflector = Reflector(llm_client=mock_client, max_retries=3)
 
     reflection = reflector.reflect(
         query="fix parse error",
@@ -99,18 +99,14 @@ def test_reflection_retry_on_parse_error(mock_openai_client, malformed_json_then
     )
 
     assert isinstance(reflection, Reflection)
-    assert mock_openai_client.chat.completions.create.call_count == 2
+    assert mock_client.complete.call_count == 2
 
 
-def test_reflection_max_retries_exceeded(mock_openai_client):
+def test_reflection_max_retries_exceeded():
     """Test that reflector raises error after max retries."""
     bad_json = "this is not json at all"
-    mock_response = MagicMock()
-    mock_response.choices = [MagicMock(message=MagicMock(content=bad_json))]
-    mock_openai_client.chat.completions.create.return_value = mock_response
-
-    reflector = Reflector(model="gpt-4o-mini", max_retries=2)
-    reflector.client = mock_openai_client
+    mock_client = make_mock_client(bad_json)
+    reflector = Reflector(llm_client=mock_client, max_retries=2)
 
     with pytest.raises(ReflectionParseError) as exc_info:
         reflector.reflect(
@@ -119,17 +115,14 @@ def test_reflection_max_retries_exceeded(mock_openai_client):
         )
 
     assert "Failed to parse reflection after 2 attempts" in str(exc_info.value)
-    assert mock_openai_client.chat.completions.create.call_count == 2
+    assert mock_client.complete.call_count == 2
 
 
-def test_reflection_empty_response(mock_openai_client):
+def test_reflection_empty_response():
     """Test that reflector handles empty LLM response."""
-    mock_response = MagicMock()
-    mock_response.choices = [MagicMock(message=MagicMock(content=None))]
-    mock_openai_client.chat.completions.create.return_value = mock_response
-
-    reflector = Reflector(model="gpt-4o-mini", max_retries=1)
-    reflector.client = mock_openai_client
+    mock_client = MagicMock(spec=LLMClient)
+    mock_client.complete.return_value = CompletionResponse(text="")
+    reflector = Reflector(llm_client=mock_client, max_retries=1)
 
     with pytest.raises(ReflectionParseError) as exc_info:
         reflector.reflect(
@@ -140,7 +133,7 @@ def test_reflection_empty_response(mock_openai_client):
     assert "Empty response from LLM" in str(exc_info.value)
 
 
-def test_reflection_bullet_tagging_quality(mock_openai_client):
+def test_reflection_bullet_tagging_quality():
     """Test that bullet tags are correctly identified as helpful/harmful."""
     reflection_json = json.dumps({
         "error_identification": None,
@@ -154,12 +147,8 @@ def test_reflection_bullet_tagging_quality(mock_openai_client):
         "candidate_bullets": []
     })
 
-    mock_response = MagicMock()
-    mock_response.choices = [MagicMock(message=MagicMock(content=reflection_json))]
-    mock_openai_client.chat.completions.create.return_value = mock_response
-
-    reflector = Reflector()
-    reflector.client = mock_openai_client
+    mock_client = make_mock_client(reflection_json)
+    reflector = Reflector(llm_client=mock_client)
 
     reflection = reflector.reflect(
         query="tag bullets",
@@ -176,7 +165,7 @@ def test_reflection_bullet_tagging_quality(mock_openai_client):
     assert harmful_tags[0].id == "trbl-050"
 
 
-def test_reflection_candidate_bullet_quality(mock_openai_client):
+def test_reflection_candidate_bullet_quality():
     """Test that candidate bullets have proper structure and tags."""
     reflection_json = json.dumps({
         "error_identification": "Database connection timeout",
@@ -198,12 +187,8 @@ def test_reflection_candidate_bullet_quality(mock_openai_client):
         ]
     })
 
-    mock_response = MagicMock()
-    mock_response.choices = [MagicMock(message=MagicMock(content=reflection_json))]
-    mock_openai_client.chat.completions.create.return_value = mock_response
-
-    reflector = Reflector()
-    reflector.client = mock_openai_client
+    mock_client = make_mock_client(reflection_json)
+    reflector = Reflector(llm_client=mock_client)
 
     reflection = reflector.reflect(
         query="fix database timeout",
@@ -227,7 +212,7 @@ def test_reflection_candidate_bullet_quality(mock_openai_client):
     assert len(bullet2.tags) >= 2
 
 
-def test_reflection_minimal_valid_output(mock_openai_client):
+def test_reflection_minimal_valid_output():
     """Test that reflection with minimal fields is still valid."""
     minimal_json = json.dumps({
         "error_identification": None,
@@ -238,12 +223,8 @@ def test_reflection_minimal_valid_output(mock_openai_client):
         "candidate_bullets": []
     })
 
-    mock_response = MagicMock()
-    mock_response.choices = [MagicMock(message=MagicMock(content=minimal_json))]
-    mock_openai_client.chat.completions.create.return_value = mock_response
-
-    reflector = Reflector()
-    reflector.client = mock_openai_client
+    mock_client = make_mock_client(minimal_json)
+    reflector = Reflector(llm_client=mock_client)
 
     reflection = reflector.reflect(
         query="minimal test",
@@ -256,14 +237,10 @@ def test_reflection_minimal_valid_output(mock_openai_client):
     assert len(reflection.candidate_bullets) == 0
 
 
-def test_reflection_with_all_fields_populated(mock_openai_client, valid_reflection_json):
+def test_reflection_with_all_fields_populated(valid_reflection_json):
     """Test reflection with all possible fields populated."""
-    mock_response = MagicMock()
-    mock_response.choices = [MagicMock(message=MagicMock(content=valid_reflection_json))]
-    mock_openai_client.chat.completions.create.return_value = mock_response
-
-    reflector = Reflector()
-    reflector.client = mock_openai_client
+    mock_client = make_mock_client(valid_reflection_json)
+    reflector = Reflector(llm_client=mock_client)
 
     reflection = reflector.reflect(
         query="comprehensive test",
@@ -283,14 +260,10 @@ def test_reflection_with_all_fields_populated(mock_openai_client, valid_reflecti
 
 
 @pytest.mark.benchmark
-def test_reflection_performance(benchmark, mock_openai_client, valid_reflection_json):
+def test_reflection_performance(benchmark, valid_reflection_json):
     """Benchmark reflection parsing and validation performance."""
-    mock_response = MagicMock()
-    mock_response.choices = [MagicMock(message=MagicMock(content=valid_reflection_json))]
-    mock_openai_client.chat.completions.create.return_value = mock_response
-
-    reflector = Reflector()
-    reflector.client = mock_openai_client
+    mock_client = make_mock_client(valid_reflection_json)
+    reflector = Reflector(llm_client=mock_client)
 
     result = benchmark(
         reflector.reflect,
@@ -306,7 +279,7 @@ def test_reflection_performance(benchmark, mock_openai_client, valid_reflection_
 # ============================================================================
 
 
-def test_quality_candidate_bullets_are_concise(mock_openai_client):
+def test_quality_candidate_bullets_are_concise():
     """Quality check: candidate bullets should be short and actionable."""
     reflection_json = json.dumps({
         "error_identification": None,
@@ -323,12 +296,8 @@ def test_quality_candidate_bullets_are_concise(mock_openai_client):
         ]
     })
 
-    mock_response = MagicMock()
-    mock_response.choices = [MagicMock(message=MagicMock(content=reflection_json))]
-    mock_openai_client.chat.completions.create.return_value = mock_response
-
-    reflector = Reflector()
-    reflector.client = mock_openai_client
+    mock_client = make_mock_client(reflection_json)
+    reflector = Reflector(llm_client=mock_client)
 
     reflection = reflector.reflect(
         query="test conciseness",
@@ -347,7 +316,7 @@ def test_quality_candidate_bullets_are_concise(mock_openai_client):
             f"Bullet contains prose narrative: {bullet.content}"
 
 
-def test_quality_candidate_bullets_have_tags(mock_openai_client):
+def test_quality_candidate_bullets_have_tags():
     """Quality check: candidate bullets must have relevant tags."""
     reflection_json = json.dumps({
         "error_identification": None,
@@ -364,12 +333,8 @@ def test_quality_candidate_bullets_have_tags(mock_openai_client):
         ]
     })
 
-    mock_response = MagicMock()
-    mock_response.choices = [MagicMock(message=MagicMock(content=reflection_json))]
-    mock_openai_client.chat.completions.create.return_value = mock_response
-
-    reflector = Reflector()
-    reflector.client = mock_openai_client
+    mock_client = make_mock_client(reflection_json)
+    reflector = Reflector(llm_client=mock_client)
 
     reflection = reflector.reflect(
         query="test tags",
@@ -388,7 +353,7 @@ def test_quality_candidate_bullets_have_tags(mock_openai_client):
                 assert parts[0] and parts[1], f"Empty namespace or value in tag: {tag}"
 
 
-def test_quality_insights_are_actionable(mock_openai_client):
+def test_quality_insights_are_actionable():
     """Quality check: key insights should be actionable, not generic."""
     good_insight_json = json.dumps({
         "error_identification": None,
@@ -399,12 +364,8 @@ def test_quality_insights_are_actionable(mock_openai_client):
         "candidate_bullets": []
     })
 
-    mock_response = MagicMock()
-    mock_response.choices = [MagicMock(message=MagicMock(content=good_insight_json))]
-    mock_openai_client.chat.completions.create.return_value = mock_response
-
-    reflector = Reflector()
-    reflector.client = mock_openai_client
+    mock_client = make_mock_client(good_insight_json)
+    reflector = Reflector(llm_client=mock_client)
 
     reflection = reflector.reflect(
         query="test insight quality",
@@ -428,7 +389,7 @@ def test_quality_insights_are_actionable(mock_openai_client):
             f"Insight too short to be actionable: {reflection.key_insight}"
 
 
-def test_quality_no_duplicate_candidate_bullets(mock_openai_client):
+def test_quality_no_duplicate_candidate_bullets():
     """Quality check: candidate bullets should not have near-duplicates."""
     reflection_json = json.dumps({
         "error_identification": None,
@@ -450,12 +411,8 @@ def test_quality_no_duplicate_candidate_bullets(mock_openai_client):
         ]
     })
 
-    mock_response = MagicMock()
-    mock_response.choices = [MagicMock(message=MagicMock(content=reflection_json))]
-    mock_openai_client.chat.completions.create.return_value = mock_response
-
-    reflector = Reflector()
-    reflector.client = mock_openai_client
+    mock_client = make_mock_client(reflection_json)
+    reflector = Reflector(llm_client=mock_client)
 
     reflection = reflector.reflect(
         query="test dedup",

@@ -20,6 +20,7 @@ from ace.core.storage.store_adapter import Store
 from ace.curator.curator import curate
 from ace.generator.generator import Generator
 from ace.generator.schemas import Trajectory
+from ace.llm import LLMClient
 from ace.reflector.reflector import Reflector
 from ace.reflector.schema import Reflection
 
@@ -51,7 +52,7 @@ class Pipeline:
         db_path: str = "ace.db",
         generator_max_steps: int = 10,
         retrieval_top_k: int = 24,
-        reflector_model: str = "gpt-4o-mini",
+        llm_client: LLMClient | None = None,
         reflector_temperature: float = 0.3,
         curator_threshold: float = 0.90,
     ):
@@ -63,7 +64,7 @@ class Pipeline:
             db_path: Path to SQLite database (used if store not provided)
             generator_max_steps: Maximum steps for generator execution
             retrieval_top_k: Number of bullets to retrieve
-            reflector_model: OpenAI model for reflection
+            llm_client: LLM client for reflection. If None, creates from config.
             reflector_temperature: LLM temperature for reflection
             curator_threshold: Similarity threshold for duplicate detection
         """
@@ -73,7 +74,7 @@ class Pipeline:
 
         self.retriever = Retriever(self.store)
         self.reflector = Reflector(
-            model=reflector_model,
+            llm_client=llm_client,
             temperature=reflector_temperature,
         )
 
