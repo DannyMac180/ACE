@@ -15,6 +15,7 @@ This document provides comprehensive API documentation for all core modules in t
 - [Curator](#curator)
 - [Refine](#refine)
 - [Generator](#generator)
+- [Serve (Online Adaptation)](#serve-online-adaptation)
 - [LLM Clients](#llm-clients)
 - [Evaluation](#evaluation)
 
@@ -645,6 +646,135 @@ print(f"Completed in {trajectory.total_steps} steps")
 for step in trajectory.steps:
     print(f"  Action: {step.action}")
     print(f"  Result: {step.observation}")
+```
+
+---
+
+## Serve (Online Adaptation)
+
+**Module:** `ace.serve`
+
+HTTP server for test-time sequential adaptation using execution feedback (no ground-truth labels).
+
+Implements the ACE paper's online mode where the reflector relies on execution feedback (test outputs, logs, errors) to derive insights. Supports warm-start by preloading a playbook before accepting queries.
+
+### Schema
+
+**Module:** `ace.serve.schema`
+
+#### `WarmupSource`
+
+Source of playbook data at startup.
+
+```python
+class WarmupSource(str, Enum):
+    NONE = "none"        # Cold start, no preloaded playbook
+    FILE = "file"        # Preloaded from a JSON file (--warmup option)
+    DATABASE = "database" # Started with existing database playbook
+```
+
+#### `OnlineStats`
+
+Statistics for online serving session.
+
+```python
+class OnlineStats(BaseModel):
+    session_id: str
+    started_at: datetime
+    requests_processed: int = 0
+    total_ops_applied: int = 0
+    helpful_feedback_count: int = 0
+    harmful_feedback_count: int = 0
+    avg_adaptation_ms: float = 0.0
+    warmup_source: WarmupSource = WarmupSource.NONE
+    warmup_bullets_loaded: int = 0
+    warmup_playbook_version: int = 0
+```
+
+### OnlineServer Class
+
+**Module:** `ace.serve.runner`
+
+```python
+class OnlineServer:
+    def __init__(
+        self,
+        store: Store | None = None,
+        reflector: Reflector | None = None,
+        retriever: Retriever | None = None,
+        auto_adapt: bool = True,
+        warmup_path: str | Path | None = None,
+    ) -> None
+```
+
+**Parameters:**
+- `store`: Playbook store (loads from config if None)
+- `reflector`: Reflector instance (creates default if None)
+- `retriever`: Retriever instance (creates default if None)
+- `auto_adapt`: Whether to auto-adapt on each feedback (default True)
+- `warmup_path`: Path to a playbook JSON file for warm-start
+
+#### Warm-Start Behavior
+
+The server tracks warmup source for metrics:
+- If `warmup_path` is provided, loads playbook from file (`WarmupSource.FILE`)
+- If database has existing bullets, uses those (`WarmupSource.DATABASE`)
+- Otherwise, starts cold (`WarmupSource.NONE`)
+
+Paper Table 3 shows 'ReAct + ACE + offline warmup' beats cold-start online adaptation.
+
+### Functions
+
+#### `create_app(auto_adapt, store, warmup_path) -> FastAPI`
+
+Create FastAPI application for online serving.
+
+```python
+def create_app(
+    auto_adapt: bool = True,
+    store: Store | None = None,
+    warmup_path: str | Path | None = None,
+) -> FastAPI
+```
+
+#### `run_server(host, port, auto_adapt, reload, warmup_path) -> None`
+
+Run the online server with uvicorn.
+
+```python
+def run_server(
+    host: str = "127.0.0.1",
+    port: int = 8000,
+    auto_adapt: bool = True,
+    reload: bool = False,
+    warmup_path: str | Path | None = None,
+) -> None
+```
+
+### HTTP Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/health` | GET | Health check, returns `{"status": "ok", "mode": "online"}` |
+| `/stats` | GET | Session statistics including warmup info |
+| `/playbook/version` | GET | Current playbook version |
+| `/retrieve` | POST | Retrieve bullets for a query |
+| `/feedback` | POST | Process execution feedback and adapt playbook |
+
+### CLI Usage
+
+```bash
+# Cold start
+ace serve --host 127.0.0.1 --port 8000
+
+# Warm start with pre-loaded playbook
+ace serve --warmup playbook.json
+
+# Retrieve-only mode (no automatic adaptation)
+ace serve --no-adapt
+
+# Development mode with hot reload
+ace serve --reload
 ```
 
 ---

@@ -49,6 +49,19 @@ class FeedbackResponse(BaseModel):
     message: str = ""
 
 
+class WarmupSource(str, Enum):
+    """Source of warmup data.
+
+    - NONE: Cold start, no preloaded playbook
+    - FILE: Preloaded from a JSON file
+    - DATABASE: Started with existing database playbook
+    """
+
+    NONE = "none"
+    FILE = "file"
+    DATABASE = "database"
+
+
 class OnlineStats(BaseModel):
     """Statistics for online serving session."""
 
@@ -59,6 +72,9 @@ class OnlineStats(BaseModel):
     helpful_feedback_count: int = 0
     harmful_feedback_count: int = 0
     avg_adaptation_ms: float = 0.0
+    warmup_source: WarmupSource = WarmupSource.NONE
+    warmup_bullets_loaded: int = 0
+    warmup_playbook_version: int = 0
 
 
 class RetrieveRequest(BaseModel):

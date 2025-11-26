@@ -60,6 +60,26 @@ Available commands:
 - `tag` - Tag a bullet as helpful or harmful
 - `refine` - Deduplicate and consolidate bullets
 - `stats` - Show playbook statistics
+- `serve` - Start online server for test-time sequential adaptation
+- `train` - Run multi-epoch offline adaptation training
+
+### Online Serving (Test-Time Adaptation)
+
+Start the HTTP server for real-time adaptation with execution feedback:
+
+```bash
+# Basic cold start
+ace serve --host 127.0.0.1 --port 8000
+
+# Warm start with pre-loaded playbook (recommended for production)
+ace serve --warmup playbook.json
+
+# Disable automatic adaptation (retrieve-only mode)
+ace serve --no-adapt
+```
+
+The `--warmup` option supports offline warmup as described in the ACE paper (Table 3),
+where pre-training the playbook offline before online adaptation improves performance.
 
 Use `ace <command> --help` for detailed usage of each command.
 

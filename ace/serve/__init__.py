@@ -5,6 +5,12 @@ execution feedback only (no ground-truth labels).
 """
 
 from .runner import OnlineServer
-from .schema import AdaptationMode, FeedbackRequest, FeedbackResponse
+from .schema import AdaptationMode, FeedbackRequest, FeedbackResponse, WarmupSource
 
-__all__ = ["OnlineServer", "AdaptationMode", "FeedbackRequest", "FeedbackResponse"]
+__all__ = [
+    "OnlineServer",
+    "AdaptationMode",
+    "FeedbackRequest",
+    "FeedbackResponse",
+    "WarmupSource",
+]
