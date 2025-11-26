@@ -117,10 +117,16 @@ class Pipeline:
         logger.info(f"Retrieved {len(retrieved_bullets)} bullets for context")
 
         # 2. Run generator to execute task and produce trajectory
-        if execute_fn:
-            self.generator.tool_executor = execute_fn
+        # Stash and restore executor to avoid persisting custom executor across calls
+        original_executor = self.generator.tool_executor
+        try:
+            if execute_fn:
+                self.generator.tool_executor = execute_fn
 
-        trajectory = self.generator.run(query)
+            trajectory = self.generator.run(query)
+        finally:
+            self.generator.tool_executor = original_executor
+
         logger.info(
             f"Generator completed: {trajectory.total_steps} steps, "
             f"status={trajectory.final_status}"
@@ -181,7 +187,6 @@ class Pipeline:
     def run_with_feedback(
         self,
         query: str,
-        execute_fn: Callable[[str], str] | None = None,
         code_diff: str = "",
         test_output: str = "",
         logs: str = "",
@@ -189,15 +194,15 @@ class Pipeline:
         auto_commit: bool = True,
     ) -> PipelineResult:
         """
-        Run the pipeline with explicit execution feedback.
+        Run the pipeline with explicit execution feedback (no generator execution).
 
-        This variant allows passing explicit environment feedback (code_diff, test_output,
-        logs) instead of relying on the generator to capture it. Useful when the execution
-        happens externally (e.g., CI system, IDE, or MCP client).
+        This variant skips the generator entirely and uses explicit environment feedback
+        (code_diff, test_output, logs) for reflection. Use this when execution happens
+        externally (e.g., CI system, IDE, or MCP client) and you want to curate insights
+        from that real execution rather than running a simulated one.
 
         Args:
-            query: The task or goal
-            execute_fn: Optional custom tool executor
+            query: The task or goal that was executed externally
             code_diff: Code changes made during execution
             test_output: Test results or output
             logs: Execution logs
@@ -205,40 +210,43 @@ class Pipeline:
             auto_commit: If True, automatically apply delta
 
         Returns:
-            PipelineResult with all cycle data
+            PipelineResult with reflection and delta data (trajectory will be empty)
         """
         logger.info(f"Starting cycle with explicit feedback for: {query}")
 
-        # 1. Retrieve bullets for context
+        # 1. Retrieve bullets for context and duplicate checking
         retrieved_bullets = self.retriever.retrieve(query, top_k=self.retrieval_top_k)
+        logger.info(f"Retrieved {len(retrieved_bullets)} bullets for context")
 
-        # 2. Run generator
-        if execute_fn:
-            self.generator.tool_executor = execute_fn
-        trajectory = self.generator.run(query)
-
-        # 3. Reflector with explicit feedback
+        # 2. Build retrieved bullet info for reflector
+        retrieved_bullet_ids = [b.id for b in retrieved_bullets]
         retrieved_bullet_dicts = [
             {"id": b.id, "content": b.content} for b in retrieved_bullets
         ]
 
+        # 3. Reflector with explicit feedback (no generator execution)
         reflection = self.reflector.reflect(
             query=query,
-            retrieved_bullet_ids=trajectory.used_bullet_ids,
+            retrieved_bullet_ids=retrieved_bullet_ids,
             code_diff=code_diff,
             test_output=test_output,
             logs=logs,
-            env_meta=env_meta or {"final_status": trajectory.final_status},
+            env_meta=env_meta or {},
             retrieved_bullets=retrieved_bullet_dicts,
         )
+        logger.info(
+            f"Reflection generated: {len(reflection.candidate_bullets)} candidate bullets, "
+            f"{len(reflection.bullet_tags)} bullet tags"
+        )
 
-        # 4. Curator
+        # 4. Curator converts insights to delta operations
         existing_bullets = self.store.get_all_bullets()
         delta = curate(
             reflection,
             existing_bullets=existing_bullets,
             threshold=self.curator_threshold,
         )
+        logger.info(f"Curated {len(delta.ops)} delta operations")
 
         # 5. Load and update playbook
         playbook = self.store.load_playbook()
@@ -247,9 +255,17 @@ class Pipeline:
             playbook = apply_delta(playbook, merge_delta, self.store)
             logger.info(f"Applied delta, playbook now at version {playbook.version}")
 
+        # Create an empty trajectory since execution happened externally
+        empty_trajectory = Trajectory(
+            steps=[],
+            initial_goal=query,
+            final_status="success",
+            used_bullet_ids=retrieved_bullet_ids,
+        )
+
         return PipelineResult(
             playbook=playbook,
-            trajectory=trajectory,
+            trajectory=empty_trajectory,
             reflection=reflection,
             delta_ops_applied=len(delta.ops) if auto_commit else 0,
             retrieved_bullets=retrieved_bullets,

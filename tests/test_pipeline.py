@@ -234,6 +234,49 @@ class TestPipelineFullCycle:
         assert result.delta_ops_applied == 0
         assert len(store_with_bullets.get_all_bullets()) == initial_bullet_count
 
+    @patch("ace.pipeline.Reflector")
+    def test_executor_restored_after_run(self, mock_reflector_class, store_with_bullets):
+        """Custom execute_fn should not persist after run_full_cycle completes."""
+        mock_reflector = MagicMock()
+        mock_reflector.reflect_on_trajectory.return_value = Reflection(
+            bullet_tags=[],
+            candidate_bullets=[],
+        )
+        mock_reflector_class.return_value = mock_reflector
+
+        pipeline = Pipeline(store=store_with_bullets)
+        pipeline.reflector = mock_reflector
+
+        original_executor = pipeline.generator.tool_executor
+        custom_executor = MagicMock(return_value="custom result")
+
+        pipeline.run_full_cycle("test", execute_fn=custom_executor, auto_commit=False)
+
+        assert pipeline.generator.tool_executor is original_executor
+        assert pipeline.generator.tool_executor is not custom_executor
+
+    @patch("ace.pipeline.Reflector")
+    def test_executor_restored_even_on_error(
+        self, mock_reflector_class, store_with_bullets
+    ):
+        """Executor should be restored even if generator raises an exception."""
+        mock_reflector_class.return_value = MagicMock()
+
+        pipeline = Pipeline(store=store_with_bullets)
+        original_executor = pipeline.generator.tool_executor
+
+        def failing_executor(action: str) -> str:
+            raise RuntimeError("Simulated failure")
+
+        pipeline.generator.retriever = None
+
+        try:
+            pipeline.run_full_cycle("test", execute_fn=failing_executor, auto_commit=False)
+        except RuntimeError:
+            pass
+
+        assert pipeline.generator.tool_executor is original_executor
+
 
 class TestPipelineWithFeedback:
     """Tests for pipeline with explicit feedback."""
@@ -266,6 +309,57 @@ class TestPipelineWithFeedback:
         assert call_kwargs["code_diff"] == "--- a/file.py\n+++ b/file.py"
         assert call_kwargs["test_output"] == "PASSED 5 tests"
         assert call_kwargs["logs"] == "INFO: Process completed"
+
+    @patch("ace.pipeline.Reflector")
+    def test_with_feedback_skips_generator(
+        self, mock_reflector_class, store_with_bullets
+    ):
+        """run_with_feedback should NOT run the generator."""
+        mock_reflector = MagicMock()
+        mock_reflector.reflect.return_value = Reflection(
+            bullet_tags=[],
+            candidate_bullets=[],
+        )
+        mock_reflector_class.return_value = mock_reflector
+
+        pipeline = Pipeline(store=store_with_bullets)
+        pipeline.reflector = mock_reflector
+        pipeline.generator.run = MagicMock()
+
+        result = pipeline.run_with_feedback(
+            query="test query",
+            code_diff="some diff",
+            auto_commit=False,
+        )
+
+        pipeline.generator.run.assert_not_called()
+        assert result.trajectory.steps == []
+        assert result.trajectory.initial_goal == "test query"
+
+    @patch("ace.pipeline.Reflector")
+    def test_with_feedback_uses_retrieved_bullet_ids(
+        self, mock_reflector_class, store_with_bullets
+    ):
+        """run_with_feedback should use retrieved bullet IDs for reflection."""
+        mock_reflector = MagicMock()
+        mock_reflector.reflect.return_value = Reflection(
+            bullet_tags=[],
+            candidate_bullets=[],
+        )
+        mock_reflector_class.return_value = mock_reflector
+
+        pipeline = Pipeline(store=store_with_bullets)
+        pipeline.reflector = mock_reflector
+
+        pipeline.run_with_feedback(
+            query="retrieval",
+            code_diff="diff",
+            auto_commit=False,
+        )
+
+        call_kwargs = mock_reflector.reflect.call_args.kwargs
+        assert "retrieved_bullet_ids" in call_kwargs
+        assert len(call_kwargs["retrieved_bullet_ids"]) > 0
 
 
 class TestConvenienceFunction:
