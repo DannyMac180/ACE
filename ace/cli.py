@@ -267,12 +267,15 @@ def cmd_serve(args: argparse.Namespace) -> None:
     print(f"Starting ACE online server on {args.host}:{args.port}")
     print(f"  Mode: {'online' if args.online else 'offline'}")
     print(f"  Auto-adapt: {not args.no_adapt}")
+    if args.warmup:
+        print(f"  Warmup: {args.warmup}")
 
     run_online_server(
         host=args.host,
         port=args.port,
         auto_adapt=not args.no_adapt,
         reload=args.reload,
+        warmup_path=args.warmup,
     )
 
 
@@ -534,6 +537,11 @@ def main() -> NoReturn:
         "--reload",
         action="store_true",
         help="Enable hot reload for development",
+    )
+    serve_parser.add_argument(
+        "--warmup",
+        metavar="PLAYBOOK_JSON",
+        help="Path to playbook JSON file for warm-start (preload before accepting queries)",
     )
     serve_parser.set_defaults(func=cmd_serve)
 

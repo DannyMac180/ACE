@@ -5,10 +5,12 @@ Implements the ACE paper's online mode:
 relies on execution feedback (test outputs, logs, errors) to derive insights."
 """
 
+import json
 import logging
 import time
 import uuid
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI
@@ -17,6 +19,7 @@ from ace.core.config import load_config
 from ace.core.merge import Delta as MergeDelta
 from ace.core.merge import apply_delta
 from ace.core.retrieve import Retriever
+from ace.core.schema import Playbook
 from ace.core.storage.store_adapter import Store
 from ace.curator.curator import curate
 from ace.reflector.reflector import Reflector
@@ -28,6 +31,7 @@ from .schema import (
     OnlineStats,
     RetrieveRequest,
     RetrieveResponse,
+    WarmupSource,
 )
 
 logger = logging.getLogger(__name__)
@@ -41,6 +45,9 @@ class OnlineServer:
     - Sequential processing (one request at a time)
     - Immediate adaptation after each feedback
     - No epochs; continuous learning
+
+    Supports warm-start by preloading a playbook before accepting queries.
+    Paper Table 3 shows 'ReAct + ACE + offline warmup' beats cold-start.
     """
 
     def __init__(
@@ -49,6 +56,7 @@ class OnlineServer:
         reflector: Reflector | None = None,
         retriever: Retriever | None = None,
         auto_adapt: bool = True,
+        warmup_path: str | Path | None = None,
     ):
         """Initialize the online server.
 
@@ -57,6 +65,7 @@ class OnlineServer:
             reflector: Reflector instance (creates default if None)
             retriever: Retriever instance (creates default if None)
             auto_adapt: Whether to auto-adapt on each feedback (default True)
+            warmup_path: Path to a playbook JSON file for warm-start
         """
         if store is None:
             config = load_config()
@@ -68,7 +77,60 @@ class OnlineServer:
         self.mode = AdaptationMode.ONLINE
 
         self.session_id = str(uuid.uuid4())[:8]
-        self.stats = OnlineStats(session_id=self.session_id)
+
+        warmup_source = WarmupSource.NONE
+        warmup_bullets_loaded = 0
+        warmup_playbook_version = 0
+
+        if warmup_path:
+            warmup_source, warmup_bullets_loaded, warmup_playbook_version = (
+                self._load_warmup_playbook(warmup_path)
+            )
+        else:
+            existing = self.store.load_playbook()
+            if existing.bullets:
+                warmup_source = WarmupSource.DATABASE
+                warmup_bullets_loaded = len(existing.bullets)
+                warmup_playbook_version = existing.version
+
+        self.stats = OnlineStats(
+            session_id=self.session_id,
+            warmup_source=warmup_source,
+            warmup_bullets_loaded=warmup_bullets_loaded,
+            warmup_playbook_version=warmup_playbook_version,
+        )
+
+    def _load_warmup_playbook(
+        self, warmup_path: str | Path
+    ) -> tuple[WarmupSource, int, int]:
+        """Load a playbook from file for warm-start.
+
+        Args:
+            warmup_path: Path to the playbook JSON file
+
+        Returns:
+            Tuple of (warmup_source, bullets_loaded, playbook_version)
+
+        Raises:
+            FileNotFoundError: If warmup file doesn't exist
+            ValueError: If warmup file is invalid JSON or schema
+        """
+        path = Path(warmup_path)
+        if not path.exists():
+            raise FileNotFoundError(f"Warmup playbook not found: {path}")
+
+        with open(path) as f:
+            data = json.load(f)
+
+        playbook = Playbook.model_validate(data)
+        self.store.load_playbook_data(playbook)
+
+        logger.info(
+            f"Warm-start: loaded {len(playbook.bullets)} bullets "
+            f"(version {playbook.version}) from {path}"
+        )
+
+        return WarmupSource.FILE, len(playbook.bullets), playbook.version
 
     def retrieve(self, query: str, top_k: int = 24) -> RetrieveResponse:
         """Retrieve bullets for a query.
@@ -192,12 +254,14 @@ class OnlineServer:
 def create_app(
     auto_adapt: bool = True,
     store: Store | None = None,
+    warmup_path: str | Path | None = None,
 ) -> FastAPI:
     """Create FastAPI application for online serving.
 
     Args:
         auto_adapt: Whether to automatically adapt on feedback
         store: Optional store instance
+        warmup_path: Path to playbook JSON file for warm-start
 
     Returns:
         FastAPI app instance
@@ -209,11 +273,18 @@ def create_app(
         instance = OnlineServer(
             store=store,
             auto_adapt=auto_adapt,
+            warmup_path=warmup_path,
         )
         server_instance.append(instance)
+        warmup_info = (
+            f", warmup={instance.stats.warmup_source.value}"
+            f" ({instance.stats.warmup_bullets_loaded} bullets)"
+            if instance.stats.warmup_source != WarmupSource.NONE
+            else ""
+        )
         logger.info(
             f"Online server started: session={instance.session_id}, "
-            f"auto_adapt={auto_adapt}"
+            f"auto_adapt={auto_adapt}{warmup_info}"
         )
         yield
         server_instance.clear()
@@ -263,6 +334,7 @@ def run_server(
     port: int = 8000,
     auto_adapt: bool = True,
     reload: bool = False,
+    warmup_path: str | Path | None = None,
 ) -> None:
     """Run the online server.
 
@@ -271,9 +343,11 @@ def run_server(
         port: Port to bind to
         auto_adapt: Whether to auto-adapt on feedback
         reload: Whether to enable hot reload
+        warmup_path: Path to playbook JSON file for warm-start
     """
     import uvicorn
 
-    logger.info(f"Starting ACE online server on {host}:{port}")
-    app = create_app(auto_adapt=auto_adapt)
+    warmup_msg = f" (warmup: {warmup_path})" if warmup_path else ""
+    logger.info(f"Starting ACE online server on {host}:{port}{warmup_msg}")
+    app = create_app(auto_adapt=auto_adapt, warmup_path=warmup_path)
     uvicorn.run(app, host=host, port=port, reload=reload)

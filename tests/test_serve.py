@@ -1,5 +1,8 @@
 """Tests for online serving module."""
 
+import json
+import tempfile
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -12,6 +15,7 @@ from ace.serve.schema import (
     FeedbackResponse,
     OnlineStats,
     RetrieveResponse,
+    WarmupSource,
 )
 
 
@@ -82,6 +86,22 @@ class TestFeedbackResponse:
         assert resp.ops_applied == 0
 
 
+class TestWarmupSource:
+    """Test WarmupSource enum."""
+
+    def test_none_source(self):
+        assert WarmupSource.NONE == "none"
+        assert WarmupSource.NONE.value == "none"
+
+    def test_file_source(self):
+        assert WarmupSource.FILE == "file"
+        assert WarmupSource.FILE.value == "file"
+
+    def test_database_source(self):
+        assert WarmupSource.DATABASE == "database"
+        assert WarmupSource.DATABASE.value == "database"
+
+
 class TestOnlineStats:
     """Test OnlineStats schema."""
 
@@ -93,6 +113,20 @@ class TestOnlineStats:
         assert stats.helpful_feedback_count == 0
         assert stats.harmful_feedback_count == 0
         assert stats.avg_adaptation_ms == 0.0
+        assert stats.warmup_source == WarmupSource.NONE
+        assert stats.warmup_bullets_loaded == 0
+        assert stats.warmup_playbook_version == 0
+
+    def test_stats_with_warmup(self):
+        stats = OnlineStats(
+            session_id="test-456",
+            warmup_source=WarmupSource.FILE,
+            warmup_bullets_loaded=10,
+            warmup_playbook_version=5,
+        )
+        assert stats.warmup_source == WarmupSource.FILE
+        assert stats.warmup_bullets_loaded == 10
+        assert stats.warmup_playbook_version == 5
 
 
 class TestOnlineServer:
@@ -145,6 +179,109 @@ class TestOnlineServer:
             auto_adapt=False,
         )
         assert server.auto_adapt is False
+
+    def test_init_cold_start(self, mock_store, mock_reflector, mock_retriever):
+        """Test that empty database results in cold start."""
+        server = OnlineServer(
+            store=mock_store,
+            reflector=mock_reflector,
+            retriever=mock_retriever,
+        )
+        assert server.stats.warmup_source == WarmupSource.NONE
+        assert server.stats.warmup_bullets_loaded == 0
+        assert server.stats.warmup_playbook_version == 0
+
+    def test_init_database_warmup(self, mock_reflector, mock_retriever):
+        """Test that existing database bullets are detected as warmup."""
+        store = MagicMock()
+        playbook = MagicMock()
+        playbook.version = 3
+        mock_bullet = MagicMock()
+        playbook.bullets = [mock_bullet, mock_bullet, mock_bullet]
+        store.load_playbook.return_value = playbook
+
+        server = OnlineServer(
+            store=store,
+            reflector=mock_reflector,
+            retriever=mock_retriever,
+        )
+        assert server.stats.warmup_source == WarmupSource.DATABASE
+        assert server.stats.warmup_bullets_loaded == 3
+        assert server.stats.warmup_playbook_version == 3
+
+    def test_init_file_warmup(self, mock_store, mock_reflector, mock_retriever):
+        """Test warm-start from a playbook JSON file."""
+        playbook_data = {
+            "version": 5,
+            "bullets": [
+                {
+                    "id": "strat-001",
+                    "section": "strategies",
+                    "content": "Test bullet",
+                    "tags": ["topic:test"],
+                    "helpful": 0,
+                    "harmful": 0,
+                },
+                {
+                    "id": "strat-002",
+                    "section": "strategies",
+                    "content": "Second bullet",
+                    "tags": ["topic:test"],
+                    "helpful": 1,
+                    "harmful": 0,
+                },
+            ],
+        }
+
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".json", delete=False
+        ) as f:
+            json.dump(playbook_data, f)
+            temp_path = f.name
+
+        try:
+            server = OnlineServer(
+                store=mock_store,
+                reflector=mock_reflector,
+                retriever=mock_retriever,
+                warmup_path=temp_path,
+            )
+            assert server.stats.warmup_source == WarmupSource.FILE
+            assert server.stats.warmup_bullets_loaded == 2
+            assert server.stats.warmup_playbook_version == 5
+            mock_store.load_playbook_data.assert_called_once()
+        finally:
+            Path(temp_path).unlink()
+
+    def test_init_file_warmup_not_found(self, mock_store, mock_reflector, mock_retriever):
+        """Test that missing warmup file raises FileNotFoundError."""
+        with pytest.raises(FileNotFoundError) as exc_info:
+            OnlineServer(
+                store=mock_store,
+                reflector=mock_reflector,
+                retriever=mock_retriever,
+                warmup_path="/nonexistent/path/playbook.json",
+            )
+        assert "Warmup playbook not found" in str(exc_info.value)
+
+    def test_init_file_warmup_invalid_json(self, mock_store, mock_reflector, mock_retriever):
+        """Test that invalid JSON in warmup file raises error."""
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".json", delete=False
+        ) as f:
+            f.write("not valid json")
+            temp_path = f.name
+
+        try:
+            with pytest.raises(json.JSONDecodeError):
+                OnlineServer(
+                    store=mock_store,
+                    reflector=mock_reflector,
+                    retriever=mock_retriever,
+                    warmup_path=temp_path,
+                )
+        finally:
+            Path(temp_path).unlink()
 
     def test_retrieve(self, mock_store, mock_reflector, mock_retriever):
         mock_bullet = MagicMock()
@@ -266,6 +403,44 @@ class TestCreateApp:
                     data = response.json()
                     assert "session_id" in data
                     assert "requests_processed" in data
+                    assert "warmup_source" in data
+                    assert "warmup_bullets_loaded" in data
+                    assert "warmup_playbook_version" in data
+
+    def test_stats_endpoint_with_warmup(self, mock_store):
+        playbook_data = {
+            "version": 10,
+            "bullets": [
+                {
+                    "id": "strat-001",
+                    "section": "strategies",
+                    "content": "Test bullet",
+                    "tags": [],
+                    "helpful": 0,
+                    "harmful": 0,
+                },
+            ],
+        }
+
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".json", delete=False
+        ) as f:
+            json.dump(playbook_data, f)
+            temp_path = f.name
+
+        try:
+            with patch("ace.serve.runner.Reflector"):
+                with patch("ace.serve.runner.Retriever"):
+                    app = create_app(store=mock_store, warmup_path=temp_path)
+                    with TestClient(app) as client:
+                        response = client.get("/stats")
+                        assert response.status_code == 200
+                        data = response.json()
+                        assert data["warmup_source"] == "file"
+                        assert data["warmup_bullets_loaded"] == 1
+                        assert data["warmup_playbook_version"] == 10
+        finally:
+            Path(temp_path).unlink()
 
     def test_playbook_version_endpoint(self, mock_store):
         with patch("ace.serve.runner.Reflector"):
