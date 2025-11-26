@@ -3,7 +3,12 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-Section = Literal["strategies", "templates", "troubleshooting", "code_snippets", "facts"]
+Section = Literal[
+    "strategies_and_hard_rules",
+    "code_snippets_and_templates",
+    "troubleshooting_and_pitfalls",
+    "domain_facts_and_references",
+]
 
 
 class Bullet(BaseModel):

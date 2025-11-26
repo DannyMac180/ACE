@@ -52,7 +52,7 @@ def valid_reflection_json() -> str:
         ],
         "candidate_bullets": [
             {
-                "section": "troubleshooting",
+                "section": "troubleshooting_and_pitfalls",
                 "content": "TypeError on None: add explicit None checks before operations",
                 "tags": ["topic:validation", "error:TypeError", "stack:python"]
             }
@@ -175,12 +175,12 @@ def test_reflection_candidate_bullet_quality():
         "bullet_tags": [],
         "candidate_bullets": [
             {
-                "section": "troubleshooting",
+                "section": "troubleshooting_and_pitfalls",
                 "content": "Connection timeout: increase pool_size in pgvector config",
                 "tags": ["db:pgvector", "error:timeout", "topic:retrieval"]
             },
             {
-                "section": "strategies",
+                "section": "strategies_and_hard_rules",
                 "content": "Add exponential backoff retry for database connections",
                 "tags": ["db:pgvector", "pattern:retry", "robustness"]
             }
@@ -200,14 +200,14 @@ def test_reflection_candidate_bullet_quality():
 
     # Check first bullet
     bullet1 = reflection.candidate_bullets[0]
-    assert bullet1.section == "troubleshooting"
+    assert bullet1.section == "troubleshooting_and_pitfalls"
     assert "timeout" in bullet1.content.lower()
     assert "db:pgvector" in bullet1.tags
     assert any("error:" in tag for tag in bullet1.tags)
 
     # Check second bullet
     bullet2 = reflection.candidate_bullets[1]
-    assert bullet2.section == "strategies"
+    assert bullet2.section == "strategies_and_hard_rules"
     assert "retry" in bullet2.content.lower()
     assert len(bullet2.tags) >= 2
 
@@ -289,7 +289,7 @@ def test_quality_candidate_bullets_are_concise():
         "bullet_tags": [],
         "candidate_bullets": [
             {
-                "section": "strategies",
+                "section": "strategies_and_hard_rules",
                 "content": "Use hybrid retrieval: BM25 + embeddings; default top_k=24",
                 "tags": ["topic:retrieval"]
             }
@@ -326,7 +326,7 @@ def test_quality_candidate_bullets_have_tags():
         "bullet_tags": [],
         "candidate_bullets": [
             {
-                "section": "strategies",
+                "section": "strategies_and_hard_rules",
                 "content": "Always validate JSON output from LLM reflections",
                 "tags": ["topic:parsing", "robustness", "llm"]
             }
@@ -399,12 +399,12 @@ def test_quality_no_duplicate_candidate_bullets():
         "bullet_tags": [],
         "candidate_bullets": [
             {
-                "section": "strategies",
+                "section": "strategies_and_hard_rules",
                 "content": "Use hybrid retrieval with BM25 and embeddings",
                 "tags": ["topic:retrieval"]
             },
             {
-                "section": "troubleshooting",
+                "section": "troubleshooting_and_pitfalls",
                 "content": "Connection timeout: check network and increase timeout setting",
                 "tags": ["error:timeout"]
             }

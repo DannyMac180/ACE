@@ -58,25 +58,25 @@ def store_with_bullets(temp_db, temp_index_dir):
         bullets = [
             Bullet(
                 id="strat-001",
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Prefer hybrid retrieval: BM25 + embedding; rerank by lexical overlap",
                 tags=["topic:retrieval", "stack:python"],
             ),
             Bullet(
                 id="strat-002",
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Never rewrite the whole playbook. Only ADD/PATCH/DEPRECATE bullets",
                 tags=["topic:curation", "policy"],
             ),
             Bullet(
                 id="trbl-001",
-                section="troubleshooting",
+                section="troubleshooting_and_pitfalls",
                 content="Check FAISS index dimension mismatch if insertions fail",
                 tags=["topic:vector", "tool:faiss"],
             ),
             Bullet(
                 id="tmpl-001",
-                section="templates",
+                section="code_snippets_and_templates",
                 content="Unit test template: apply Delta ops and assert version increment",
                 tags=["topic:testing"],
             ),
@@ -177,7 +177,7 @@ def test_full_pipeline_with_new_bullet(store_with_bullets):
         ],
         candidate_bullets=[
             CandidateBullet(
-                section="troubleshooting",
+                section="troubleshooting_and_pitfalls",
                 content="Validate embedding dims match FAISS index dims before insertion",
                 tags=["topic:vector", "tool:faiss", "error:dimension"],
             )
@@ -211,7 +211,7 @@ def test_full_pipeline_with_new_bullet(store_with_bullets):
     # Verify the new bullet was added
     new_bullets = [b for b in manager.playbook.bullets if "Validate embedding dims" in b.content]
     assert len(new_bullets) == 1
-    assert new_bullets[0].section == "troubleshooting"
+    assert new_bullets[0].section == "troubleshooting_and_pitfalls"
     assert "topic:vector" in new_bullets[0].tags
 
 
@@ -233,7 +233,7 @@ def test_full_pipeline_with_harmful_feedback(store_with_bullets):
         ],
         candidate_bullets=[
             CandidateBullet(
-                section="templates",
+                section="code_snippets_and_templates",
                 content="For async code, use pytest-asyncio and async def test_* patterns",
                 tags=["topic:testing", "lang:python", "pattern:async"],
             )
@@ -280,7 +280,7 @@ def test_full_pipeline_multiple_iterations(store_with_bullets):
         bullet_tags=[BulletTag(id="strat-001", tag="helpful")],
         candidate_bullets=[
             CandidateBullet(
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Use reranking to improve retrieval precision",
                 tags=["topic:retrieval", "technique:rerank"],
             )
@@ -333,7 +333,7 @@ def test_pipeline_error_handling_missing_bullet(temp_db, temp_index_dir):
     try:
         store = Store(temp_db)
         store.save_bullet(
-            Bullet(id="test-001", section="strategies", content="test", tags=[])
+            Bullet(id="test-001", section="strategies_and_hard_rules", content="test", tags=[])
         )
 
         playbook = store.load_playbook()

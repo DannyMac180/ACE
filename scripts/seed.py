@@ -12,7 +12,7 @@ def seed_initial_playbook() -> None:
     seed_bullets = [
         Bullet(
             id="strat-00001",
-            section="strategies",
+            section="strategies_and_hard_rules",
             content=(
                 "Prefer hybrid retrieval: BM25 + embedding; rerank by lexical "
                 "overlap with query terms; default top_k=24."
@@ -21,7 +21,7 @@ def seed_initial_playbook() -> None:
         ),
         Bullet(
             id="strat-00002",
-            section="strategies",
+            section="strategies_and_hard_rules",
             content=(
                 "Never rewrite the whole playbook. Only ADD/PATCH/DEPRECATE "
                 "bullets; run refine for dedup."
@@ -30,7 +30,7 @@ def seed_initial_playbook() -> None:
         ),
         Bullet(
             id="strat-00003",
-            section="strategies",
+            section="strategies_and_hard_rules",
             content=(
                 "Consider bullets near-duplicate if cosine>0.90 OR minhash "
                 "Jaccard>0.85; keep clearer text; transfer counters."
@@ -39,7 +39,7 @@ def seed_initial_playbook() -> None:
         ),
         Bullet(
             id="trbl-00001",
-            section="troubleshooting",
+            section="troubleshooting_and_pitfalls",
             content=(
                 "Reflector/Curator must emit valid JSON without markdown "
                 "fencing; reject and retry on parse errors."
@@ -48,7 +48,7 @@ def seed_initial_playbook() -> None:
         ),
         Bullet(
             id="tmpl-00001",
-            section="templates",
+            section="code_snippets_and_templates",
             content=(
                 "Unit test template for merge: apply Delta ops and assert "
                 "version increment + idempotency."
@@ -57,13 +57,13 @@ def seed_initial_playbook() -> None:
         ),
         Bullet(
             id="code-00001",
-            section="code_snippets",
+            section="code_snippets_and_templates",
             content="Expose MCP tools 'ace.retrieve|reflect|curate|commit|refine|stats'; resource 'ace://playbook.json'.",
             tags=["topic:mcp"],
         ),
         Bullet(
             id="seed-retrieval-hygiene",
-            section="strategies",
+            section="strategies_and_hard_rules",
             content=(
                 "Ensure retrieval queries are specific and context-aware to "
                 "prevent irrelevant or conflicting information from polluting "
@@ -73,7 +73,7 @@ def seed_initial_playbook() -> None:
         ),
         Bullet(
             id="strat-00004",
-            section="strategies",
+            section="strategies_and_hard_rules",
             content=(
                 "Always write a failing test before implementing new "
                 "functionality or fixing a bug."
@@ -82,7 +82,7 @@ def seed_initial_playbook() -> None:
         ),
         Bullet(
             id="code-00002",
-            section="code_snippets",
+            section="code_snippets_and_templates",
             content=(
                 "The MCP tool shape is defined by the following JSON schema: "
                 "{ 'type': 'object', 'properties': { 'tool_name': "
@@ -96,7 +96,7 @@ def seed_initial_playbook() -> None:
         ),
         Bullet(
             id="strat-00005",
-            section="strategies",
+            section="strategies_and_hard_rules",
             content=(
                 "Bullets are considered near-duplicates if their embedding "
                 "cosine similarity exceeds 0.90 or their minhash Jaccard "
@@ -107,7 +107,7 @@ def seed_initial_playbook() -> None:
         ),
         Bullet(
             id="strat-00006",
-            section="strategies",
+            section="strategies_and_hard_rules",
             content=(
                 "When generating structured output, especially tool calls or "
                 "data schemas, always ensure the output is strictly valid "

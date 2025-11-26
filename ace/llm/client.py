@@ -78,7 +78,7 @@ class MockLLMClient(LLMClient):
         elif "curate" in content_lower or "delta" in content_lower:
             response_text = (
                 f"{self.response_prefix} Proposing the following changes:\n"
-                '{"ops": [{"op": "ADD", "new_bullet": {"section": "strategies", '
+                '{"ops": [{"op": "ADD", "new_bullet": {"section": "strategies_and_hard_rules", '
                 '"content": "Always validate inputs", "tags": ["topic:validation"]}}]}'
             )
         elif "analyze" in content_lower:

@@ -57,13 +57,13 @@ class TestGeneratorWithRetriever:
         test_bullets = [
             Bullet(
                 id="strat-001",
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Use hybrid retrieval for best results",
                 tags=["topic:retrieval"],
             ),
             Bullet(
                 id="tmpl-001",
-                section="templates",
+                section="code_snippets_and_templates",
                 content="Always validate input before processing",
                 tags=["topic:validation"],
             ),
@@ -135,12 +135,12 @@ class TestGeneratorBulletRetrieval:
         mock_retriever = MagicMock()
         mock_retriever.store.get_bullet.return_value = Bullet(
             id="strat-001",
-            section="strategies",
+            section="strategies_and_hard_rules",
             content="Test content",
             tags=[],
         )
         gen = Generator(retriever=mock_retriever)
         result = gen._format_bullets_for_reasoning(["strat-001"])
 
-        assert "[strategies]" in result
+        assert "[strategies_and_hard_rules]" in result
         assert "Test content" in result

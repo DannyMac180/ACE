@@ -93,11 +93,10 @@ def parse_reflection(json_str: str) -> Reflection:
 
                 section = cb["section"]
                 valid_sections = [
-                    "strategies",
-                    "templates",
-                    "troubleshooting",
-                    "code_snippets",
-                    "facts",
+                    "strategies_and_hard_rules",
+                    "code_snippets_and_templates",
+                    "troubleshooting_and_pitfalls",
+                    "domain_facts_and_references",
                 ]
                 if section not in valid_sections:
                     raise ReflectionParseError(f"Invalid section: {section}")

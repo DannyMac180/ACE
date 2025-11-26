@@ -31,7 +31,7 @@ def test_parse_reflection_valid():
       ],
       "candidate_bullets": [
         {
-          "section": "troubleshooting",
+          "section": "troubleshooting_and_pitfalls",
           "content": "Check imports before running tests",
           "tags": ["topic:testing", "tool:pytest"]
         }
@@ -49,7 +49,7 @@ def test_parse_reflection_valid():
     assert reflection.bullet_tags[0].id == "strat-00091"
     assert reflection.bullet_tags[0].tag == "helpful"
     assert len(reflection.candidate_bullets) == 1
-    assert reflection.candidate_bullets[0].section == "troubleshooting"
+    assert reflection.candidate_bullets[0].section == "troubleshooting_and_pitfalls"
     assert reflection.candidate_bullets[0].content == "Check imports before running tests"
     assert "topic:testing" in reflection.candidate_bullets[0].tags
 
@@ -134,7 +134,7 @@ def test_parse_reflection_missing_required_fields():
       "bullet_tags": [],
       "candidate_bullets": [
         {
-          "section": "strategies"
+          "section": "strategies_and_hard_rules"
         }
       ]
     }
@@ -154,11 +154,11 @@ def test_bullet_tag_creation():
 def test_candidate_bullet_creation():
     """Test CandidateBullet dataclass creation."""
     cb = CandidateBullet(
-        section="strategies",
+        section="strategies_and_hard_rules",
         content="Use hybrid retrieval",
         tags=["topic:retrieval"],
     )
-    assert cb.section == "strategies"
+    assert cb.section == "strategies_and_hard_rules"
     assert cb.content == "Use hybrid retrieval"
     assert cb.tags == ["topic:retrieval"]
 
@@ -173,7 +173,7 @@ def test_reflection_creation():
         bullet_tags=[BulletTag(id="test-1", tag="helpful")],
         candidate_bullets=[
             CandidateBullet(
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Test content",
                 tags=["tag1"],
             )

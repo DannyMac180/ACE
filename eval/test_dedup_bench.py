@@ -45,19 +45,19 @@ def base_playbook() -> Playbook:
     bullets = [
         Bullet(
             id="strat-001",
-            section="strategies",
+            section="strategies_and_hard_rules",
             content="Use hybrid retrieval with BM25 and embeddings for best results",
             tags=["topic:retrieval", "stack:python"],
         ),
         Bullet(
             id="strat-002",
-            section="strategies",
+            section="strategies_and_hard_rules",
             content="Always validate JSON output from LLM reflections to prevent parse errors",
             tags=["topic:parsing", "robustness"],
         ),
         Bullet(
             id="tmpl-001",
-            section="templates",
+            section="code_snippets_and_templates",
             content=(
                 "Unit test template for merge operations: apply Delta and assert version increment"
             ),
@@ -76,7 +76,7 @@ def test_dedup_exact_match(runner, mock_embedding):
     """Test that exact text matches are identified as duplicates."""
     # Candidate is identical to strat-001
     candidate = {
-        "section": "strategies",
+        "section": "strategies_and_hard_rules",
         "content": "Use hybrid retrieval with BM25 and embeddings for best results",
         "tags": ["topic:retrieval"],
     }
@@ -124,7 +124,7 @@ def test_dedup_near_match_cosine(runner, mock_embedding):
 
     with patch("ace.refine.runner.generate_embedding", side_effect=side_effect):
         candidate = {
-            "section": "strategies",
+            "section": "strategies_and_hard_rules",
             "content": candidate_text,
             "tags": ["topic:retrieval"],
         }
@@ -146,7 +146,7 @@ def test_dedup_near_match_minhash(runner, mock_embedding):
     # MinHash doesn't use embeddings, so deterministic_embedding mock is fine
     # (it just prevents heavy model load).
     candidate = {
-        "section": "templates",
+        "section": "code_snippets_and_templates",
         "content": (
             "Unit test template for merge operations: assert version increment and apply Delta"
         ),
@@ -167,7 +167,7 @@ def test_dedup_near_match_minhash(runner, mock_embedding):
 def test_dedup_distinct(runner, mock_embedding):
     """Test that distinct content is NOT merged."""
     candidate = {
-        "section": "strategies",
+        "section": "strategies_and_hard_rules",
         "content": "Something completely different about deployment pipelines",
         "tags": ["topic:deployment"],
     }
@@ -209,7 +209,7 @@ def test_dedup_near_threshold_mismatch(runner, mock_embedding):
 
     with patch("ace.refine.runner.generate_embedding", side_effect=side_effect):
         candidate = {
-            "section": "strategies",
+            "section": "strategies_and_hard_rules",
             "content": candidate_text,
             "tags": ["topic:retrieval"],
         }
@@ -230,7 +230,7 @@ def test_dedup_performance(benchmark, base_playbook, mock_embedding):
     runner = RefineRunner(playbook=base_playbook)
 
     candidate = {
-        "section": "strategies",
+        "section": "strategies_and_hard_rules",
         "content": "Use hybrid retrieval with BM25 and embeddings for best results",
         "tags": ["topic:retrieval"],
     }

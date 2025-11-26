@@ -11,7 +11,12 @@ class BulletTag:
 
 @dataclass
 class CandidateBullet:
-    section: Literal["strategies", "templates", "troubleshooting", "code_snippets", "facts"]
+    section: Literal[
+        "strategies_and_hard_rules",
+        "code_snippets_and_templates",
+        "troubleshooting_and_pitfalls",
+        "domain_facts_and_references",
+    ]
     content: str
     tags: list[str] = field(default_factory=list)
 

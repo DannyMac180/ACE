@@ -23,31 +23,31 @@ def sample_bullets() -> list[Bullet]:
     return [
         Bullet(
             id="strat-001",
-            section="strategies",
+            section="strategies_and_hard_rules",
             content="Use hybrid retrieval with BM25 and embeddings for best results",
             tags=["topic:retrieval", "stack:python"],
         ),
         Bullet(
             id="strat-002",
-            section="strategies",
+            section="strategies_and_hard_rules",
             content="Always validate JSON output from LLM reflections",
             tags=["topic:parsing", "robustness"],
         ),
         Bullet(
             id="tmpl-001",
-            section="templates",
+            section="code_snippets_and_templates",
             content="Unit test template for merge operations",
             tags=["topic:testing", "merge"],
         ),
         Bullet(
             id="trbl-001",
-            section="troubleshooting",
+            section="troubleshooting_and_pitfalls",
             content="If retrieval returns no results, check embedding model initialization",
             tags=["topic:retrieval", "debugging"],
         ),
         Bullet(
             id="code-001",
-            section="code_snippets",
+            section="code_snippets_and_templates",
             content="retriever = Retriever(store); results = retriever.retrieve(query, top_k=24)",
             tags=["topic:retrieval", "example"],
         ),
@@ -150,7 +150,7 @@ def test_retrieval_section_specific(store_with_bullets):
 
     results = retriever.retrieve("troubleshooting retrieval", top_k=5)
 
-    troubleshooting_bullets = [b for b in results if b.section == "troubleshooting"]
+    troubleshooting_bullets = [b for b in results if b.section == "troubleshooting_and_pitfalls"]
     assert len(troubleshooting_bullets) > 0
 
 
@@ -193,7 +193,7 @@ def golden_bullets() -> list[Bullet]:
         # Retrieval & DB domain
         Bullet(
             id="strat-golden-001",
-            section="strategies",
+            section="strategies_and_hard_rules",
             content=(
                 "Use pgvector for production; FAISS for local dev. "
                 "Hybrid retrieval with BM25+embedding always."
@@ -204,7 +204,7 @@ def golden_bullets() -> list[Bullet]:
         ),
         Bullet(
             id="trbl-golden-001",
-            section="troubleshooting",
+            section="troubleshooting_and_pitfalls",
             content=(
                 "If pgvector extension missing: CREATE EXTENSION IF NOT EXISTS vector; "
                 "then restart connection."
@@ -216,7 +216,7 @@ def golden_bullets() -> list[Bullet]:
         # Curation & delta policies
         Bullet(
             id="strat-golden-002",
-            section="strategies",
+            section="strategies_and_hard_rules",
             content=(
                 "Never rewrite playbook wholesale. "
                 "Only emit ADD/PATCH/DEPRECATE ops. Run refine weekly."
@@ -227,7 +227,7 @@ def golden_bullets() -> list[Bullet]:
         ),
         Bullet(
             id="code-golden-001",
-            section="code_snippets",
+            section="code_snippets_and_templates",
             content='delta = {"ops": [{"op":"ADD","new_bullet":{...}}]}; curator.commit(delta)',
             tags=["topic:curation", "example:delta", "stack:python"],
             helpful=4,
@@ -236,7 +236,7 @@ def golden_bullets() -> list[Bullet]:
         # MCP & tooling
         Bullet(
             id="strat-golden-003",
-            section="strategies",
+            section="strategies_and_hard_rules",
             content=(
                 "Expose MCP tools: ace.retrieve, ace.reflect, ace.curate, "
                 "ace.commit, ace.refine. Use stdio transport."
@@ -247,7 +247,7 @@ def golden_bullets() -> list[Bullet]:
         ),
         Bullet(
             id="trbl-golden-002",
-            section="troubleshooting",
+            section="troubleshooting_and_pitfalls",
             content=(
                 "MCP JSON parse error: strip markdown fencing (```json) "
                 "before json.loads(); retry once."
@@ -259,7 +259,7 @@ def golden_bullets() -> list[Bullet]:
         # Testing & CI
         Bullet(
             id="tmpl-golden-001",
-            section="templates",
+            section="code_snippets_and_templates",
             content=(
                 "Integration test pattern: setup fixture → act (call API/tool) → "
                 "assert expected delta/state → teardown."
@@ -270,7 +270,7 @@ def golden_bullets() -> list[Bullet]:
         ),
         Bullet(
             id="strat-golden-004",
-            section="strategies",
+            section="strategies_and_hard_rules",
             content=(
                 "CI stages: lint→typecheck→unit→integration→refine-dry-run. "
                 "Block merge on failures."
@@ -282,7 +282,7 @@ def golden_bullets() -> list[Bullet]:
         # Python stack specifics
         Bullet(
             id="code-golden-002",
-            section="code_snippets",
+            section="code_snippets_and_templates",
             content=(
                 "with store.db.begin(): store.bullet_store.create_bullet(bullet); "
                 "ensures atomic commit."
@@ -294,7 +294,7 @@ def golden_bullets() -> list[Bullet]:
         # Reflection & LLM integration
         Bullet(
             id="strat-golden-005",
-            section="strategies",
+            section="strategies_and_hard_rules",
             content=(
                 "Reflector must emit strict JSON matching schema. "
                 "No chain-of-thought. Retry on parse error."

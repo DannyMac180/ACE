@@ -154,7 +154,7 @@ class TestTrainingRunner:
             bullet_tags=[],
             candidate_bullets=[
                 CandidateBullet(
-                    section="strategies",
+                    section="strategies_and_hard_rules",
                     content="Test strategy",
                     tags=["test"],
                 )
@@ -223,7 +223,7 @@ class TestTrainingRunner:
                 DeltaOp(
                     op="ADD",
                     new_bullet={
-                        "section": "strategies",
+                        "section": "strategies_and_hard_rules",
                         "content": "test",
                         "tags": [],
                     },
@@ -255,7 +255,7 @@ class TestTrainingRunner:
                 DeltaOp(
                     op="ADD",
                     new_bullet={
-                        "section": "strategies",
+                        "section": "strategies_and_hard_rules",
                         "content": "test",
                         "tags": [],
                     },

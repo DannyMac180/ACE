@@ -167,7 +167,12 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Literal, Optional, List
 
-Section = Literal["strategies", "templates", "troubleshooting", "code_snippets", "facts"]
+Section = Literal[
+    "strategies_and_hard_rules",       # High-level tactics, policies, invariants
+    "code_snippets_and_templates",     # Reusable code patterns and templates
+    "troubleshooting_and_pitfalls",    # Common errors and how to avoid them
+    "domain_facts_and_references",     # Domain knowledge and references
+]
 
 @dataclass
 class Bullet:

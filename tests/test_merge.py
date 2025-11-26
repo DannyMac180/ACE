@@ -12,7 +12,7 @@ def test_add_operation():
     delta = DeltaOp(
         op="ADD",
         new_bullet={
-            "section": "strategies",
+            "section": "strategies_and_hard_rules",
             "content": "Use hybrid retrieval",
             "tags": ["topic:retrieval"],
         },
@@ -22,7 +22,7 @@ def test_add_operation():
     assert manager.playbook.version == 1
     assert len(manager.playbook.bullets) == 1
     assert manager.playbook.bullets[0].content == "Use hybrid retrieval"
-    assert manager.playbook.bullets[0].section == "strategies"
+    assert manager.playbook.bullets[0].section == "strategies_and_hard_rules"
     assert manager.playbook.bullets[0].tags == ["topic:retrieval"]
     assert manager.playbook.bullets[0].helpful == 0
     assert manager.playbook.bullets[0].harmful == 0
@@ -41,7 +41,11 @@ def test_patch_operation():
 
     delta_add = DeltaOp(
         op="ADD",
-        new_bullet={"section": "strategies", "content": "Original content", "tags": []},
+        new_bullet={
+            "section": "strategies_and_hard_rules",
+            "content": "Original content",
+            "tags": [],
+        },
     )
     manager.apply_delta(delta_add)
     bullet_id = manager.playbook.bullets[0].id
@@ -73,7 +77,7 @@ def test_incr_helpful_operation():
     manager = PlaybookManager()
 
     delta_add = DeltaOp(
-        op="ADD", new_bullet={"section": "strategies", "content": "Test", "tags": []}
+        op="ADD", new_bullet={"section": "strategies_and_hard_rules", "content": "Test", "tags": []}
     )
     manager.apply_delta(delta_add)
     bullet_id = manager.playbook.bullets[0].id
@@ -90,7 +94,7 @@ def test_incr_harmful_operation():
     manager = PlaybookManager()
 
     delta_add = DeltaOp(
-        op="ADD", new_bullet={"section": "strategies", "content": "Test", "tags": []}
+        op="ADD", new_bullet={"section": "strategies_and_hard_rules", "content": "Test", "tags": []}
     )
     manager.apply_delta(delta_add)
     bullet_id = manager.playbook.bullets[0].id
@@ -106,7 +110,7 @@ def test_deprecate_operation():
     manager = PlaybookManager()
 
     delta_add = DeltaOp(
-        op="ADD", new_bullet={"section": "strategies", "content": "Test", "tags": []}
+        op="ADD", new_bullet={"section": "strategies_and_hard_rules", "content": "Test", "tags": []}
     )
     manager.apply_delta(delta_add)
     bullet_id = manager.playbook.bullets[0].id
@@ -132,10 +136,20 @@ def test_multiple_operations_idempotent():
     manager = PlaybookManager()
 
     delta1 = DeltaOp(
-        op="ADD", new_bullet={"section": "strategies", "content": "Bullet 1", "tags": []}
+        op="ADD",
+        new_bullet={
+            "section": "strategies_and_hard_rules",
+            "content": "Bullet 1",
+            "tags": [],
+        },
     )
     delta2 = DeltaOp(
-        op="ADD", new_bullet={"section": "facts", "content": "Bullet 2", "tags": ["tag1"]}
+        op="ADD",
+        new_bullet={
+            "section": "domain_facts_and_references",
+            "content": "Bullet 2",
+            "tags": ["tag1"],
+        },
     )
 
     manager.apply_delta(delta1)
@@ -157,7 +171,12 @@ def test_add_with_id_idempotency():
     manager = PlaybookManager()
     delta_add = DeltaOp(
         op="ADD",
-        new_bullet={"id": "test-id-123", "section": "strategies", "content": "Test", "tags": []},
+        new_bullet={
+            "id": "test-id-123",
+            "section": "strategies_and_hard_rules",
+            "content": "Test",
+            "tags": [],
+        },
     )
     manager.apply_delta(delta_add)
 
@@ -177,7 +196,12 @@ def test_patch_same_content_idempotency():
     """PATCH with same content should still bump version (non-idempotent by design)."""
     manager = PlaybookManager()
     delta_add = DeltaOp(
-        op="ADD", new_bullet={"section": "strategies", "content": "Original", "tags": []}
+        op="ADD",
+        new_bullet={
+            "section": "strategies_and_hard_rules",
+            "content": "Original",
+            "tags": [],
+        },
     )
     manager.apply_delta(delta_add)
     bullet_id = manager.playbook.bullets[0].id
@@ -200,7 +224,7 @@ def test_incr_helpful_non_idempotent():
     """INCR_HELPFUL is explicitly non-idempotent: each call increments."""
     manager = PlaybookManager()
     delta_add = DeltaOp(
-        op="ADD", new_bullet={"section": "strategies", "content": "Test", "tags": []}
+        op="ADD", new_bullet={"section": "strategies_and_hard_rules", "content": "Test", "tags": []}
     )
     manager.apply_delta(delta_add)
     bullet_id = manager.playbook.bullets[0].id
@@ -219,7 +243,7 @@ def test_incr_harmful_non_idempotent():
     """INCR_HARMFUL is explicitly non-idempotent: each call increments."""
     manager = PlaybookManager()
     delta_add = DeltaOp(
-        op="ADD", new_bullet={"section": "strategies", "content": "Test", "tags": []}
+        op="ADD", new_bullet={"section": "strategies_and_hard_rules", "content": "Test", "tags": []}
     )
     manager.apply_delta(delta_add)
     bullet_id = manager.playbook.bullets[0].id
@@ -262,7 +286,12 @@ def test_add_duplicate_id_is_noop():
     manager = PlaybookManager()
     delta1 = DeltaOp(
         op="ADD",
-        new_bullet={"id": "test-id-1", "section": "strategies", "content": "First", "tags": []},
+        new_bullet={
+            "id": "test-id-1",
+            "section": "strategies_and_hard_rules",
+            "content": "First",
+            "tags": [],
+        },
     )
     manager.apply_delta(delta1)
 
@@ -271,7 +300,12 @@ def test_add_duplicate_id_is_noop():
 
     delta2 = DeltaOp(
         op="ADD",
-        new_bullet={"id": "test-id-1", "section": "facts", "content": "Duplicate", "tags": []},
+        new_bullet={
+            "id": "test-id-1",
+            "section": "domain_facts_and_references",
+            "content": "Duplicate",
+            "tags": [],
+        },
     )
     manager.apply_delta(delta2)
 

@@ -53,12 +53,12 @@ def test_curate_with_candidate_bullets():
     reflection = Reflection(
         candidate_bullets=[
             CandidateBullet(
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Use hybrid retrieval for better results",
                 tags=["topic:retrieval", "stack:python"],
             ),
             CandidateBullet(
-                section="troubleshooting",
+                section="troubleshooting_and_pitfalls",
                 content="Check FAISS index dimension mismatch",
                 tags=["topic:vector", "tool:faiss"],
             ),
@@ -71,14 +71,14 @@ def test_curate_with_candidate_bullets():
     # First ADD operation
     assert delta.ops[0].op == "ADD"
     assert delta.ops[0].new_bullet is not None
-    assert delta.ops[0].new_bullet["section"] == "strategies"
+    assert delta.ops[0].new_bullet["section"] == "strategies_and_hard_rules"
     assert delta.ops[0].new_bullet["content"] == "Use hybrid retrieval for better results"
     assert delta.ops[0].new_bullet["tags"] == ["topic:retrieval", "stack:python"]
 
     # Second ADD operation
     assert delta.ops[1].op == "ADD"
     assert delta.ops[1].new_bullet is not None
-    assert delta.ops[1].new_bullet["section"] == "troubleshooting"
+    assert delta.ops[1].new_bullet["section"] == "troubleshooting_and_pitfalls"
     assert delta.ops[1].new_bullet["content"] == "Check FAISS index dimension mismatch"
     assert delta.ops[1].new_bullet["tags"] == ["topic:vector", "tool:faiss"]
 
@@ -93,7 +93,7 @@ def test_curate_with_mixed_operations():
         ],
         candidate_bullets=[
             CandidateBullet(
-                section="facts",
+                section="domain_facts_and_references",
                 content="SQLite supports JSON1 extension",
                 tags=["db:sqlite", "topic:storage"],
             )
@@ -113,7 +113,7 @@ def test_curate_with_mixed_operations():
     # Then ADD operations
     assert delta.ops[2].op == "ADD"
     assert delta.ops[2].new_bullet is not None
-    assert delta.ops[2].new_bullet["section"] == "facts"
+    assert delta.ops[2].new_bullet["section"] == "domain_facts_and_references"
     assert delta.ops[2].new_bullet["content"] == "SQLite supports JSON1 extension"
 
 
@@ -122,7 +122,7 @@ def test_curate_preserves_all_candidate_bullet_fields():
     reflection = Reflection(
         candidate_bullets=[
             CandidateBullet(
-                section="code_snippets",
+                section="code_snippets_and_templates",
                 content="import faiss\nindex = faiss.IndexFlatL2(dim)",
                 tags=["lang:python", "lib:faiss", "topic:indexing"],
             )
@@ -134,7 +134,7 @@ def test_curate_preserves_all_candidate_bullet_fields():
     op = delta.ops[0]
     assert op.op == "ADD"
     assert op.new_bullet is not None
-    assert op.new_bullet["section"] == "code_snippets"
+    assert op.new_bullet["section"] == "code_snippets_and_templates"
     assert op.new_bullet["content"] == "import faiss\nindex = faiss.IndexFlatL2(dim)"
     assert len(op.new_bullet["tags"]) == 3
     assert "lang:python" in op.new_bullet["tags"]
@@ -151,7 +151,7 @@ def test_curate_with_reflection_insights():
         key_insight="Always validate embedding dimensions match index",
         candidate_bullets=[
             CandidateBullet(
-                section="troubleshooting",
+                section="troubleshooting_and_pitfalls",
                 content="Validate embedding dims match FAISS index dims before insertion",
                 tags=["topic:vector", "tool:faiss", "error:dimension"],
             )
@@ -170,7 +170,7 @@ def test_curate_with_reflection_insights():
 # --- Semantic Duplicate Detection Tests ---
 
 
-def _make_bullet(id: str, content: str, section: str = "strategies") -> Bullet:
+def _make_bullet(id: str, content: str, section: str = "strategies_and_hard_rules") -> Bullet:
     """Helper to create a Bullet for testing."""
     return Bullet(
         id=id,
@@ -192,7 +192,7 @@ def test_curate_emits_patch_for_near_duplicate():
     reflection = Reflection(
         candidate_bullets=[
             CandidateBullet(
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Use hybrid retrieval combining BM25 and embedding search",
                 tags=["topic:retrieval"],
             ),
@@ -216,7 +216,7 @@ def test_curate_emits_add_for_unique_candidate():
     reflection = Reflection(
         candidate_bullets=[
             CandidateBullet(
-                section="troubleshooting",
+                section="troubleshooting_and_pitfalls",
                 content="Check database connection timeout settings",
                 tags=["topic:database"],
             ),
@@ -241,12 +241,12 @@ def test_curate_mixed_add_and_patch():
     reflection = Reflection(
         candidate_bullets=[
             CandidateBullet(
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Validate all inputs before any processing",  # Near-dup of strat-001
                 tags=["topic:validation"],
             ),
             CandidateBullet(
-                section="facts",
+                section="domain_facts_and_references",
                 content="Python 3.11 supports exception groups",  # Unique
                 tags=["lang:python"],
             ),
@@ -270,7 +270,7 @@ def test_curate_with_empty_existing_bullets():
     reflection = Reflection(
         candidate_bullets=[
             CandidateBullet(
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Some new strategy",
                 tags=["topic:new"],
             ),
@@ -288,7 +288,7 @@ def test_curate_legacy_behavior_without_existing_bullets():
     reflection = Reflection(
         candidate_bullets=[
             CandidateBullet(
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Some strategy",
                 tags=["topic:test"],
             ),
@@ -315,7 +315,7 @@ def test_curate_tags_processed_before_semantic_check():
         ],
         candidate_bullets=[
             CandidateBullet(
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Use hybrid retrieval combining BM25 and vector search for better results",
                 tags=["topic:retrieval"],
             ),
@@ -340,7 +340,7 @@ def test_curate_custom_threshold():
     reflection = Reflection(
         candidate_bullets=[
             CandidateBullet(
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Use hybrid retrieval",  # Less similar
                 tags=["topic:retrieval"],
             ),
