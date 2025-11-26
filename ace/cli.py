@@ -13,6 +13,7 @@ from ace.core.retrieve import Retriever
 from ace.core.schema import Playbook
 from ace.core.storage.store_adapter import Store
 from ace.curator.curator import curate
+from ace.pipeline import Pipeline
 from ace.refine.runner import refine
 from ace.reflector.reflector import Reflector
 from ace.reflector.schema import Reflection
@@ -325,6 +326,54 @@ def cmd_train(args: argparse.Namespace) -> None:
         print(f"  Duration: {output['duration_seconds']}s")
 
 
+def cmd_pipeline(args: argparse.Namespace) -> None:
+    """Run the full ACE pipeline: retrieve→generate→reflect→curate→merge."""
+    config = load_config()
+    pipeline = Pipeline(db_path=config.database.url)
+
+    if args.feedback:
+        doc = read_json_input(args.feedback)
+        result = pipeline.run_with_feedback(
+            query=args.query,
+            code_diff=doc.get("code_diff", ""),
+            test_output=doc.get("test_output", ""),
+            logs=doc.get("logs", ""),
+            env_meta=doc.get("env_meta"),
+            auto_commit=not args.dry_run,
+        )
+    else:
+        result = pipeline.run_full_cycle(
+            query=args.query,
+            auto_commit=not args.dry_run,
+        )
+
+    output: dict[str, Any] = {
+        "playbook_version": result.playbook.version,
+        "trajectory_steps": result.trajectory.total_steps,
+        "trajectory_status": result.trajectory.final_status,
+        "candidate_bullets": len(result.reflection.candidate_bullets),
+        "bullet_tags": len(result.reflection.bullet_tags),
+        "delta_ops_applied": result.delta_ops_applied,
+        "retrieved_bullets": len(result.retrieved_bullets),
+    }
+
+    if args.dry_run:
+        output["dry_run"] = True
+
+    if args.json:
+        print_output(output, as_json=True)
+    else:
+        print("Pipeline completed:")
+        print(f"  Playbook version: {output['playbook_version']}")
+        print(f"  Trajectory: {output['trajectory_steps']} steps ({output['trajectory_status']})")
+        print(f"  Retrieved bullets: {output['retrieved_bullets']}")
+        print(f"  Candidate bullets: {output['candidate_bullets']}")
+        print(f"  Bullet tags: {output['bullet_tags']}")
+        print(f"  Delta ops applied: {output['delta_ops_applied']}")
+        if args.dry_run:
+            print("  (DRY RUN - no changes committed)")
+
+
 def cmd_eval_run(args: argparse.Namespace) -> None:
     """Run evaluation benchmarks."""
     try:
@@ -439,6 +488,22 @@ def main() -> NoReturn:
     stats_parser = subparsers.add_parser("stats", help="Show playbook statistics")
     stats_parser.add_argument("--json", action="store_true", help="Output as JSON")
     stats_parser.set_defaults(func=cmd_stats)
+
+    pipeline_parser = subparsers.add_parser(
+        "pipeline", help="Run full ACE cycle: retrieve→generate→reflect→curate→merge"
+    )
+    pipeline_parser.add_argument("query", help="Task or goal to execute")
+    pipeline_parser.add_argument(
+        "--feedback",
+        help="Path to JSON with explicit feedback (code_diff, test_output, logs)",
+    )
+    pipeline_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Run without committing changes",
+    )
+    pipeline_parser.add_argument("--json", action="store_true", help="Output as JSON")
+    pipeline_parser.set_defaults(func=cmd_pipeline)
 
     serve_parser = subparsers.add_parser(
         "serve", help="Start online server for test-time sequential adaptation"

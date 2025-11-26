@@ -1,8 +1,17 @@
 # ace/curator/curator.py
+import uuid
+
 from ace.core.schema import Bullet, Delta, DeltaOp
 from ace.reflector.schema import Reflection
 
 from .semantic_matcher import SemanticMatcher
+
+
+def _generate_bullet_id(section: str) -> str:
+    """Generate a unique bullet ID with section prefix."""
+    prefix = section[:4] if len(section) >= 4 else section
+    short_uuid = uuid.uuid4().hex[:8]
+    return f"{prefix}-{short_uuid}"
 
 
 def curate(
@@ -61,6 +70,7 @@ def curate(
                     DeltaOp(
                         op="ADD",
                         new_bullet={
+                            "id": _generate_bullet_id(candidate.section),
                             "section": candidate.section,
                             "content": candidate.content,
                             "tags": candidate.tags,
@@ -74,6 +84,7 @@ def curate(
                 DeltaOp(
                     op="ADD",
                     new_bullet={
+                        "id": _generate_bullet_id(candidate.section),
                         "section": candidate.section,
                         "content": candidate.content,
                         "tags": candidate.tags,
