@@ -30,7 +30,7 @@ Rules:
 Output format:
 {
   "ops": [
-    {"op":"ADD","new_bullet":{"section":"strategies","content":"...","tags":["..."]}},
+    {"op":"ADD","new_bullet":{"section":"strategies_and_hard_rules","content":"...","tags":["..."]}},
     {"op":"INCR_HELPFUL","target_id":"strat-00091"}
   ]
 }

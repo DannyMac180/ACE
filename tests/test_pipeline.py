@@ -55,19 +55,19 @@ def store_with_bullets(temp_db, temp_index_dir):
         bullets = [
             Bullet(
                 id="strat-001",
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Prefer hybrid retrieval: BM25 + embedding for better recall",
                 tags=["topic:retrieval", "stack:python"],
             ),
             Bullet(
                 id="strat-002",
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Never rewrite the whole playbook. Only ADD/PATCH/DEPRECATE bullets",
                 tags=["topic:curation", "policy"],
             ),
             Bullet(
                 id="trbl-001",
-                section="troubleshooting",
+                section="troubleshooting_and_pitfalls",
                 content="Check FAISS index dimension mismatch if insertions fail",
                 tags=["topic:vector", "tool:faiss"],
             ),
@@ -214,7 +214,7 @@ class TestPipelineFullCycle:
             bullet_tags=[BulletTag(id="strat-001", tag="helpful")],
             candidate_bullets=[
                 CandidateBullet(
-                    section="strategies",
+                    section="strategies_and_hard_rules",
                     content="New strategy bullet",
                     tags=["topic:test"],
                 )
@@ -406,7 +406,7 @@ class TestPipelineWithNewBullets:
             bullet_tags=[],
             candidate_bullets=[
                 CandidateBullet(
-                    section="troubleshooting",
+                    section="troubleshooting_and_pitfalls",
                     content="New troubleshooting tip from pipeline test",
                     tags=["topic:test", "source:pipeline"],
                 )
@@ -448,7 +448,7 @@ class TestPipelineIntegration:
             ],
             candidate_bullets=[
                 CandidateBullet(
-                    section="strategies",
+                    section="strategies_and_hard_rules",
                     content="Integration test bullet",
                     tags=["topic:integration"],
                 )

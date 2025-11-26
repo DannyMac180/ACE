@@ -32,8 +32,19 @@ Core data models for the ACE playbook system using Pydantic.
 #### Types
 
 ```python
-Section = Literal["strategies", "templates", "troubleshooting", "code_snippets", "facts"]
+Section = Literal[
+    "strategies_and_hard_rules",
+    "code_snippets_and_templates",
+    "troubleshooting_and_pitfalls",
+    "domain_facts_and_references",
+]
 ```
+
+**Section Descriptions:**
+- `strategies_and_hard_rules`: High-level tactics, policies, and invariants
+- `code_snippets_and_templates`: Reusable code patterns and templates
+- `troubleshooting_and_pitfalls`: Common errors and how to avoid them
+- `domain_facts_and_references`: Domain knowledge and reference information
 
 #### Classes
 

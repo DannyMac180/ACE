@@ -216,7 +216,7 @@ class TestOnlineServer:
             "bullets": [
                 {
                     "id": "strat-001",
-                    "section": "strategies",
+                    "section": "strategies_and_hard_rules",
                     "content": "Test bullet",
                     "tags": ["topic:test"],
                     "helpful": 0,
@@ -224,7 +224,7 @@ class TestOnlineServer:
                 },
                 {
                     "id": "strat-002",
-                    "section": "strategies",
+                    "section": "strategies_and_hard_rules",
                     "content": "Second bullet",
                     "tags": ["topic:test"],
                     "helpful": 1,
@@ -413,7 +413,7 @@ class TestCreateApp:
             "bullets": [
                 {
                     "id": "strat-001",
-                    "section": "strategies",
+                    "section": "strategies_and_hard_rules",
                     "content": "Test bullet",
                     "tags": [],
                     "helpful": 0,

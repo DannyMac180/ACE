@@ -2,6 +2,8 @@
 from dataclasses import dataclass, field
 from typing import Literal
 
+from ace.core.schema import SECTION_MIGRATION_MAP, Section
+
 
 @dataclass
 class BulletTag:
@@ -11,9 +13,14 @@ class BulletTag:
 
 @dataclass
 class CandidateBullet:
-    section: Literal["strategies", "templates", "troubleshooting", "code_snippets", "facts"]
+    section: Section
     content: str
     tags: list[str] = field(default_factory=list)
+
+    def __post_init__(self):
+        # Normalize old section names to new ones for backward compatibility
+        if self.section in SECTION_MIGRATION_MAP:
+            self.section = SECTION_MIGRATION_MAP[self.section]
 
 
 @dataclass

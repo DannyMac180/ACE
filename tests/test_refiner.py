@@ -23,7 +23,7 @@ def test_refine_with_reflection_processes_curator():
         bullets=[
             Bullet(
                 id="strat-00001",
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Existing strategy",
                 tags=["topic:test"],
             )
@@ -34,7 +34,7 @@ def test_refine_with_reflection_processes_curator():
         bullet_tags=[BulletTag(id="strat-00001", tag="helpful")],
         candidate_bullets=[
             CandidateBullet(
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="New strategy from reflection",
                 tags=["topic:retrieval"],
             )
@@ -96,7 +96,7 @@ def test_refine_with_zero_threshold_still_adds_bullets():
         bullets=[
             Bullet(
                 id="strat-00001",
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Existing strategy about retrieval",
                 tags=["topic:retrieval"],
             )
@@ -106,7 +106,7 @@ def test_refine_with_zero_threshold_still_adds_bullets():
     reflection = Reflection(
         candidate_bullets=[
             CandidateBullet(
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="New strategy about validation",
                 tags=["topic:validation"],
             )
@@ -128,7 +128,11 @@ def test_refine_runner_run_returns_result():
     playbook = Playbook(version=1, bullets=[])
     reflection = Reflection(
         candidate_bullets=[
-            CandidateBullet(section="facts", content="Test fact", tags=["topic:test"])
+            CandidateBullet(
+                section="domain_facts_and_references",
+                content="Test fact",
+                tags=["topic:test"],
+            )
         ]
     )
 
@@ -149,7 +153,11 @@ def test_refine_orchestration_stages():
     playbook = Playbook(version=1, bullets=[])
     reflection = Reflection(
         candidate_bullets=[
-            CandidateBullet(section="strategies", content="Strategy one", tags=["topic:test"])
+            CandidateBullet(
+                section="strategies_and_hard_rules",
+                content="Strategy one",
+                tags=["topic:test"],
+            )
         ]
     )
 
@@ -176,7 +184,7 @@ def test_refine_with_helpful_and_harmful_tags():
         bullets=[
             Bullet(
                 id="strat-00001",
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Good strategy",
                 tags=["topic:retrieval"],
                 helpful=5,
@@ -184,7 +192,7 @@ def test_refine_with_helpful_and_harmful_tags():
             ),
             Bullet(
                 id="strat-00002",
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Bad strategy",
                 tags=["topic:retrieval"],
                 helpful=0,
@@ -221,7 +229,7 @@ def test_deduplicate_finds_similar_bullets():
         bullets=[
             Bullet(
                 id="strat-00001",
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content=(
                     "Use hybrid retrieval with BM25 and vector embeddings "
                     "for better search results"
@@ -235,7 +243,7 @@ def test_deduplicate_finds_similar_bullets():
     reflection = Reflection(
         candidate_bullets=[
             CandidateBullet(
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Use hybrid retrieval with BM25 and vector embeddings for improved search",
                 tags=["topic:retrieval"],
             )
@@ -260,7 +268,7 @@ def test_deduplicate_keeps_distinct_bullets():
         bullets=[
             Bullet(
                 id="strat-00001",
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Use hybrid retrieval with BM25 and vector embeddings",
                 tags=["topic:retrieval"],
             )
@@ -271,7 +279,7 @@ def test_deduplicate_keeps_distinct_bullets():
     reflection = Reflection(
         candidate_bullets=[
             CandidateBullet(
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Always validate user input to prevent injection attacks",
                 tags=["topic:security"],
             )
@@ -292,7 +300,7 @@ def test_deduplicate_with_minhash_threshold():
         bullets=[
             Bullet(
                 id="strat-00001",
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="run tests before commit always check coverage",
                 tags=["topic:testing"],
             )
@@ -303,7 +311,7 @@ def test_deduplicate_with_minhash_threshold():
     reflection = Reflection(
         candidate_bullets=[
             CandidateBullet(
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="always run tests before commit check coverage",
                 tags=["topic:testing"],
             )
@@ -328,7 +336,7 @@ def test_consolidate_transfers_counters():
         bullets=[
             Bullet(
                 id="strat-00001",
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Use hybrid retrieval",
                 tags=["topic:retrieval"],
                 helpful=5,
@@ -336,7 +344,7 @@ def test_consolidate_transfers_counters():
             ),
             Bullet(
                 id="strat-00002",
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Similar retrieval strategy",
                 tags=["topic:retrieval"],
                 helpful=3,
@@ -371,7 +379,7 @@ def test_consolidate_handles_candidate_ids():
         bullets=[
             Bullet(
                 id="strat-00001",
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Existing strategy",
                 tags=["topic:test"],
                 helpful=2,
@@ -406,7 +414,7 @@ def test_archive_policy_removes_high_harmful_ratio_bullets():
         bullets=[
             Bullet(
                 id="strat-00001",
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Good strategy",
                 tags=["topic:retrieval"],
                 helpful=8,
@@ -414,7 +422,7 @@ def test_archive_policy_removes_high_harmful_ratio_bullets():
             ),
             Bullet(
                 id="strat-00002",
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Bad strategy",
                 tags=["topic:retrieval"],
                 helpful=2,
@@ -422,7 +430,7 @@ def test_archive_policy_removes_high_harmful_ratio_bullets():
             ),
             Bullet(
                 id="strat-00003",
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Neutral strategy",
                 tags=["topic:test"],
                 helpful=0,
@@ -430,7 +438,7 @@ def test_archive_policy_removes_high_harmful_ratio_bullets():
             ),
             Bullet(
                 id="strat-00004",
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Borderline strategy",
                 tags=["topic:test"],
                 helpful=3,
@@ -438,7 +446,7 @@ def test_archive_policy_removes_high_harmful_ratio_bullets():
             ),
             Bullet(
                 id="strat-00005",
-                section="strategies",
+                section="strategies_and_hard_rules",
                 content="Mostly harmful",
                 tags=["topic:test"],
                 helpful=1,

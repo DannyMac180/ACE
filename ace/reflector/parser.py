@@ -91,16 +91,14 @@ def parse_reflection(json_str: str) -> Reflection:
                         "candidate_bullet must have 'section' and 'content' fields"
                     )
 
+                from ace.core.schema import SECTION_MIGRATION_MAP
+
                 section = cb["section"]
-                valid_sections = [
-                    "strategies",
-                    "templates",
-                    "troubleshooting",
-                    "code_snippets",
-                    "facts",
-                ]
-                if section not in valid_sections:
+                # Accept both old and new section names for backward compatibility
+                if section not in SECTION_MIGRATION_MAP:
                     raise ReflectionParseError(f"Invalid section: {section}")
+                # Normalize to new section name
+                section = SECTION_MIGRATION_MAP[section]
 
                 tags = cb.get("tags", [])
                 if not isinstance(tags, list):

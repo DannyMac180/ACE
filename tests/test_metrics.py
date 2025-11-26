@@ -117,7 +117,7 @@ class TestParserIntegration:
             "error_identification": "Test error",
             "bullet_tags": [{"id": "strat-001", "tag": "helpful"}],
             "candidate_bullets": [
-                {"section": "strategies", "content": "test", "tags": ["test"]}
+                {"section": "strategies_and_hard_rules", "content": "test", "tags": ["test"]}
             ]
         })
 

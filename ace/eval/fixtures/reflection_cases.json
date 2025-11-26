@@ -24,7 +24,7 @@
         "key_insight": true,
         "min_candidate_bullets": 1,
         "should_tag_bullets": false,
-        "candidate_sections": ["strategies", "code_snippets"],
+        "candidate_sections": ["strategies_and_hard_rules", "code_snippets_and_templates"],
         "candidate_tags": ["topic:retry", "topic:api", "stack:python"]
       }
     },
@@ -50,7 +50,7 @@
         "correct_approach": true,
         "min_candidate_bullets": 1,
         "should_tag_helpful": ["strat-00091"],
-        "candidate_sections": ["strategies", "troubleshooting"],
+        "candidate_sections": ["strategies_and_hard_rules", "troubleshooting_and_pitfalls"],
         "candidate_tags": ["db:postgresql", "topic:connection-pool", "stack:python"]
       }
     },
@@ -100,7 +100,7 @@
         "min_candidate_bullets": 1,
         "should_tag_harmful": ["strat-00067"],
         "should_tag_helpful": [],
-        "candidate_sections": ["troubleshooting", "strategies"],
+        "candidate_sections": ["troubleshooting_and_pitfalls", "strategies_and_hard_rules"],
         "candidate_tags": ["topic:memory", "topic:event-loop", "stack:python"]
       }
     },
@@ -125,7 +125,7 @@
         "correct_approach": true,
         "min_candidate_bullets": 2,
         "should_tag_bullets": false,
-        "candidate_sections": ["strategies", "code_snippets"],
+        "candidate_sections": ["strategies_and_hard_rules", "code_snippets_and_templates"],
         "candidate_tags": ["topic:websocket", "topic:retry", "topic:backoff", "stack:python"]
       }
     },
@@ -151,7 +151,7 @@
         "key_insight": true,
         "min_candidate_bullets": 1,
         "should_tag_helpful": ["trbl-00056"],
-        "candidate_sections": ["troubleshooting", "code_snippets"],
+        "candidate_sections": ["troubleshooting_and_pitfalls", "code_snippets_and_templates"],
         "candidate_tags": ["topic:parsing", "topic:json", "topic:robustness"]
       }
     },
@@ -176,7 +176,7 @@
         "correct_approach": true,
         "min_candidate_bullets": 1,
         "should_tag_helpful": ["strat-00102"],
-        "candidate_sections": ["strategies", "code_snippets"],
+        "candidate_sections": ["strategies_and_hard_rules", "code_snippets_and_templates"],
         "candidate_tags": ["topic:refine", "topic:dedup", "stack:python"]
       }
     },
@@ -203,7 +203,7 @@
         "key_insight": true,
         "min_candidate_bullets": 2,
         "should_tag_bullets": false,
-        "candidate_sections": ["troubleshooting", "code_snippets"],
+        "candidate_sections": ["troubleshooting_and_pitfalls", "code_snippets_and_templates"],
         "candidate_tags": ["topic:migration", "db:sqlalchemy", "stack:python"]
       }
     },
@@ -228,7 +228,7 @@
         "correct_approach": true,
         "min_candidate_bullets": 1,
         "should_tag_helpful": ["strat-00078"],
-        "candidate_sections": ["strategies", "code_snippets"],
+        "candidate_sections": ["strategies_and_hard_rules", "code_snippets_and_templates"],
         "candidate_tags": ["topic:security", "topic:logging", "stack:python"]
       }
     },
@@ -256,7 +256,7 @@
         "min_candidate_bullets": 2,
         "should_tag_helpful": ["strat-00091"],
         "should_tag_harmful": [],
-        "candidate_sections": ["strategies", "troubleshooting", "code_snippets"],
+        "candidate_sections": ["strategies_and_hard_rules", "troubleshooting_and_pitfalls", "code_snippets_and_templates"],
         "candidate_tags": ["topic:concurrency", "topic:race-condition", "db:postgresql", "stack:python"]
       }
     }
