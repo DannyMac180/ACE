@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from ace.generator.schemas import Step, Trajectory
+from ace.llm import CompletionResponse, LLMClient, MockLLMClient
 from ace.reflector import (
     BulletTag,
     CandidateBullet,
@@ -189,9 +190,11 @@ def test_reflection_creation():
 class TestExtractTrajectoryContext:
     """Tests for _extract_trajectory_context helper."""
 
-    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
     def test_extract_code_diff(self):
         """Test extraction of code diffs from trajectory."""
+        mock_client = MockLLMClient()
+        reflector = Reflector(llm_client=mock_client)
+
         trajectory = Trajectory(
             initial_goal="Fix bug",
             final_status="success",
@@ -209,16 +212,17 @@ class TestExtractTrajectoryContext:
             ],
         )
 
-        reflector = Reflector()
         code_diff, test_output, logs = reflector._extract_trajectory_context(trajectory)
 
         assert "---" in code_diff
         assert "+++" in code_diff
         assert code_diff != ""
 
-    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
     def test_extract_test_output(self):
         """Test extraction of test output from trajectory."""
+        mock_client = MockLLMClient()
+        reflector = Reflector(llm_client=mock_client)
+
         trajectory = Trajectory(
             initial_goal="Run tests",
             final_status="failure",
@@ -231,15 +235,16 @@ class TestExtractTrajectoryContext:
             ],
         )
 
-        reflector = Reflector()
         code_diff, test_output, logs = reflector._extract_trajectory_context(trajectory)
 
         assert "FAILED" in test_output
         assert "AssertionError" in test_output
 
-    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
     def test_extract_logs(self):
         """Test extraction of logs from trajectory."""
+        mock_client = MockLLMClient()
+        reflector = Reflector(llm_client=mock_client)
+
         trajectory = Trajectory(
             initial_goal="Debug issue",
             final_status="failure",
@@ -252,15 +257,16 @@ class TestExtractTrajectoryContext:
             ],
         )
 
-        reflector = Reflector()
         code_diff, test_output, logs = reflector._extract_trajectory_context(trajectory)
 
         assert "ERROR:" in logs
         assert "stderr:" in logs
 
-    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
     def test_extract_empty_trajectory(self):
         """Test extraction from trajectory with no matching patterns."""
+        mock_client = MockLLMClient()
+        reflector = Reflector(llm_client=mock_client)
+
         trajectory = Trajectory(
             initial_goal="Simple task",
             final_status="success",
@@ -273,16 +279,17 @@ class TestExtractTrajectoryContext:
             ],
         )
 
-        reflector = Reflector()
         code_diff, test_output, logs = reflector._extract_trajectory_context(trajectory)
 
         assert code_diff == ""
         assert test_output == ""
         assert logs == ""
 
-    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
     def test_extract_multiple_steps(self):
         """Test extraction combines multiple relevant steps."""
+        mock_client = MockLLMClient()
+        reflector = Reflector(llm_client=mock_client)
+
         trajectory = Trajectory(
             initial_goal="Complex task",
             final_status="partial",
@@ -305,7 +312,6 @@ class TestExtractTrajectoryContext:
             ],
         )
 
-        reflector = Reflector()
         code_diff, test_output, logs = reflector._extract_trajectory_context(trajectory)
 
         assert "modified" in code_diff
@@ -316,10 +322,10 @@ class TestExtractTrajectoryContext:
 class TestReflectOnTrajectory:
     """Tests for reflect_on_trajectory method."""
 
-    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
     def test_passes_used_bullet_ids(self):
         """Test that used_bullet_ids from trajectory are passed to reflect."""
-        reflector = Reflector()
+        mock_client = MockLLMClient()
+        reflector = Reflector(llm_client=mock_client)
         reflector.reflect = MagicMock(
             return_value=Reflection(
                 key_insight="Test insight",
@@ -341,10 +347,10 @@ class TestReflectOnTrajectory:
         call_args = reflector.reflect.call_args
         assert call_args.kwargs["retrieved_bullet_ids"] == ["strat-001", "tmpl-002"]
 
-    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
     def test_passes_initial_goal_as_query(self):
         """Test that initial_goal is passed as query."""
-        reflector = Reflector()
+        mock_client = MockLLMClient()
+        reflector = Reflector(llm_client=mock_client)
         reflector.reflect = MagicMock(return_value=Reflection())
 
         trajectory = Trajectory(
@@ -358,10 +364,10 @@ class TestReflectOnTrajectory:
         call_args = reflector.reflect.call_args
         assert call_args.kwargs["query"] == "Implement feature X"
 
-    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
     def test_passes_env_meta(self):
         """Test that trajectory metadata is passed as env_meta."""
-        reflector = Reflector()
+        mock_client = MockLLMClient()
+        reflector = Reflector(llm_client=mock_client)
         reflector.reflect = MagicMock(return_value=Reflection())
 
         trajectory = Trajectory(
@@ -458,32 +464,69 @@ class TestParseQuality:
             parse_quality("{ not valid }")
 
 
+# --- Tests for LLM client injection ---
+
+
+class TestLLMClientInjection:
+    """Tests for LLM client injection in Reflector."""
+
+    def test_reflector_uses_injected_client(self):
+        """Test that Reflector uses the injected LLM client."""
+        mock_client = MagicMock(spec=LLMClient)
+        mock_client.complete.return_value = CompletionResponse(
+            text='{"error_identification": "Test", "bullet_tags": [], "candidate_bullets": []}'
+        )
+
+        reflector = Reflector(llm_client=mock_client)
+        reflection = reflector.reflect(query="test", retrieved_bullet_ids=[])
+
+        mock_client.complete.assert_called_once()
+        assert reflection.error_identification == "Test"
+
+    def test_reflector_uses_mock_client_for_testing(self):
+        """Test that Reflector works with MockLLMClient."""
+        # MockLLMClient returns pattern-based responses, not valid JSON
+        # So we need to mock it to return valid JSON
+        mock_client = MagicMock(spec=LLMClient)
+        mock_client.complete.return_value = CompletionResponse(
+            text='{"key_insight": "Mock insight", "bullet_tags": [], "candidate_bullets": []}'
+        )
+
+        reflector = Reflector(llm_client=mock_client)
+        reflection = reflector.reflect(query="test query", retrieved_bullet_ids=[])
+
+        assert reflection.key_insight == "Mock insight"
+
+    @patch("ace.reflector.reflector.create_llm_client")
+    def test_reflector_creates_client_from_factory_when_not_provided(
+        self, mock_factory
+    ):
+        """Test that Reflector creates client from factory when none provided."""
+        mock_client = MagicMock(spec=LLMClient)
+        mock_factory.return_value = mock_client
+
+        reflector = Reflector()
+
+        mock_factory.assert_called_once()
+        assert reflector.client is mock_client
+
+
 # --- Tests for iterative refinement ---
 
 
 class TestIterativeRefinement:
     """Tests for iterative refinement in Reflector."""
 
-    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
     def test_refinement_rounds_default(self):
         """Test default refinement_rounds is 1 (no refinement)."""
-        reflector = Reflector()
-        reflector.refinement_rounds = 1
-        reflector.quality_threshold = 0.7
-        reflector.max_retries = 3
-        reflector.model = "gpt-4o-mini"
-        reflector.temperature = 0.3
-        reflector.client = MagicMock()
+        mock_client = MagicMock(spec=LLMClient)
+        response_json = (
+            '{"error_identification": "Test error", '
+            '"bullet_tags": [], "candidate_bullets": []}'
+        )
+        mock_client.complete.return_value = CompletionResponse(text=response_json)
 
-        mock_response = MagicMock()
-        mock_response.choices[0].message.content = """
-        {
-          "error_identification": "Test error",
-          "bullet_tags": [],
-          "candidate_bullets": []
-        }
-        """
-        reflector.client.chat.completions.create.return_value = mock_response
+        reflector = Reflector(llm_client=mock_client)
 
         reflection = reflector.reflect(
             query="test query",
@@ -492,35 +535,32 @@ class TestIterativeRefinement:
 
         assert reflection.error_identification == "Test error"
         # Only 1 call since refinement_rounds=1
-        assert reflector.client.chat.completions.create.call_count == 1
+        assert mock_client.complete.call_count == 1
 
-    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
     def test_refinement_stops_when_quality_threshold_met(self):
         """Test refinement stops early when quality threshold is met."""
-        reflector = Reflector()
-        reflector.refinement_rounds = 3
-        reflector.quality_threshold = 0.7
-        reflector.max_retries = 3
-        reflector.model = "gpt-4o-mini"
-        reflector.temperature = 0.3
-        reflector.client = MagicMock()
+        mock_client = MagicMock(spec=LLMClient)
 
+        initial_json = (
+            '{"error_identification": "Initial", '
+            '"bullet_tags": [], "candidate_bullets": []}'
+        )
+        quality_json = (
+            '{"specificity": 0.9, "actionability": 0.8, '
+            '"redundancy": 0.1, "feedback": ""}'
+        )
         # First call: initial reflection
-        initial_response = MagicMock()
-        initial_response.choices[0].message.content = """
-        {"error_identification": "Initial", "bullet_tags": [], "candidate_bullets": []}
-        """
-
         # Second call: quality eval (high quality, should stop)
-        quality_response = MagicMock()
-        quality_response.choices[0].message.content = """
-        {"specificity": 0.9, "actionability": 0.8, "redundancy": 0.1, "feedback": ""}
-        """
-
-        reflector.client.chat.completions.create.side_effect = [
-            initial_response,
-            quality_response,
+        mock_client.complete.side_effect = [
+            CompletionResponse(text=initial_json),
+            CompletionResponse(text=quality_json),
         ]
+
+        reflector = Reflector(
+            llm_client=mock_client,
+            refinement_rounds=3,
+            quality_threshold=0.7,
+        )
 
         reflection = reflector.reflect(
             query="test query",
@@ -529,43 +569,35 @@ class TestIterativeRefinement:
 
         assert reflection.error_identification == "Initial"
         # 1 for initial + 1 for quality eval = 2 calls
-        assert reflector.client.chat.completions.create.call_count == 2
+        assert mock_client.complete.call_count == 2
 
-    @patch.object(Reflector, "__init__", lambda self, **kwargs: None)
     def test_refinement_iterates_until_max_rounds(self):
         """Test refinement continues until max rounds when quality is low."""
-        reflector = Reflector()
-        reflector.refinement_rounds = 2
-        reflector.quality_threshold = 0.9  # High threshold
-        reflector.max_retries = 3
-        reflector.model = "gpt-4o-mini"
-        reflector.temperature = 0.3
-        reflector.client = MagicMock()
+        mock_client = MagicMock(spec=LLMClient)
 
-        # Initial reflection
-        initial_response = MagicMock()
-        initial_response.choices[0].message.content = """
-        {"error_identification": "V1", "bullet_tags": [], "candidate_bullets": []}
-        """
-
-        # Quality eval: low quality
-        quality_response = MagicMock()
-        quality_response.choices[0].message.content = (
+        initial_json = (
+            '{"error_identification": "V1", '
+            '"bullet_tags": [], "candidate_bullets": []}'
+        )
+        quality_json = (
             '{"specificity": 0.4, "actionability": 0.5, '
             '"redundancy": 0.6, "feedback": "Be more specific"}'
         )
-
-        # Refined reflection
-        refined_response = MagicMock()
-        refined_response.choices[0].message.content = """
-        {"error_identification": "V2 - refined", "bullet_tags": [], "candidate_bullets": []}
-        """
-
-        reflector.client.chat.completions.create.side_effect = [
-            initial_response,
-            quality_response,
-            refined_response,
+        refined_json = (
+            '{"error_identification": "V2 - refined", '
+            '"bullet_tags": [], "candidate_bullets": []}'
+        )
+        mock_client.complete.side_effect = [
+            CompletionResponse(text=initial_json),  # Initial reflection
+            CompletionResponse(text=quality_json),  # Quality eval: low quality
+            CompletionResponse(text=refined_json),  # Refined reflection
         ]
+
+        reflector = Reflector(
+            llm_client=mock_client,
+            refinement_rounds=2,
+            quality_threshold=0.9,  # High threshold
+        )
 
         reflection = reflector.reflect(
             query="test query",
@@ -575,20 +607,24 @@ class TestIterativeRefinement:
         # Should get the refined version
         assert reflection.error_identification == "V2 - refined"
         # 1 initial + 1 quality + 1 refinement = 3 calls
-        assert reflector.client.chat.completions.create.call_count == 3
+        assert mock_client.complete.call_count == 3
 
     def test_reflector_init_with_refinement_params(self):
         """Test Reflector can be initialized with refinement parameters."""
-        with patch("ace.reflector.reflector.OpenAI"):
-            reflector = Reflector(refinement_rounds=3, quality_threshold=0.8)
-            assert reflector.refinement_rounds == 3
-            assert reflector.quality_threshold == 0.8
+        mock_client = MockLLMClient()
+        reflector = Reflector(
+            llm_client=mock_client,
+            refinement_rounds=3,
+            quality_threshold=0.8,
+        )
+        assert reflector.refinement_rounds == 3
+        assert reflector.quality_threshold == 0.8
 
     def test_refinement_rounds_minimum_is_one(self):
         """Test that refinement_rounds is at least 1."""
-        with patch("ace.reflector.reflector.OpenAI"):
-            reflector = Reflector(refinement_rounds=0)
-            assert reflector.refinement_rounds == 1
+        mock_client = MockLLMClient()
+        reflector = Reflector(llm_client=mock_client, refinement_rounds=0)
+        assert reflector.refinement_rounds == 1
 
-            reflector2 = Reflector(refinement_rounds=-5)
-            assert reflector2.refinement_rounds == 1
+        reflector2 = Reflector(llm_client=mock_client, refinement_rounds=-5)
+        assert reflector2.refinement_rounds == 1

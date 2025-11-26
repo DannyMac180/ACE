@@ -1,8 +1,7 @@
 # ace/reflector/reflector.py
-import os
 from typing import TYPE_CHECKING
 
-from openai import OpenAI
+from ace.llm import LLMClient, Message, create_llm_client
 
 from .parser import QualityParseError, ReflectionParseError, parse_quality, parse_reflection
 from .prompts import format_quality_eval_prompt, format_refinement_prompt, format_reflector_prompt
@@ -17,7 +16,7 @@ class Reflector:
 
     def __init__(
         self,
-        model: str = "gpt-4o-mini",
+        llm_client: LLMClient | None = None,
         max_retries: int = 3,
         temperature: float = 0.3,
         refinement_rounds: int = 1,
@@ -26,18 +25,18 @@ class Reflector:
         """Initialize Reflector.
 
         Args:
-            model: OpenAI model to use
+            llm_client: LLM client for generating reflections. If None, creates one
+                        from config using the factory.
             max_retries: Maximum retry attempts on parse errors
             temperature: LLM temperature (lower = more deterministic)
             refinement_rounds: Maximum refinement iterations (1 = no refinement)
             quality_threshold: Quality score threshold (0-1) to stop early
         """
-        self.model = model
         self.max_retries = max_retries
         self.temperature = temperature
         self.refinement_rounds = max(1, refinement_rounds)
         self.quality_threshold = quality_threshold
-        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        self.client = llm_client if llm_client is not None else create_llm_client()
 
     def reflect(
         self,
@@ -118,16 +117,15 @@ class Reflector:
         last_error = None
         for attempt in range(self.max_retries):
             try:
-                response = self.client.chat.completions.create(
-                    model=self.model,
+                response = self.client.complete(
                     messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt},
+                        Message(role="system", content=system_prompt),
+                        Message(role="user", content=user_prompt),
                     ],
                     temperature=self.temperature,
                 )
 
-                json_str = response.choices[0].message.content
+                json_str = response.text
                 if not json_str:
                     raise ReflectionParseError("Empty response from LLM")
 
@@ -171,16 +169,15 @@ class Reflector:
 
         for attempt in range(self.max_retries):
             try:
-                response = self.client.chat.completions.create(
-                    model=self.model,
+                response = self.client.complete(
                     messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt},
+                        Message(role="system", content=system_prompt),
+                        Message(role="user", content=user_prompt),
                     ],
                     temperature=self.temperature,
                 )
 
-                json_str = response.choices[0].message.content
+                json_str = response.text
                 if not json_str:
                     raise QualityParseError("Empty response from LLM")
 
@@ -222,16 +219,15 @@ class Reflector:
 
         for attempt in range(self.max_retries):
             try:
-                response = self.client.chat.completions.create(
-                    model=self.model,
+                response = self.client.complete(
                     messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt},
+                        Message(role="system", content=system_prompt),
+                        Message(role="user", content=user_prompt),
                     ],
                     temperature=self.temperature,
                 )
 
-                json_str = response.choices[0].message.content
+                json_str = response.text
                 if not json_str:
                     raise ReflectionParseError("Empty response from LLM")
 
