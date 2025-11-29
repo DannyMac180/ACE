@@ -3,6 +3,9 @@
 Implements the ACE paper's multi-epoch offline adaptation:
 "ACE further supports multi-epoch adaptation, where the same queries are
 revisited to progressively strengthen the context."
+
+Includes regression gating as described in the paper: after each epoch,
+evaluate on a held-out split and rollback if metrics regress.
 """
 
 import json
@@ -11,9 +14,11 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 
-from ace.core.config import load_config
+from ace.core.config import TrainingConfig, load_config
 from ace.core.merge import Delta as MergeDelta
 from ace.core.merge import apply_delta
+from ace.core.regression import RegressionDetector, RegressionThresholds
+from ace.core.schema import Playbook
 from ace.core.storage.store_adapter import Store
 from ace.curator.curator import curate
 from ace.eval.metrics import mean_reciprocal_rank, precision_at_k, recall_at_k
@@ -35,6 +40,8 @@ class TrainingRunner:
        a. For each sample, run reflect→curate→commit
        b. Compute metrics if ground_truth is present
        c. Optionally run refine at end of epoch
+       d. If regression gating enabled: evaluate on held-out split,
+          rollback to pre-epoch playbook if regression detected
     3. Return final training state and metrics
     """
 
@@ -46,6 +53,10 @@ class TrainingRunner:
         refine_threshold: float = 0.90,
         shuffle: bool = False,
         retrieval_k: int = 10,
+        gate_on_regression: bool | None = None,
+        max_regression_delta: float | None = None,
+        held_out_path: str | None = None,
+        regression_metrics: list[str] | None = None,
     ):
         """Initialize the training runner.
 
@@ -56,9 +67,13 @@ class TrainingRunner:
             refine_threshold: Threshold for refine deduplication
             shuffle: Whether to shuffle samples each epoch
             retrieval_k: k value for precision/recall metrics
+            gate_on_regression: Enable regression gating (rollback on regression)
+            max_regression_delta: Max allowed regression before rollback (0.0-1.0)
+            held_out_path: Path to held-out evaluation split (JSONL)
+            regression_metrics: Metrics to check for regression
         """
+        config = load_config()
         if store is None:
-            config = load_config()
             store = Store(config.database.url)
         self.store = store
         self.reflector = reflector or Reflector()
@@ -66,7 +81,29 @@ class TrainingRunner:
         self.refine_threshold = refine_threshold
         self.shuffle = shuffle
         self.retrieval_k = retrieval_k
+
+        train_cfg: TrainingConfig = config.training
+        self.gate_on_regression = (
+            gate_on_regression if gate_on_regression is not None
+            else train_cfg.gate_on_regression
+        )
+        self.max_regression_delta = (
+            max_regression_delta if max_regression_delta is not None
+            else train_cfg.max_regression_delta
+        )
+        self.held_out_path = (
+            held_out_path if held_out_path is not None
+            else train_cfg.held_out_path
+        )
+        self.regression_metrics = (
+            regression_metrics if regression_metrics is not None
+            else train_cfg.regression_metrics
+        )
+
         self._epoch_metrics: dict[int, dict] = {}
+        self._held_out_samples: list[TrainSample] | None = None
+        self._regression_detector: RegressionDetector | None = None
+        self._playbook_snapshots: dict[int, Playbook] = {}
 
     def load_samples(self, data_path: str) -> list[TrainingSample]:
         """Load training samples from a JSONL file.
@@ -205,6 +242,137 @@ class TrainingRunner:
         """Get computed metrics for an epoch."""
         return self._epoch_metrics.get(epoch, {})
 
+    def _init_regression_gating(self) -> None:
+        """Initialize regression gating components."""
+        if not self.gate_on_regression:
+            return
+
+        if not self.held_out_path:
+            logger.warning(
+                "Regression gating enabled but no held_out_path specified. "
+                "Disabling regression gating."
+            )
+            self.gate_on_regression = False
+            return
+
+        try:
+            self._held_out_samples = self.load_train_samples(self.held_out_path)
+            logger.info(
+                f"Loaded {len(self._held_out_samples)} held-out samples for regression gating"
+            )
+        except FileNotFoundError:
+            logger.warning(
+                f"Held-out file not found: {self.held_out_path}. "
+                "Disabling regression gating."
+            )
+            self.gate_on_regression = False
+            return
+
+        thresholds = RegressionThresholds(
+            success_rate_drop=self.max_regression_delta,
+            retrieval_precision_drop=self.max_regression_delta,
+        )
+        self._regression_detector = RegressionDetector(thresholds)
+
+    def _snapshot_playbook(self, epoch: int) -> None:
+        """Take a snapshot of the current playbook before an epoch."""
+        playbook = self.store.load_playbook()
+        self._playbook_snapshots[epoch] = Playbook(
+            version=playbook.version,
+            bullets=[b.model_copy() for b in playbook.bullets],
+        )
+        logger.debug(f"Snapshot playbook v{playbook.version} before epoch {epoch}")
+
+    def _restore_playbook(self, epoch: int) -> bool:
+        """Restore playbook to pre-epoch snapshot.
+
+        Returns:
+            True if restoration succeeded, False otherwise.
+        """
+        if epoch not in self._playbook_snapshots:
+            logger.error(f"No snapshot for epoch {epoch}, cannot restore")
+            return False
+
+        snapshot = self._playbook_snapshots[epoch]
+        self.store.load_playbook_data(snapshot)
+        logger.info(f"Restored playbook to v{snapshot.version} (pre-epoch {epoch})")
+        return True
+
+    def _evaluate_held_out(self, epoch: int) -> dict:
+        """Evaluate current playbook on held-out split.
+
+        Args:
+            epoch: Current epoch number
+
+        Returns:
+            Dictionary of computed metrics
+        """
+        if not self._held_out_samples:
+            return {}
+
+        from ace.core.retrieve import Retriever
+        retriever = Retriever(self.store)
+
+        retrieved_results = []
+        for sample in self._held_out_samples:
+            bullets = retriever.retrieve(sample.query, top_k=self.retrieval_k)
+            retrieved_results.append([b.id for b in bullets])
+
+        metrics = self.compute_retrieval_metrics(
+            self._held_out_samples, retrieved_results
+        )
+        self._epoch_metrics[epoch] = metrics
+        logger.info(f"Epoch {epoch} held-out metrics: {metrics}")
+        return metrics
+
+    def _check_regression(self, epoch: int, metrics: dict) -> bool:
+        """Check if current epoch metrics regressed.
+
+        Args:
+            epoch: Current epoch number
+            metrics: Computed metrics for this epoch
+
+        Returns:
+            True if regression detected, False otherwise
+        """
+        if not self._regression_detector or not metrics:
+            return False
+
+        regression_detected = False
+        for metric_name in self.regression_metrics:
+            normalized_name = metric_name.lower().strip()
+            matching_key = None
+            for key in metrics:
+                if normalized_name in key.lower():
+                    matching_key = key
+                    break
+
+            if matching_key is None:
+                continue
+
+            value = metrics[matching_key]
+            report = self._regression_detector.detect_regression(
+                benchmark_name="held_out",
+                metric_name=matching_key,
+                current_value=value,
+                higher_is_better=True,
+            )
+
+            if report.detected:
+                logger.warning(
+                    f"REGRESSION epoch {epoch}: {report.message}"
+                )
+                regression_detected = True
+            else:
+                self._regression_detector.record_result(
+                    benchmark_name="held_out",
+                    metric_name=matching_key,
+                    value=value,
+                    metadata={"epoch": epoch},
+                )
+
+        return regression_detected
+
     def train(
         self,
         data_path: str,
@@ -227,6 +395,8 @@ class TrainingRunner:
         if not samples:
             raise ValueError("No valid training samples found")
 
+        self._init_regression_gating()
+
         state = resume_state or TrainingState(total_epochs=epochs)
         state.total_epochs = epochs
 
@@ -234,6 +404,7 @@ class TrainingRunner:
         version_start = playbook.version
         total_ops = 0
         total_samples = 0
+        epochs_rolled_back = 0
 
         start_epoch_num = max(1, state.current_epoch)
         if state.is_epoch_completed(start_epoch_num):
@@ -248,6 +419,9 @@ class TrainingRunner:
                 logger.info(f"Starting epoch {epoch_num}/{epochs}")
                 playbook = self.store.load_playbook()
                 state.start_epoch(epoch_num, playbook.version)
+
+            if self.gate_on_regression and not is_resuming:
+                self._snapshot_playbook(epoch_num)
 
             epoch_samples = list(samples)
             if self.shuffle and not is_resuming:
@@ -278,6 +452,31 @@ class TrainingRunner:
                 self._run_refine()
 
             playbook = self.store.load_playbook()
+
+            if self.gate_on_regression:
+                metrics = self._evaluate_held_out(epoch_num)
+                if self._check_regression(epoch_num, metrics):
+                    logger.warning(
+                        f"Rolling back epoch {epoch_num} due to regression "
+                        f"(playbook v{playbook.version})"
+                    )
+                    if self._restore_playbook(epoch_num):
+                        playbook = self.store.load_playbook()
+                        epochs_rolled_back += 1
+                        logger.info(
+                            f"ROLLBACK: Epoch {epoch_num} reverted, "
+                            f"playbook now v{playbook.version}"
+                        )
+                    else:
+                        logger.error(
+                            f"Failed to rollback epoch {epoch_num}, keeping changes"
+                        )
+                else:
+                    logger.info(
+                        f"KEEP: Epoch {epoch_num} passed regression gate, "
+                        f"playbook v{playbook.version}"
+                    )
+
             state.complete_epoch(
                 epoch=epoch_num,
                 samples_processed=len(samples_to_process),
