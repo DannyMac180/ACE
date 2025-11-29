@@ -16,11 +16,10 @@ from ace.core.merge import Delta as MergeDelta
 from ace.core.merge import apply_delta
 from ace.core.storage.store_adapter import Store
 from ace.curator.curator import curate
+from ace.eval.metrics import mean_reciprocal_rank, precision_at_k, recall_at_k
 from ace.refine.runner import refine
 from ace.reflector.reflector import Reflector
 from ace.reflector.schema import Reflection
-
-from ace.eval.metrics import mean_reciprocal_rank, precision_at_k, recall_at_k
 
 from .schema import TrainingResult, TrainingSample, TrainingState, TrainSample
 
@@ -167,7 +166,11 @@ class TrainingRunner:
         Returns:
             Dictionary of metrics (MRR, Recall@k, Precision@k)
         """
-        labeled_samples = [(s, r) for s, r in zip(samples, retrieved_results) if s.is_labeled]
+        labeled_samples = [
+            (s, r)
+            for s, r in zip(samples, retrieved_results, strict=False)
+            if s.is_labeled
+        ]
         if not labeled_samples:
             return {}
 
