@@ -23,6 +23,21 @@ threshold = 0.90
 # Minhash Jaccard threshold for near-duplicate detection
 minhash_threshold = 0.85
 
+[training]
+# Enable regression gating: rollback epochs that regress on held-out eval
+gate_on_regression = false
+
+# Maximum allowed regression delta before rollback (0.0-1.0)
+# E.g., 0.05 means rollback if any metric drops more than 5%
+max_regression_delta = 0.05
+
+# Path to held-out evaluation split (JSONL format)
+held_out_path = ""
+
+# Metrics to check for regression (comma-separated)
+# Available: mrr, recall, precision, success_rate
+regression_metrics = "mrr,recall"
+
 [logging]
 # Log level: DEBUG, INFO, WARNING, ERROR
 level = "INFO"

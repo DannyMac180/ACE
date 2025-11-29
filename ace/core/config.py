@@ -36,6 +36,14 @@ class RefineConfig:
 
 
 @dataclass
+class TrainingConfig:
+    gate_on_regression: bool
+    max_regression_delta: float
+    held_out_path: str
+    regression_metrics: list[str]
+
+
+@dataclass
 class LoggingConfig:
     level: str
     format: str
@@ -61,6 +69,7 @@ class ACEConfig:
     embeddings: EmbeddingsConfig
     retrieval: RetrievalConfig
     refine: RefineConfig
+    training: TrainingConfig
     logging: LoggingConfig
     mcp: MCPConfig
     llm: LLMConfig
@@ -140,6 +149,26 @@ def load_config(config_path: Path | None = None) -> ACEConfig:
     refine_minhash = float(
         os.getenv("ACE_REFINE_MINHASH_THRESHOLD", config_dict["refine"]["minhash_threshold"])
     )
+
+    training_dict = config_dict.get("training", {})
+    training_gate = os.getenv(
+        "ACE_TRAINING_GATE_ON_REGRESSION",
+        str(training_dict.get("gate_on_regression", False))
+    ).lower() in ("true", "1", "yes")
+    training_max_delta = float(os.getenv(
+        "ACE_TRAINING_MAX_REGRESSION_DELTA",
+        training_dict.get("max_regression_delta", 0.05)
+    ))
+    training_held_out = os.getenv(
+        "ACE_TRAINING_HELD_OUT_PATH",
+        training_dict.get("held_out_path", "")
+    )
+    training_metrics_str = os.getenv(
+        "ACE_TRAINING_REGRESSION_METRICS",
+        training_dict.get("regression_metrics", "mrr,recall")
+    )
+    training_metrics = [m.strip() for m in training_metrics_str.split(",") if m.strip()]
+
     log_level = os.getenv("ACE_LOG_LEVEL", config_dict["logging"]["level"])
     log_format = os.getenv("ACE_LOG_FORMAT", config_dict["logging"]["format"])
     mcp_transport = os.getenv("MCP_TRANSPORT", config_dict["mcp"]["transport"])
@@ -154,6 +183,12 @@ def load_config(config_path: Path | None = None) -> ACEConfig:
         embeddings=EmbeddingsConfig(model=embeddings_model),
         retrieval=RetrievalConfig(top_k=retrieval_topk, lexical_weight=retrieval_lexical),
         refine=RefineConfig(threshold=refine_threshold, minhash_threshold=refine_minhash),
+        training=TrainingConfig(
+            gate_on_regression=training_gate,
+            max_regression_delta=training_max_delta,
+            held_out_path=training_held_out,
+            regression_metrics=training_metrics,
+        ),
         logging=LoggingConfig(level=log_level, format=log_format),
         mcp=MCPConfig(transport=mcp_transport, port=mcp_port),
         llm=LLMConfig(
