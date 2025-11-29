@@ -20,7 +20,9 @@ from ace.refine.runner import refine
 from ace.reflector.reflector import Reflector
 from ace.reflector.schema import Reflection
 
-from .schema import TrainingResult, TrainingSample, TrainingState
+from ace.eval.metrics import mean_reciprocal_rank, precision_at_k, recall_at_k
+
+from .schema import TrainingResult, TrainingSample, TrainingState, TrainSample
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +34,8 @@ class TrainingRunner:
     1. Load samples from JSONL file
     2. For each epoch (1 to N):
        a. For each sample, run reflect→curate→commit
-       b. Optionally run refine at end of epoch
+       b. Compute metrics if ground_truth is present
+       c. Optionally run refine at end of epoch
     3. Return final training state and metrics
     """
 
@@ -43,6 +46,7 @@ class TrainingRunner:
         refine_after_epoch: bool = True,
         refine_threshold: float = 0.90,
         shuffle: bool = False,
+        retrieval_k: int = 10,
     ):
         """Initialize the training runner.
 
@@ -52,6 +56,7 @@ class TrainingRunner:
             refine_after_epoch: Whether to run refine after each epoch
             refine_threshold: Threshold for refine deduplication
             shuffle: Whether to shuffle samples each epoch
+            retrieval_k: k value for precision/recall metrics
         """
         if store is None:
             config = load_config()
@@ -61,6 +66,8 @@ class TrainingRunner:
         self.refine_after_epoch = refine_after_epoch
         self.refine_threshold = refine_threshold
         self.shuffle = shuffle
+        self.retrieval_k = retrieval_k
+        self._epoch_metrics: dict[int, dict] = {}
 
     def load_samples(self, data_path: str) -> list[TrainingSample]:
         """Load training samples from a JSONL file.
@@ -104,6 +111,96 @@ class TrainingRunner:
 
         logger.info(f"Loaded {len(samples)} training samples from {data_path}")
         return samples
+
+    def load_train_samples(self, data_path: str) -> list[TrainSample]:
+        """Load TrainSample format from JSONL (supports labeled/unlabeled modes).
+
+        Format per line:
+        - query: str (required)
+        - input: dict | null (optional structured input)
+        - ground_truth: str | dict | null (if present, enables metric computation)
+        - feedback: dict | null (code_diff, test_output, logs, env_meta, success)
+
+        Args:
+            data_path: Path to JSONL file
+
+        Returns:
+            List of TrainSample objects
+        """
+        samples = []
+        path = Path(data_path)
+
+        if not path.exists():
+            raise FileNotFoundError(f"Training data file not found: {data_path}")
+
+        with open(path) as f:
+            for line_num, line in enumerate(f, 1):
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    data = json.loads(line)
+                    samples.append(TrainSample.model_validate(data))
+                except json.JSONDecodeError as e:
+                    logger.warning(f"Skipping invalid JSON on line {line_num}: {e}")
+                except Exception as e:
+                    logger.warning(f"Skipping invalid sample on line {line_num}: {e}")
+
+        labeled_count = sum(1 for s in samples if s.is_labeled)
+        logger.info(
+            f"Loaded {len(samples)} samples ({labeled_count} labeled, "
+            f"{len(samples) - labeled_count} unlabeled) from {data_path}"
+        )
+        return samples
+
+    def compute_retrieval_metrics(
+        self,
+        samples: list[TrainSample],
+        retrieved_results: list[list[str]],
+    ) -> dict:
+        """Compute retrieval metrics for labeled samples.
+
+        Args:
+            samples: List of samples with ground_truth
+            retrieved_results: Retrieved bullet IDs per sample
+
+        Returns:
+            Dictionary of metrics (MRR, Recall@k, Precision@k)
+        """
+        labeled_samples = [(s, r) for s, r in zip(samples, retrieved_results) if s.is_labeled]
+        if not labeled_samples:
+            return {}
+
+        relevant_ids = []
+        ranked_results = []
+
+        for sample, retrieved in labeled_samples:
+            gt = sample.ground_truth
+            if isinstance(gt, dict):
+                ids = set(gt.get("relevant_bullet_ids", []))
+            elif isinstance(gt, str):
+                ids = {gt}
+            else:
+                ids = set()
+            relevant_ids.append(ids)
+            ranked_results.append(retrieved)
+
+        if not ranked_results:
+            return {}
+
+        return {
+            "mrr": mean_reciprocal_rank(ranked_results, relevant_ids),
+            f"recall@{self.retrieval_k}": recall_at_k(
+                ranked_results, relevant_ids, self.retrieval_k
+            ),
+            f"precision@{self.retrieval_k}": precision_at_k(
+                ranked_results, relevant_ids, self.retrieval_k
+            ),
+        }
+
+    def get_epoch_metrics(self, epoch: int) -> dict:
+        """Get computed metrics for an epoch."""
+        return self._epoch_metrics.get(epoch, {})
 
     def train(
         self,

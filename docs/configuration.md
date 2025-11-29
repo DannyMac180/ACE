@@ -258,3 +258,82 @@ export ACE_LLM_MAX_TOKENS=4000
 - Be sure numeric environment variable values are valid; they are parsed with int()/float() and must fit the validation ranges above.
 - logging.level supports CRITICAL even if the comment in default TOML only lists up to ERROR.
 - mcp.port is only used when transport=http.
+
+## Training Data Format
+
+ACE supports two training modes based on data availability:
+
+### Labeled Mode (Offline Evaluation)
+
+Use when you have ground truth for computing retrieval metrics (MRR, Precision@k, Recall@k).
+
+**File:** `ace/eval/fixtures/labeled_samples.jsonl`
+
+```jsonl
+{"query": "How do I implement hybrid retrieval?", "input": {"task_id": "001"}, "ground_truth": {"relevant_bullet_ids": ["strat-00001", "strat-00003"], "expected_output": "Use BM25 + embeddings"}, "feedback": {"code_diff": "", "test_output": "PASS", "success": true}}
+```
+
+**Fields:**
+- `query` (required): The task query or prompt
+- `input` (optional): Structured input data for the task
+- `ground_truth` (required for labeled): Expected output for metric computation
+  - `relevant_bullet_ids`: List of bullet IDs that should be retrieved
+  - `expected_output`: Expected text/structured output
+- `feedback` (optional): Execution feedback signals
+
+### Unlabeled Mode (Online Adaptation)
+
+Use for feedback-only signals when ground truth is unavailable. The system learns from execution outcomes.
+
+**File:** `ace/eval/fixtures/unlabeled_samples.jsonl`
+
+```jsonl
+{"query": "Fix the flaky test", "feedback": {"code_diff": "-time.sleep(0.1)\n+await asyncio.sleep(0.1)", "test_output": "FAIL then PASS", "logs": "Retry logic added", "env_meta": {"ci": true}, "success": false}}
+```
+
+**Fields:**
+- `query` (required): The task query or prompt
+- `feedback` (required for unlabeled): Execution feedback matching Reflection inputs
+  - `code_diff`: Code changes made
+  - `test_output`: Test execution results
+  - `logs`: Execution logs
+  - `env_meta`: Environment metadata (CI, platform, etc.)
+  - `success`: Whether the task succeeded
+
+### TrainSample Schema
+
+```python
+class TrainSample(BaseModel):
+    query: str                           # Required
+    input: dict | None = None            # Optional structured input
+    ground_truth: str | dict | None      # Present = labeled mode
+    feedback: dict | None                # Execution signals
+```
+
+### Usage in TrainingRunner
+
+```python
+from ace.train.runner import TrainingRunner
+
+runner = TrainingRunner(retrieval_k=10)
+
+# Load labeled samples for evaluation
+labeled = runner.load_train_samples("ace/eval/fixtures/labeled_samples.jsonl")
+
+# Load unlabeled samples for online adaptation
+unlabeled = runner.load_train_samples("ace/eval/fixtures/unlabeled_samples.jsonl")
+
+# Compute metrics for labeled samples
+metrics = runner.compute_retrieval_metrics(labeled, retrieved_results)
+# Returns: {"mrr": 0.85, "recall@10": 0.72, "precision@10": 0.45}
+```
+
+### ACE Paper Mapping
+
+| ACE Paper Concept | Training Data Field |
+|-------------------|---------------------|
+| Offline adaptation | `ground_truth` present |
+| Online adaptation | `feedback` only |
+| Task execution trajectory | `feedback.code_diff`, `feedback.test_output`, `feedback.logs` |
+| Environment feedback | `feedback.env_meta` |
+| Success signal | `feedback.success` |
