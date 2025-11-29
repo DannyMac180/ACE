@@ -10,11 +10,49 @@ def _utcnow() -> datetime:
     return datetime.now(UTC)
 
 
+class TrainSample(BaseModel):
+    """A training sample supporting both labeled and unlabeled modes.
+
+    This is the primary input format for ACE training data:
+    - Labeled mode: ground_truth is present for metric computation
+    - Unlabeled mode: feedback-only signals (code_diff, test_output, etc.)
+
+    Attributes:
+        query: The task query or prompt
+        input: Optional structured input data for the task
+        ground_truth: Expected output for labeled samples (enables metrics)
+        feedback: Execution feedback matching Reflection inputs
+    """
+
+    query: str
+    input: dict | None = None
+    ground_truth: str | dict | None = None
+    feedback: dict | None = Field(
+        default=None,
+        description="Feedback signals: code_diff, test_output, logs, env_meta, success",
+    )
+
+    @property
+    def is_labeled(self) -> bool:
+        """Check if this sample has ground truth for evaluation."""
+        return self.ground_truth is not None
+
+    def get_feedback_field(self, field: str, default: str = "") -> str:
+        """Extract a feedback field safely."""
+        if self.feedback is None:
+            return default
+        value = self.feedback.get(field, default)
+        return str(value) if value is not None else default
+
+
 class TrainingSample(BaseModel):
     """A single training sample from offline adaptation data.
 
     Represents a task execution record with inputs/outputs that can be used
     to train the playbook through reflect→curate→commit.
+
+    Note: For new implementations, prefer TrainSample which supports
+    labeled/unlabeled modes with ground_truth.
     """
 
     id: str
@@ -25,6 +63,22 @@ class TrainingSample(BaseModel):
     logs: str = ""
     env_meta: dict | None = None
     success: bool | None = None
+
+    def to_train_sample(self, sample_id: str | None = None) -> "TrainSample":
+        """Convert to TrainSample format for unified processing."""
+        return TrainSample(
+            query=self.query,
+            input={"id": sample_id or self.id},
+            ground_truth=None,
+            feedback={
+                "code_diff": self.code_diff,
+                "test_output": self.test_output,
+                "logs": self.logs,
+                "env_meta": self.env_meta,
+                "success": self.success,
+                "retrieved_bullet_ids": self.retrieved_bullet_ids,
+            },
+        )
 
 
 class SampleEpochRecord(BaseModel):
