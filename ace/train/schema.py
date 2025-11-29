@@ -41,7 +41,8 @@ class TrainSample(BaseModel):
         """Extract a feedback field safely."""
         if self.feedback is None:
             return default
-        return self.feedback.get(field, default)
+        value = self.feedback.get(field, default)
+        return str(value) if value is not None else default
 
 
 class TrainingSample(BaseModel):
