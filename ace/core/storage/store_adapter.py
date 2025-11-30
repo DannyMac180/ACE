@@ -40,6 +40,11 @@ class Store:
         # Update embeddings
         self.embedding_store.add_embedding(bullet.id, bullet.content)
 
+    def delete_bullet(self, bullet_id: str) -> None:
+        """Delete a bullet from the store."""
+        self.bullet_store.delete_bullet(bullet_id)
+        self.embedding_store.remove_embedding(bullet_id)
+
     def get_bullets(self) -> list[Bullet]:
         """Retrieve all bullets from the store."""
         return self.bullet_store.list_bullets(limit=10000)

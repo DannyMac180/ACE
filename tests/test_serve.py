@@ -693,3 +693,59 @@ class TestAutoRefine:
         assert stats.auto_refine_runs == 0
         assert stats.auto_refine_merged == 0
         assert stats.auto_refine_archived == 0
+
+    def test_auto_refine_deletes_removed_bullets_from_store(self, mock_reflector, mock_retriever):
+        """Test that auto-refine properly deletes archived bullets from the store."""
+        store = MagicMock()
+        
+        bullet1 = MagicMock()
+        bullet1.id = "bullet-1"
+        bullet2 = MagicMock()
+        bullet2.id = "bullet-2"
+        bullet3 = MagicMock()
+        bullet3.id = "bullet-3"
+        
+        playbook = MagicMock()
+        playbook.version = 1
+        playbook.bullets = [bullet1, bullet2, bullet3]
+        store.load_playbook.return_value = playbook
+
+        server = OnlineServer(
+            store=store,
+            reflector=mock_reflector,
+            retriever=mock_retriever,
+            max_bullets=2,
+        )
+
+        with patch("ace.serve.runner.curate") as mock_curate:
+            with patch("ace.serve.runner.apply_delta") as mock_apply:
+                with patch("ace.serve.runner.run_refine") as mock_refine:
+                    mock_op = MagicMock()
+                    mock_op.op = "ADD"
+                    mock_delta = MagicMock()
+                    mock_delta.ops = [mock_op]
+                    mock_delta.model_dump.return_value = {"ops": [{"op": "ADD"}]}
+                    mock_curate.return_value = mock_delta
+
+                    new_playbook = MagicMock()
+                    new_playbook.version = 2
+                    mock_apply.return_value = new_playbook
+
+                    def simulate_refine(reflection, pb, threshold):
+                        pb.bullets = [bullet1, bullet2]
+                        result = MagicMock()
+                        result.merged = 0
+                        result.archived = 1
+                        return result
+
+                    mock_refine.side_effect = simulate_refine
+
+                    request = FeedbackRequest(query="test")
+                    server.process_feedback(request)
+
+                    store.delete_bullet.assert_called_once_with("bullet-3")
+                    
+                    assert store.save_bullet.call_count == 2
+                    saved_ids = [call[0][0].id for call in store.save_bullet.call_args_list]
+                    assert "bullet-1" in saved_ids
+                    assert "bullet-2" in saved_ids

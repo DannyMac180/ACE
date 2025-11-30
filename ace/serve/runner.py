@@ -289,12 +289,20 @@ class OnlineServer:
         if not should_refine:
             return
 
+        original_ids = {b.id for b in playbook.bullets}
+
         empty_reflection = Reflection()
         result = run_refine(
             empty_reflection,
             playbook,
             threshold=self._config.refine.threshold,
         )
+
+        refined_ids = {b.id for b in playbook.bullets}
+        removed_ids = original_ids - refined_ids
+
+        for bullet_id in removed_ids:
+            self.store.delete_bullet(bullet_id)
 
         for bullet in playbook.bullets:
             self.store.save_bullet(bullet)
@@ -307,7 +315,7 @@ class OnlineServer:
 
         logger.info(
             f"Auto-refine complete: merged={result.merged}, archived={result.archived}, "
-            f"bullets={len(playbook.bullets)}"
+            f"removed={len(removed_ids)}, bullets={len(playbook.bullets)}"
         )
 
     def get_stats(self) -> OnlineStats:
