@@ -269,6 +269,10 @@ def cmd_serve(args: argparse.Namespace) -> None:
     print(f"  Auto-adapt: {not args.no_adapt}")
     if args.warmup:
         print(f"  Warmup: {args.warmup}")
+    if args.auto_refine_every > 0:
+        print(f"  Auto-refine every: {args.auto_refine_every} deltas")
+    if args.max_bullets is not None:
+        print(f"  Max bullets: {args.max_bullets}")
 
     run_online_server(
         host=args.host,
@@ -276,6 +280,8 @@ def cmd_serve(args: argparse.Namespace) -> None:
         auto_adapt=not args.no_adapt,
         reload=args.reload,
         warmup_path=args.warmup,
+        auto_refine_every=args.auto_refine_every,
+        max_bullets=args.max_bullets,
     )
 
 
@@ -542,6 +548,20 @@ def main() -> NoReturn:
         "--warmup",
         metavar="PLAYBOOK_JSON",
         help="Path to playbook JSON file for warm-start (preload before accepting queries)",
+    )
+    serve_parser.add_argument(
+        "--auto-refine-every",
+        type=int,
+        default=0,
+        metavar="N",
+        help="Run refine every N deltas (0 = disabled, default: 0)",
+    )
+    serve_parser.add_argument(
+        "--max-bullets",
+        type=int,
+        default=None,
+        metavar="N",
+        help="Max bullets before triggering refine (default: from config)",
     )
     serve_parser.set_defaults(func=cmd_serve)
 

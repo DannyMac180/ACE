@@ -16,6 +16,9 @@ top_k = 24
 # Lexical weight for hybrid search (0.0-1.0)
 lexical_weight = 0.5
 
+# Maximum bullets allowed before auto-refine triggers (0 = disabled)
+max_bullets = 2000
+
 [refine]
 # Cosine similarity threshold for deduplication (0.0-1.0)
 threshold = 0.90

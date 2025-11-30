@@ -75,6 +75,9 @@ class OnlineStats(BaseModel):
     warmup_source: WarmupSource = WarmupSource.NONE
     warmup_bullets_loaded: int = 0
     warmup_playbook_version: int = 0
+    auto_refine_runs: int = 0
+    auto_refine_merged: int = 0
+    auto_refine_archived: int = 0
 
 
 class RetrieveRequest(BaseModel):
