@@ -697,14 +697,14 @@ class TestAutoRefine:
     def test_auto_refine_deletes_removed_bullets_from_store(self, mock_reflector, mock_retriever):
         """Test that auto-refine properly deletes archived bullets from the store."""
         store = MagicMock()
-        
+
         bullet1 = MagicMock()
         bullet1.id = "bullet-1"
         bullet2 = MagicMock()
         bullet2.id = "bullet-2"
         bullet3 = MagicMock()
         bullet3.id = "bullet-3"
-        
+
         playbook = MagicMock()
         playbook.version = 1
         playbook.bullets = [bullet1, bullet2, bullet3]
@@ -744,7 +744,7 @@ class TestAutoRefine:
                     server.process_feedback(request)
 
                     store.delete_bullet.assert_called_once_with("bullet-3")
-                    
+
                     assert store.save_bullet.call_count == 2
                     saved_ids = [call[0][0].id for call in store.save_bullet.call_args_list]
                     assert "bullet-1" in saved_ids
