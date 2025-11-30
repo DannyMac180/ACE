@@ -3,7 +3,7 @@ from collections.abc import Callable
 from datetime import datetime
 from typing import TYPE_CHECKING, Literal
 
-from ace.generator.schemas import Step, Trajectory
+from ace.generator.schemas import Step, Trajectory, TrajectoryDoc
 
 if TYPE_CHECKING:
     from ace.core.retrieve import Retriever
@@ -277,3 +277,19 @@ class Generator:
         )
 
         return trajectory
+
+    def run_and_emit_doc(self, goal: str) -> TrajectoryDoc:
+        """
+        Execute a task and return a TrajectoryDoc for reflection.
+
+        This is a convenience method that runs the generator and converts
+        the result to the TrajectoryDoc format expected by the Reflector.
+
+        Args:
+            goal: The task/goal to accomplish
+
+        Returns:
+            TrajectoryDoc ready for reflection
+        """
+        trajectory = self.run(goal)
+        return trajectory.to_trajectory_doc()

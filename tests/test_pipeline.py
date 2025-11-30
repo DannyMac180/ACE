@@ -11,7 +11,7 @@ import pytest
 
 from ace.core.schema import Bullet, Playbook
 from ace.core.storage.store_adapter import Store
-from ace.generator.schemas import Trajectory
+from ace.generator.schemas import Trajectory, TrajectoryDoc
 from ace.pipeline import Pipeline, PipelineResult, run_full_cycle
 from ace.reflector.schema import BulletTag, CandidateBullet, Reflection
 
@@ -137,7 +137,7 @@ class TestPipelineFullCycle:
     ):
         """run_full_cycle should return a complete PipelineResult."""
         mock_reflector = MagicMock()
-        mock_reflector.reflect_on_trajectory.return_value = Reflection(
+        mock_reflector.reflect.return_value = Reflection(
             error_identification=None,
             root_cause_analysis=None,
             correct_approach="Use hybrid retrieval",
@@ -165,7 +165,7 @@ class TestPipelineFullCycle:
     ):
         """run_full_cycle should use custom tool executor if provided."""
         mock_reflector = MagicMock()
-        mock_reflector.reflect_on_trajectory.return_value = Reflection(
+        mock_reflector.reflect.return_value = Reflection(
             bullet_tags=[],
             candidate_bullets=[],
         )
@@ -191,7 +191,7 @@ class TestPipelineFullCycle:
     ):
         """run_full_cycle should apply delta when auto_commit=True."""
         mock_reflector = MagicMock()
-        mock_reflector.reflect_on_trajectory.return_value = Reflection(
+        mock_reflector.reflect.return_value = Reflection(
             bullet_tags=[BulletTag(id="strat-001", tag="helpful")],
             candidate_bullets=[],
         )
@@ -210,7 +210,7 @@ class TestPipelineFullCycle:
     def test_full_cycle_dry_run(self, mock_reflector_class, store_with_bullets):
         """run_full_cycle with auto_commit=False should not modify playbook."""
         mock_reflector = MagicMock()
-        mock_reflector.reflect_on_trajectory.return_value = Reflection(
+        mock_reflector.reflect.return_value = Reflection(
             bullet_tags=[BulletTag(id="strat-001", tag="helpful")],
             candidate_bullets=[
                 CandidateBullet(
@@ -238,7 +238,7 @@ class TestPipelineFullCycle:
     def test_executor_restored_after_run(self, mock_reflector_class, store_with_bullets):
         """Custom execute_fn should not persist after run_full_cycle completes."""
         mock_reflector = MagicMock()
-        mock_reflector.reflect_on_trajectory.return_value = Reflection(
+        mock_reflector.reflect.return_value = Reflection(
             bullet_tags=[],
             candidate_bullets=[],
         )
@@ -305,10 +305,12 @@ class TestPipelineWithFeedback:
         )
 
         mock_reflector.reflect.assert_called_once()
-        call_kwargs = mock_reflector.reflect.call_args.kwargs
-        assert call_kwargs["code_diff"] == "--- a/file.py\n+++ b/file.py"
-        assert call_kwargs["test_output"] == "PASSED 5 tests"
-        assert call_kwargs["logs"] == "INFO: Process completed"
+        call_args = mock_reflector.reflect.call_args
+        doc_arg = call_args.args[0]
+        assert isinstance(doc_arg, TrajectoryDoc)
+        assert doc_arg.code_diff == "--- a/file.py\n+++ b/file.py"
+        assert doc_arg.test_output == "PASSED 5 tests"
+        assert doc_arg.logs == "INFO: Process completed"
 
     @patch("ace.pipeline.Reflector")
     def test_with_feedback_skips_generator(
@@ -357,9 +359,10 @@ class TestPipelineWithFeedback:
             auto_commit=False,
         )
 
-        call_kwargs = mock_reflector.reflect.call_args.kwargs
-        assert "retrieved_bullet_ids" in call_kwargs
-        assert len(call_kwargs["retrieved_bullet_ids"]) > 0
+        call_args = mock_reflector.reflect.call_args
+        doc_arg = call_args.args[0]
+        assert isinstance(doc_arg, TrajectoryDoc)
+        assert len(doc_arg.retrieved_bullet_ids) > 0
 
 
 class TestConvenienceFunction:
@@ -398,7 +401,7 @@ class TestPipelineWithNewBullets:
     def test_adds_candidate_bullets(self, mock_reflector_class, store_with_bullets):
         """Pipeline should add candidate bullets from reflection."""
         mock_reflector = MagicMock()
-        mock_reflector.reflect_on_trajectory.return_value = Reflection(
+        mock_reflector.reflect.return_value = Reflection(
             error_identification="Test error",
             root_cause_analysis="Root cause",
             correct_approach="Fix approach",
@@ -438,7 +441,7 @@ class TestPipelineIntegration:
     def test_full_integration_flow(self, mock_reflector_class, store_with_bullets):
         """Test complete flow with mocked reflector."""
         mock_reflector = MagicMock()
-        mock_reflector.reflect_on_trajectory.return_value = Reflection(
+        mock_reflector.reflect.return_value = Reflection(
             error_identification=None,
             root_cause_analysis=None,
             correct_approach="Implemented solution",

@@ -16,6 +16,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from ace.generator.schemas import TrajectoryDoc
 from ace.llm import CompletionResponse, LLMClient
 from ace.reflector.parser import ReflectionParseError
 from ace.reflector.reflector import Reflector
@@ -74,11 +75,12 @@ def test_reflection_valid_json_parsing(valid_reflection_json):
     mock_client = make_mock_client(valid_reflection_json)
     reflector = Reflector(llm_client=mock_client)
 
-    reflection = reflector.reflect(
+    doc = TrajectoryDoc(
         query="fix type error",
         retrieved_bullet_ids=["strat-001", "code-002"],
         test_output="TypeError: expected string, got None"
     )
+    reflection = reflector.reflect(doc)
 
     assert isinstance(reflection, Reflection)
     assert reflection.error_identification == "TypeError: expected string, got None"
@@ -92,11 +94,12 @@ def test_reflection_retry_on_parse_error(malformed_json_then_valid):
     mock_client = make_mock_client_sequence(malformed_json_then_valid)
     reflector = Reflector(llm_client=mock_client, max_retries=3)
 
-    reflection = reflector.reflect(
+    doc = TrajectoryDoc(
         query="fix parse error",
         retrieved_bullet_ids=["strat-001"],
         logs="Failed to parse JSON"
     )
+    reflection = reflector.reflect(doc)
 
     assert isinstance(reflection, Reflection)
     assert mock_client.complete.call_count == 2
@@ -108,11 +111,9 @@ def test_reflection_max_retries_exceeded():
     mock_client = make_mock_client(bad_json)
     reflector = Reflector(llm_client=mock_client, max_retries=2)
 
+    doc = TrajectoryDoc(query="test retry limit", retrieved_bullet_ids=[])
     with pytest.raises(ReflectionParseError) as exc_info:
-        reflector.reflect(
-            query="test retry limit",
-            retrieved_bullet_ids=[]
-        )
+        reflector.reflect(doc)
 
     assert "Failed to parse reflection after 2 attempts" in str(exc_info.value)
     assert mock_client.complete.call_count == 2
@@ -124,11 +125,9 @@ def test_reflection_empty_response():
     mock_client.complete.return_value = CompletionResponse(text="")
     reflector = Reflector(llm_client=mock_client, max_retries=1)
 
+    doc = TrajectoryDoc(query="test empty response", retrieved_bullet_ids=[])
     with pytest.raises(ReflectionParseError) as exc_info:
-        reflector.reflect(
-            query="test empty response",
-            retrieved_bullet_ids=[]
-        )
+        reflector.reflect(doc)
 
     assert "Empty response from LLM" in str(exc_info.value)
 
@@ -150,10 +149,11 @@ def test_reflection_bullet_tagging_quality():
     mock_client = make_mock_client(reflection_json)
     reflector = Reflector(llm_client=mock_client)
 
-    reflection = reflector.reflect(
+    doc = TrajectoryDoc(
         query="tag bullets",
         retrieved_bullet_ids=["strat-100", "trbl-050"]
     )
+    reflection = reflector.reflect(doc)
 
     assert len(reflection.bullet_tags) == 2
     helpful_tags = [t for t in reflection.bullet_tags if t.tag == "helpful"]
@@ -190,11 +190,12 @@ def test_reflection_candidate_bullet_quality():
     mock_client = make_mock_client(reflection_json)
     reflector = Reflector(llm_client=mock_client)
 
-    reflection = reflector.reflect(
+    doc = TrajectoryDoc(
         query="fix database timeout",
         retrieved_bullet_ids=[],
         logs="psycopg2.OperationalError: connection timeout"
     )
+    reflection = reflector.reflect(doc)
 
     assert len(reflection.candidate_bullets) == 2
 
@@ -226,10 +227,8 @@ def test_reflection_minimal_valid_output():
     mock_client = make_mock_client(minimal_json)
     reflector = Reflector(llm_client=mock_client)
 
-    reflection = reflector.reflect(
-        query="minimal test",
-        retrieved_bullet_ids=[]
-    )
+    doc = TrajectoryDoc(query="minimal test", retrieved_bullet_ids=[])
+    reflection = reflector.reflect(doc)
 
     assert isinstance(reflection, Reflection)
     assert reflection.error_identification is None
@@ -242,7 +241,7 @@ def test_reflection_with_all_fields_populated(valid_reflection_json):
     mock_client = make_mock_client(valid_reflection_json)
     reflector = Reflector(llm_client=mock_client)
 
-    reflection = reflector.reflect(
+    doc = TrajectoryDoc(
         query="comprehensive test",
         retrieved_bullet_ids=["strat-001", "code-002"],
         code_diff="+ def validate_input(x):\n+     if x is None:\n+         raise ValueError",
@@ -250,6 +249,7 @@ def test_reflection_with_all_fields_populated(valid_reflection_json):
         logs="INFO: validation added",
         env_meta={"repo": "ace", "branch": "feat/validation"}
     )
+    reflection = reflector.reflect(doc)
 
     assert reflection.error_identification is not None
     assert reflection.root_cause_analysis is not None
@@ -265,11 +265,8 @@ def test_reflection_performance(benchmark, valid_reflection_json):
     mock_client = make_mock_client(valid_reflection_json)
     reflector = Reflector(llm_client=mock_client)
 
-    result = benchmark(
-        reflector.reflect,
-        query="benchmark test",
-        retrieved_bullet_ids=["test-001"]
-    )
+    doc = TrajectoryDoc(query="benchmark test", retrieved_bullet_ids=["test-001"])
+    result = benchmark(reflector.reflect, doc)
 
     assert isinstance(result, Reflection)
 
@@ -299,10 +296,8 @@ def test_quality_candidate_bullets_are_concise():
     mock_client = make_mock_client(reflection_json)
     reflector = Reflector(llm_client=mock_client)
 
-    reflection = reflector.reflect(
-        query="test conciseness",
-        retrieved_bullet_ids=[]
-    )
+    doc = TrajectoryDoc(query="test conciseness", retrieved_bullet_ids=[])
+    reflection = reflector.reflect(doc)
 
     for bullet in reflection.candidate_bullets:
         # Bullets should be < 200 chars for reusability
@@ -336,10 +331,8 @@ def test_quality_candidate_bullets_have_tags():
     mock_client = make_mock_client(reflection_json)
     reflector = Reflector(llm_client=mock_client)
 
-    reflection = reflector.reflect(
-        query="test tags",
-        retrieved_bullet_ids=[]
-    )
+    doc = TrajectoryDoc(query="test tags", retrieved_bullet_ids=[])
+    reflection = reflector.reflect(doc)
 
     for bullet in reflection.candidate_bullets:
         # Every bullet should have at least one tag
@@ -367,10 +360,8 @@ def test_quality_insights_are_actionable():
     mock_client = make_mock_client(good_insight_json)
     reflector = Reflector(llm_client=mock_client)
 
-    reflection = reflector.reflect(
-        query="test insight quality",
-        retrieved_bullet_ids=[]
-    )
+    doc = TrajectoryDoc(query="test insight quality", retrieved_bullet_ids=[])
+    reflection = reflector.reflect(doc)
 
     if reflection.key_insight:
         insight_lower = reflection.key_insight.lower()
@@ -414,10 +405,8 @@ def test_quality_no_duplicate_candidate_bullets():
     mock_client = make_mock_client(reflection_json)
     reflector = Reflector(llm_client=mock_client)
 
-    reflection = reflector.reflect(
-        query="test dedup",
-        retrieved_bullet_ids=[]
-    )
+    doc = TrajectoryDoc(query="test dedup", retrieved_bullet_ids=[])
+    reflection = reflector.reflect(doc)
 
     contents = [b.content for b in reflection.candidate_bullets]
     # Simple check: no exact duplicates

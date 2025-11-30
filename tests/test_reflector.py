@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from ace.generator.schemas import Step, Trajectory
+from ace.generator.schemas import Step, Trajectory, TrajectoryDoc
 from ace.llm import CompletionResponse, LLMClient, MockLLMClient
 from ace.reflector import (
     BulletTag,
@@ -345,7 +345,9 @@ class TestReflectOnTrajectory:
 
         reflector.reflect.assert_called_once()
         call_args = reflector.reflect.call_args
-        assert call_args.kwargs["retrieved_bullet_ids"] == ["strat-001", "tmpl-002"]
+        doc_arg = call_args.args[0]
+        assert isinstance(doc_arg, TrajectoryDoc)
+        assert doc_arg.retrieved_bullet_ids == ["strat-001", "tmpl-002"]
 
     def test_passes_initial_goal_as_query(self):
         """Test that initial_goal is passed as query."""
@@ -362,7 +364,9 @@ class TestReflectOnTrajectory:
         reflector.reflect_on_trajectory(trajectory)
 
         call_args = reflector.reflect.call_args
-        assert call_args.kwargs["query"] == "Implement feature X"
+        doc_arg = call_args.args[0]
+        assert isinstance(doc_arg, TrajectoryDoc)
+        assert doc_arg.query == "Implement feature X"
 
     def test_passes_env_meta(self):
         """Test that trajectory metadata is passed as env_meta."""
@@ -380,7 +384,9 @@ class TestReflectOnTrajectory:
         reflector.reflect_on_trajectory(trajectory)
 
         call_args = reflector.reflect.call_args
-        env_meta = call_args.kwargs["env_meta"]
+        doc_arg = call_args.args[0]
+        assert isinstance(doc_arg, TrajectoryDoc)
+        env_meta = doc_arg.env_meta
         assert env_meta["final_status"] == "failure"
         assert env_meta["total_steps"] == 1
         assert env_meta["bullet_feedback"] == {"strat-001": "helpful"}
@@ -478,22 +484,22 @@ class TestLLMClientInjection:
         )
 
         reflector = Reflector(llm_client=mock_client)
-        reflection = reflector.reflect(query="test", retrieved_bullet_ids=[])
+        doc = TrajectoryDoc(query="test", retrieved_bullet_ids=[])
+        reflection = reflector.reflect(doc)
 
         mock_client.complete.assert_called_once()
         assert reflection.error_identification == "Test"
 
     def test_reflector_uses_mock_client_for_testing(self):
         """Test that Reflector works with MockLLMClient."""
-        # MockLLMClient returns pattern-based responses, not valid JSON
-        # So we need to mock it to return valid JSON
         mock_client = MagicMock(spec=LLMClient)
         mock_client.complete.return_value = CompletionResponse(
             text='{"key_insight": "Mock insight", "bullet_tags": [], "candidate_bullets": []}'
         )
 
         reflector = Reflector(llm_client=mock_client)
-        reflection = reflector.reflect(query="test query", retrieved_bullet_ids=[])
+        doc = TrajectoryDoc(query="test query", retrieved_bullet_ids=[])
+        reflection = reflector.reflect(doc)
 
         assert reflection.key_insight == "Mock insight"
 
@@ -528,10 +534,8 @@ class TestIterativeRefinement:
 
         reflector = Reflector(llm_client=mock_client)
 
-        reflection = reflector.reflect(
-            query="test query",
-            retrieved_bullet_ids=[],
-        )
+        doc = TrajectoryDoc(query="test query", retrieved_bullet_ids=[])
+        reflection = reflector.reflect(doc)
 
         assert reflection.error_identification == "Test error"
         # Only 1 call since refinement_rounds=1
@@ -562,10 +566,8 @@ class TestIterativeRefinement:
             quality_threshold=0.7,
         )
 
-        reflection = reflector.reflect(
-            query="test query",
-            retrieved_bullet_ids=[],
-        )
+        doc = TrajectoryDoc(query="test query", retrieved_bullet_ids=[])
+        reflection = reflector.reflect(doc)
 
         assert reflection.error_identification == "Initial"
         # 1 for initial + 1 for quality eval = 2 calls
@@ -599,10 +601,8 @@ class TestIterativeRefinement:
             quality_threshold=0.9,  # High threshold
         )
 
-        reflection = reflector.reflect(
-            query="test query",
-            retrieved_bullet_ids=[],
-        )
+        doc = TrajectoryDoc(query="test query", retrieved_bullet_ids=[])
+        reflection = reflector.reflect(doc)
 
         # Should get the refined version
         assert reflection.error_identification == "V2 - refined"

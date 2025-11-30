@@ -66,17 +66,21 @@ def cmd_retrieve(args: argparse.Namespace) -> None:
 
 def cmd_reflect(args: argparse.Namespace) -> None:
     """Generate reflection from task execution data."""
+    from ace.generator.schemas import TrajectoryDoc
+
     doc = read_json_input(args.doc)
 
-    reflector = Reflector()
-    reflection = reflector.reflect(
+    trajectory_doc = TrajectoryDoc(
         query=doc.get("query", ""),
         retrieved_bullet_ids=doc.get("retrieved_bullet_ids", []),
         code_diff=doc.get("code_diff", ""),
         test_output=doc.get("test_output", ""),
         logs=doc.get("logs", ""),
-        env_meta=doc.get("env_meta"),
+        env_meta=doc.get("env_meta") or {},
     )
+
+    reflector = Reflector()
+    reflection = reflector.reflect(trajectory_doc)
 
     print_output(asdict(reflection), as_json=args.json)
 
@@ -168,17 +172,21 @@ def cmd_tag(args: argparse.Namespace) -> None:
 
 def cmd_evolve(args: argparse.Namespace) -> None:
     """Run full reflect→curate→commit pipeline."""
+    from ace.generator.schemas import TrajectoryDoc
+
     doc = read_json_input(args.doc)
 
-    reflector = Reflector()
-    reflection = reflector.reflect(
+    trajectory_doc = TrajectoryDoc(
         query=doc.get("query", ""),
         retrieved_bullet_ids=doc.get("retrieved_bullet_ids", []),
         code_diff=doc.get("code_diff", ""),
         test_output=doc.get("test_output", ""),
         logs=doc.get("logs", ""),
-        env_meta=doc.get("env_meta"),
+        env_meta=doc.get("env_meta") or {},
     )
+
+    reflector = Reflector()
+    reflection = reflector.reflect(trajectory_doc)
 
     delta = curate(reflection)
 

@@ -516,14 +516,17 @@ class TrainingRunner:
         logger.debug(f"Processing sample {sample.id} in epoch {epoch}")
 
         try:
-            reflection = self.reflector.reflect(
+            from ace.generator.schemas import TrajectoryDoc
+
+            doc = TrajectoryDoc(
                 query=sample.query,
                 retrieved_bullet_ids=sample.retrieved_bullet_ids,
                 code_diff=sample.code_diff,
                 test_output=sample.test_output,
                 logs=sample.logs,
-                env_meta=sample.env_meta,
+                env_meta=sample.env_meta or {},
             )
+            reflection = self.reflector.reflect(doc)
 
             playbook = self.store.load_playbook()
             delta = curate(reflection, existing_bullets=playbook.bullets)

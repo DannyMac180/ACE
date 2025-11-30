@@ -8,7 +8,7 @@ from .prompts import format_quality_eval_prompt, format_refinement_prompt, forma
 from .schema import RefinementQuality, Reflection
 
 if TYPE_CHECKING:
-    from ace.generator.schemas import Trajectory
+    from ace.generator.schemas import Trajectory, TrajectoryDoc
 
 
 class Reflector:
@@ -40,8 +40,8 @@ class Reflector:
 
     def reflect(
         self,
-        query: str,
-        retrieved_bullet_ids: list[str],
+        doc_or_query: "TrajectoryDoc | str",
+        retrieved_bullet_ids: list[str] | None = None,
         code_diff: str = "",
         test_output: str = "",
         logs: str = "",
@@ -50,16 +50,18 @@ class Reflector:
     ) -> Reflection:
         """Generate a Reflection from task execution data with optional iterative refinement.
 
-        If refinement_rounds > 1, the reflection will be evaluated for quality
-        and refined until the quality threshold is met or max rounds reached.
+        Accepts either a TrajectoryDoc directly or individual parameters for backwards
+        compatibility. If refinement_rounds > 1, the reflection will be evaluated for
+        quality and refined until the quality threshold is met or max rounds reached.
 
         Args:
-            query: The task or query that was executed
-            retrieved_bullet_ids: IDs of bullets retrieved for this task
-            code_diff: Code changes made during execution
-            test_output: Test results or output
-            logs: Execution logs
-            env_meta: Additional environment metadata
+            doc_or_query: Either a TrajectoryDoc containing all execution data,
+                          or a query string (for backwards compatibility)
+            retrieved_bullet_ids: IDs of bullets retrieved for this task (ignored if TrajectoryDoc)
+            code_diff: Code changes made during execution (ignored if TrajectoryDoc)
+            test_output: Test results or output (ignored if TrajectoryDoc)
+            logs: Execution logs (ignored if TrajectoryDoc)
+            env_meta: Additional environment metadata (ignored if TrajectoryDoc)
             retrieved_bullets: List of dicts with 'id' and 'content' for redundancy check
 
         Returns:
@@ -68,13 +70,30 @@ class Reflector:
         Raises:
             ReflectionParseError: If parsing fails after max_retries
         """
+        from ace.generator.schemas import TrajectoryDoc
+
+        if isinstance(doc_or_query, TrajectoryDoc):
+            query = doc_or_query.query
+            bullet_ids = doc_or_query.retrieved_bullet_ids
+            code_diff_val = doc_or_query.code_diff
+            test_output_val = doc_or_query.test_output
+            logs_val = doc_or_query.logs
+            env_meta_val = doc_or_query.env_meta or {}
+        else:
+            query = doc_or_query
+            bullet_ids = retrieved_bullet_ids or []
+            code_diff_val = code_diff
+            test_output_val = test_output
+            logs_val = logs
+            env_meta_val = env_meta or {}
+
         reflection = self._generate_initial_reflection(
             query=query,
-            retrieved_bullet_ids=retrieved_bullet_ids,
-            code_diff=code_diff,
-            test_output=test_output,
-            logs=logs,
-            env_meta=env_meta,
+            retrieved_bullet_ids=bullet_ids,
+            code_diff=code_diff_val,
+            test_output=test_output_val,
+            logs=logs_val,
+            env_meta=env_meta_val,
         )
 
         if self.refinement_rounds <= 1:
@@ -278,7 +297,9 @@ class Reflector:
         """
         code_diff, test_output, logs = self._extract_trajectory_context(trajectory)
 
-        return self.reflect(
+        from ace.generator.schemas import TrajectoryDoc
+
+        doc = TrajectoryDoc(
             query=trajectory.initial_goal,
             retrieved_bullet_ids=trajectory.used_bullet_ids,
             code_diff=code_diff,
@@ -290,6 +311,7 @@ class Reflector:
                 "bullet_feedback": trajectory.bullet_feedback,
             },
         )
+        return self.reflect(doc)
 
     def _extract_trajectory_context(
         self, trajectory: "Trajectory"
