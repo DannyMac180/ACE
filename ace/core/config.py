@@ -27,6 +27,7 @@ class EmbeddingsConfig:
 class RetrievalConfig:
     top_k: int
     lexical_weight: float
+    max_bullets: int
 
 
 @dataclass
@@ -145,6 +146,9 @@ def load_config(config_path: Path | None = None) -> ACEConfig:
     retrieval_lexical = float(
         os.getenv("ACE_RETRIEVAL_LEXICAL_WEIGHT", config_dict["retrieval"]["lexical_weight"])
     )
+    retrieval_max_bullets = int(
+        os.getenv("ACE_RETRIEVAL_MAX_BULLETS", config_dict["retrieval"].get("max_bullets", 2000))
+    )
     refine_threshold = float(os.getenv("ACE_REFINE_THRESHOLD", config_dict["refine"]["threshold"]))
     refine_minhash = float(
         os.getenv("ACE_REFINE_MINHASH_THRESHOLD", config_dict["refine"]["minhash_threshold"])
@@ -181,7 +185,11 @@ def load_config(config_path: Path | None = None) -> ACEConfig:
     config = ACEConfig(
         database=DatabaseConfig(url=database_url),
         embeddings=EmbeddingsConfig(model=embeddings_model),
-        retrieval=RetrievalConfig(top_k=retrieval_topk, lexical_weight=retrieval_lexical),
+        retrieval=RetrievalConfig(
+            top_k=retrieval_topk,
+            lexical_weight=retrieval_lexical,
+            max_bullets=retrieval_max_bullets,
+        ),
         refine=RefineConfig(threshold=refine_threshold, minhash_threshold=refine_minhash),
         training=TrainingConfig(
             gate_on_regression=training_gate,

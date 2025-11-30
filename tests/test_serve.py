@@ -485,3 +485,267 @@ class TestCreateApp:
                         assert response.status_code == 200
                         data = response.json()
                         assert data["success"] is True
+
+
+class TestAutoRefine:
+    """Test auto-refine policy in OnlineServer."""
+
+    @pytest.fixture
+    def mock_store(self):
+        store = MagicMock()
+        playbook = MagicMock()
+        playbook.version = 1
+        playbook.bullets = []
+        store.load_playbook.return_value = playbook
+        return store
+
+    @pytest.fixture
+    def mock_reflector(self):
+        reflector = MagicMock()
+        reflector.reflect.return_value = MagicMock(
+            error_identification=None,
+            root_cause_analysis=None,
+            correct_approach=None,
+            key_insight="test insight",
+            bullet_tags=[],
+            candidate_bullets=[],
+        )
+        return reflector
+
+    @pytest.fixture
+    def mock_retriever(self):
+        retriever = MagicMock()
+        retriever.retrieve.return_value = []
+        return retriever
+
+    def test_init_with_auto_refine_every(self, mock_store, mock_reflector, mock_retriever):
+        """Test that auto_refine_every is properly initialized."""
+        server = OnlineServer(
+            store=mock_store,
+            reflector=mock_reflector,
+            retriever=mock_retriever,
+            auto_refine_every=100,
+        )
+        assert server.auto_refine_every == 100
+        assert server._delta_count_since_refine == 0
+
+    def test_init_with_max_bullets(self, mock_store, mock_reflector, mock_retriever):
+        """Test that max_bullets is properly initialized."""
+        server = OnlineServer(
+            store=mock_store,
+            reflector=mock_reflector,
+            retriever=mock_retriever,
+            max_bullets=500,
+        )
+        assert server.max_bullets == 500
+
+    def test_delta_count_increments_on_feedback(self, mock_store, mock_reflector, mock_retriever):
+        """Test that delta count increments after processing feedback with ops."""
+        server = OnlineServer(
+            store=mock_store,
+            reflector=mock_reflector,
+            retriever=mock_retriever,
+            auto_refine_every=10,
+        )
+
+        with patch("ace.serve.runner.curate") as mock_curate:
+            with patch("ace.serve.runner.apply_delta") as mock_apply:
+                mock_op = MagicMock()
+                mock_op.op = "ADD"
+                mock_delta = MagicMock()
+                mock_delta.ops = [mock_op]
+                mock_delta.model_dump.return_value = {"ops": [{"op": "ADD"}]}
+                mock_curate.return_value = mock_delta
+
+                new_playbook = MagicMock()
+                new_playbook.version = 2
+                mock_apply.return_value = new_playbook
+
+                request = FeedbackRequest(query="test query")
+                server.process_feedback(request)
+
+                assert server._delta_count_since_refine == 1
+
+    def test_auto_refine_triggers_on_delta_count(self, mock_store, mock_reflector, mock_retriever):
+        """Test that auto-refine triggers when delta count reaches threshold."""
+        server = OnlineServer(
+            store=mock_store,
+            reflector=mock_reflector,
+            retriever=mock_retriever,
+            auto_refine_every=2,
+        )
+
+        with patch("ace.serve.runner.curate") as mock_curate:
+            with patch("ace.serve.runner.apply_delta") as mock_apply:
+                with patch("ace.serve.runner.run_refine") as mock_refine:
+                    mock_op = MagicMock()
+                    mock_op.op = "ADD"
+                    mock_delta = MagicMock()
+                    mock_delta.ops = [mock_op]
+                    mock_delta.model_dump.return_value = {"ops": [{"op": "ADD"}]}
+                    mock_curate.return_value = mock_delta
+
+                    new_playbook = MagicMock()
+                    new_playbook.version = 2
+                    mock_apply.return_value = new_playbook
+
+                    mock_refine_result = MagicMock()
+                    mock_refine_result.merged = 1
+                    mock_refine_result.archived = 0
+                    mock_refine.return_value = mock_refine_result
+
+                    request = FeedbackRequest(query="test")
+                    server.process_feedback(request)
+                    mock_refine.assert_not_called()
+
+                    server.process_feedback(request)
+                    mock_refine.assert_called_once()
+
+                    assert server._delta_count_since_refine == 0
+                    assert server.stats.auto_refine_runs == 1
+                    assert server.stats.auto_refine_merged == 1
+
+    def test_auto_refine_triggers_on_max_bullets(self, mock_reflector, mock_retriever):
+        """Test that auto-refine triggers when bullet count exceeds max_bullets."""
+        store = MagicMock()
+        playbook = MagicMock()
+        playbook.version = 1
+        mock_bullets = [MagicMock() for _ in range(6)]
+        playbook.bullets = mock_bullets
+        store.load_playbook.return_value = playbook
+
+        server = OnlineServer(
+            store=store,
+            reflector=mock_reflector,
+            retriever=mock_retriever,
+            max_bullets=5,
+        )
+
+        with patch("ace.serve.runner.curate") as mock_curate:
+            with patch("ace.serve.runner.apply_delta") as mock_apply:
+                with patch("ace.serve.runner.run_refine") as mock_refine:
+                    mock_op = MagicMock()
+                    mock_op.op = "ADD"
+                    mock_delta = MagicMock()
+                    mock_delta.ops = [mock_op]
+                    mock_delta.model_dump.return_value = {"ops": [{"op": "ADD"}]}
+                    mock_curate.return_value = mock_delta
+
+                    new_playbook = MagicMock()
+                    new_playbook.version = 2
+                    mock_apply.return_value = new_playbook
+
+                    mock_refine_result = MagicMock()
+                    mock_refine_result.merged = 2
+                    mock_refine_result.archived = 1
+                    mock_refine.return_value = mock_refine_result
+
+                    request = FeedbackRequest(query="test")
+                    server.process_feedback(request)
+
+                    mock_refine.assert_called_once()
+                    assert server.stats.auto_refine_runs == 1
+                    assert server.stats.auto_refine_merged == 2
+                    assert server.stats.auto_refine_archived == 1
+
+    def test_no_auto_refine_when_disabled(self, mock_store, mock_reflector, mock_retriever):
+        """Test that auto-refine does not trigger when disabled (both params = 0)."""
+        server = OnlineServer(
+            store=mock_store,
+            reflector=mock_reflector,
+            retriever=mock_retriever,
+            auto_refine_every=0,
+            max_bullets=0,
+        )
+
+        with patch("ace.serve.runner.curate") as mock_curate:
+            with patch("ace.serve.runner.apply_delta") as mock_apply:
+                with patch("ace.serve.runner.run_refine") as mock_refine:
+                    mock_op = MagicMock()
+                    mock_op.op = "ADD"
+                    mock_delta = MagicMock()
+                    mock_delta.ops = [mock_op]
+                    mock_delta.model_dump.return_value = {"ops": [{"op": "ADD"}]}
+                    mock_curate.return_value = mock_delta
+
+                    new_playbook = MagicMock()
+                    new_playbook.version = 2
+                    mock_apply.return_value = new_playbook
+
+                    request = FeedbackRequest(query="test")
+                    for _ in range(10):
+                        server.process_feedback(request)
+
+                    mock_refine.assert_not_called()
+                    assert server.stats.auto_refine_runs == 0
+
+    def test_stats_include_auto_refine_fields(self, mock_store, mock_reflector, mock_retriever):
+        """Test that stats include auto-refine tracking fields."""
+        server = OnlineServer(
+            store=mock_store,
+            reflector=mock_reflector,
+            retriever=mock_retriever,
+        )
+        stats = server.get_stats()
+        assert hasattr(stats, "auto_refine_runs")
+        assert hasattr(stats, "auto_refine_merged")
+        assert hasattr(stats, "auto_refine_archived")
+        assert stats.auto_refine_runs == 0
+        assert stats.auto_refine_merged == 0
+        assert stats.auto_refine_archived == 0
+
+    def test_auto_refine_deletes_removed_bullets_from_store(self, mock_reflector, mock_retriever):
+        """Test that auto-refine properly deletes archived bullets from the store."""
+        store = MagicMock()
+
+        bullet1 = MagicMock()
+        bullet1.id = "bullet-1"
+        bullet2 = MagicMock()
+        bullet2.id = "bullet-2"
+        bullet3 = MagicMock()
+        bullet3.id = "bullet-3"
+
+        playbook = MagicMock()
+        playbook.version = 1
+        playbook.bullets = [bullet1, bullet2, bullet3]
+        store.load_playbook.return_value = playbook
+
+        server = OnlineServer(
+            store=store,
+            reflector=mock_reflector,
+            retriever=mock_retriever,
+            max_bullets=2,
+        )
+
+        with patch("ace.serve.runner.curate") as mock_curate:
+            with patch("ace.serve.runner.apply_delta") as mock_apply:
+                with patch("ace.serve.runner.run_refine") as mock_refine:
+                    mock_op = MagicMock()
+                    mock_op.op = "ADD"
+                    mock_delta = MagicMock()
+                    mock_delta.ops = [mock_op]
+                    mock_delta.model_dump.return_value = {"ops": [{"op": "ADD"}]}
+                    mock_curate.return_value = mock_delta
+
+                    new_playbook = MagicMock()
+                    new_playbook.version = 2
+                    mock_apply.return_value = new_playbook
+
+                    def simulate_refine(reflection, pb, threshold):
+                        pb.bullets = [bullet1, bullet2]
+                        result = MagicMock()
+                        result.merged = 0
+                        result.archived = 1
+                        return result
+
+                    mock_refine.side_effect = simulate_refine
+
+                    request = FeedbackRequest(query="test")
+                    server.process_feedback(request)
+
+                    store.delete_bullet.assert_called_once_with("bullet-3")
+
+                    assert store.save_bullet.call_count == 2
+                    saved_ids = [call[0][0].id for call in store.save_bullet.call_args_list]
+                    assert "bullet-1" in saved_ids
+                    assert "bullet-2" in saved_ids

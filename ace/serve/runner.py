@@ -15,14 +15,16 @@ from typing import Any
 
 from fastapi import FastAPI
 
-from ace.core.config import load_config
+from ace.core.config import ACEConfig, load_config
 from ace.core.merge import Delta as MergeDelta
 from ace.core.merge import apply_delta
 from ace.core.retrieve import Retriever
 from ace.core.schema import Playbook
 from ace.core.storage.store_adapter import Store
 from ace.curator.curator import curate
+from ace.refine.runner import refine as run_refine
 from ace.reflector.reflector import Reflector
+from ace.reflector.schema import Reflection
 
 from .schema import (
     AdaptationMode,
@@ -57,6 +59,9 @@ class OnlineServer:
         retriever: Retriever | None = None,
         auto_adapt: bool = True,
         warmup_path: str | Path | None = None,
+        auto_refine_every: int = 0,
+        max_bullets: int | None = None,
+        config: ACEConfig | None = None,
     ):
         """Initialize the online server.
 
@@ -66,15 +71,25 @@ class OnlineServer:
             retriever: Retriever instance (creates default if None)
             auto_adapt: Whether to auto-adapt on each feedback (default True)
             warmup_path: Path to a playbook JSON file for warm-start
+            auto_refine_every: Run refine every N deltas (0 = disabled)
+            max_bullets: Max bullets before triggering refine (overrides config)
+            config: ACEConfig instance (loads if None)
         """
-        if store is None:
+        if config is None:
             config = load_config()
+        self._config = config
+
+        if store is None:
             store = Store(config.database.url)
         self.store = store
         self.reflector = reflector or Reflector()
         self.retriever = retriever or Retriever(store)
         self.auto_adapt = auto_adapt
         self.mode = AdaptationMode.ONLINE
+
+        self.auto_refine_every = auto_refine_every
+        self.max_bullets = max_bullets if max_bullets is not None else config.retrieval.max_bullets
+        self._delta_count_since_refine = 0
 
         self.session_id = str(uuid.uuid4())[:8]
 
@@ -193,6 +208,7 @@ class OnlineServer:
                 merge_delta = MergeDelta.from_dict(delta.model_dump())
                 new_playbook = apply_delta(playbook, merge_delta, self.store)
                 version = new_playbook.version
+                self._delta_count_since_refine += 1
             else:
                 version = playbook.version
 
@@ -214,6 +230,9 @@ class OnlineServer:
                 f"version {playbook.version} -> {version}, "
                 f"{elapsed_ms:.1f}ms"
             )
+
+            if self.auto_adapt:
+                self._maybe_auto_refine()
 
             return FeedbackResponse(
                 success=True,
@@ -242,6 +261,63 @@ class OnlineServer:
                 self.stats.avg_adaptation_ms * (n - 1) + new_ms
             ) / n
 
+    def _maybe_auto_refine(self) -> None:
+        """Check if auto-refine should trigger and run if so.
+
+        Triggers when:
+        - auto_refine_every > 0 and delta count reached threshold
+        - max_bullets > 0 and bullet count exceeds max_bullets
+        """
+        playbook = self.store.load_playbook()
+        bullet_count = len(playbook.bullets)
+
+        should_refine = False
+
+        if self.auto_refine_every > 0 and self._delta_count_since_refine >= self.auto_refine_every:
+            should_refine = True
+            logger.info(
+                f"Auto-refine triggered: {self._delta_count_since_refine} deltas "
+                f"(threshold: {self.auto_refine_every})"
+            )
+
+        if self.max_bullets > 0 and bullet_count > self.max_bullets:
+            should_refine = True
+            logger.info(
+                f"Auto-refine triggered: {bullet_count} bullets > max {self.max_bullets}"
+            )
+
+        if not should_refine:
+            return
+
+        original_ids = {b.id for b in playbook.bullets}
+
+        empty_reflection = Reflection()
+        result = run_refine(
+            empty_reflection,
+            playbook,
+            threshold=self._config.refine.threshold,
+        )
+
+        refined_ids = {b.id for b in playbook.bullets}
+        removed_ids = original_ids - refined_ids
+
+        for bullet_id in removed_ids:
+            self.store.delete_bullet(bullet_id)
+
+        for bullet in playbook.bullets:
+            self.store.save_bullet(bullet)
+
+        self._delta_count_since_refine = 0
+
+        self.stats.auto_refine_runs += 1
+        self.stats.auto_refine_merged += result.merged
+        self.stats.auto_refine_archived += result.archived
+
+        logger.info(
+            f"Auto-refine complete: merged={result.merged}, archived={result.archived}, "
+            f"removed={len(removed_ids)}, bullets={len(playbook.bullets)}"
+        )
+
     def get_stats(self) -> OnlineStats:
         """Get current session statistics."""
         return self.stats
@@ -255,6 +331,8 @@ def create_app(
     auto_adapt: bool = True,
     store: Store | None = None,
     warmup_path: str | Path | None = None,
+    auto_refine_every: int = 0,
+    max_bullets: int | None = None,
 ) -> FastAPI:
     """Create FastAPI application for online serving.
 
@@ -262,6 +340,8 @@ def create_app(
         auto_adapt: Whether to automatically adapt on feedback
         store: Optional store instance
         warmup_path: Path to playbook JSON file for warm-start
+        auto_refine_every: Run refine every N deltas (0 = disabled)
+        max_bullets: Max bullets before triggering refine (overrides config)
 
     Returns:
         FastAPI app instance
@@ -274,6 +354,8 @@ def create_app(
             store=store,
             auto_adapt=auto_adapt,
             warmup_path=warmup_path,
+            auto_refine_every=auto_refine_every,
+            max_bullets=max_bullets,
         )
         server_instance.append(instance)
         warmup_info = (
@@ -335,6 +417,8 @@ def run_server(
     auto_adapt: bool = True,
     reload: bool = False,
     warmup_path: str | Path | None = None,
+    auto_refine_every: int = 0,
+    max_bullets: int | None = None,
 ) -> None:
     """Run the online server.
 
@@ -344,10 +428,22 @@ def run_server(
         auto_adapt: Whether to auto-adapt on feedback
         reload: Whether to enable hot reload
         warmup_path: Path to playbook JSON file for warm-start
+        auto_refine_every: Run refine every N deltas (0 = disabled)
+        max_bullets: Max bullets before triggering refine (overrides config)
     """
     import uvicorn
 
     warmup_msg = f" (warmup: {warmup_path})" if warmup_path else ""
-    logger.info(f"Starting ACE online server on {host}:{port}{warmup_msg}")
-    app = create_app(auto_adapt=auto_adapt, warmup_path=warmup_path)
+    refine_msg = ""
+    if auto_refine_every > 0:
+        refine_msg += f", auto-refine every {auto_refine_every} deltas"
+    if max_bullets is not None:
+        refine_msg += f", max bullets {max_bullets}"
+    logger.info(f"Starting ACE online server on {host}:{port}{warmup_msg}{refine_msg}")
+    app = create_app(
+        auto_adapt=auto_adapt,
+        warmup_path=warmup_path,
+        auto_refine_every=auto_refine_every,
+        max_bullets=max_bullets,
+    )
     uvicorn.run(app, host=host, port=port, reload=reload)
