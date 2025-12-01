@@ -92,6 +92,86 @@ cfg = get_config()  # loads configs/default.toml + env overrides and validates
 # ... use cfg.database.url, cfg.retrieval.top_k, cfg.llm.model, etc.
 ```
 
+## Trajectory Schema
+
+External agents (MCP clients, CI systems, IDEs) can record task execution data using the `TrajectoryDoc` schema. This is the standard format for feeding execution context to the ACE reflector.
+
+### TrajectoryDoc Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `query` | string | **Yes** | The task or query that was executed |
+| `retrieved_bullet_ids` | string[] | No | IDs of playbook bullets retrieved and used |
+| `code_diff` | string | No | Code changes made during execution |
+| `test_output` | string | No | Test results or output |
+| `logs` | string | No | Execution logs, errors, stack traces |
+| `env_meta` | object | No | Environment metadata (final_status, tool versions, etc.) |
+| `tools_used` | string[] | No | List of tools or actions invoked |
+
+### Example Payload
+
+```json
+{
+  "query": "Fix the authentication bug in login.py",
+  "retrieved_bullet_ids": ["strat-00091", "trbl-00022"],
+  "code_diff": "--- a/login.py\n+++ b/login.py\n@@ -15,3 +15,5 @@\n+    if not token:\n+        raise AuthError('Missing token')",
+  "test_output": "PASSED test_login_with_valid_token\nFAILED test_login_without_token - AssertionError",
+  "logs": "2024-01-15 10:23:45 ERROR: AuthError raised during login attempt",
+  "env_meta": {
+    "final_status": "partial",
+    "python_version": "3.11.5",
+    "test_framework": "pytest"
+  },
+  "tools_used": ["read_file", "edit_file", "run_tests"]
+}
+```
+
+### MCP Integration
+
+Use the MCP tools to record trajectories and generate reflections:
+
+```bash
+# 1. Record a trajectory (returns trajectory_id)
+ace.record_trajectory(
+  query="Fix authentication bug",
+  code_diff="...",
+  test_output="...",
+  logs="..."
+)
+# Returns: {"trajectory_id": "traj-abc123def456"}
+
+# 2. Generate reflection from trajectory
+ace.reflect(trajectory_id="traj-abc123def456")
+# Returns: {
+#   "error_identification": "...",
+#   "root_cause_analysis": "...",
+#   "candidate_bullets": [...]
+# }
+
+# 3. Commit the delta to update playbook
+ace.commit(delta={"ops": [...]})
+```
+
+### Python API
+
+```python
+from ace.generator import TrajectoryDoc
+from ace.reflector import Reflector
+
+# Create a TrajectoryDoc
+doc = TrajectoryDoc(
+    query="Implement caching for API responses",
+    retrieved_bullet_ids=["strat-00042"],
+    code_diff="...",
+    test_output="All 15 tests passed",
+    env_meta={"final_status": "success"},
+)
+
+# Reflect directly on the doc
+reflector = Reflector()
+reflection = reflector.reflect(doc)
+```
+
 ## Configuration
 
 See the full configuration guide with defaults, env var mappings, validation rules, and examples:

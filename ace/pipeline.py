@@ -19,7 +19,7 @@ from ace.core.schema import Bullet, Playbook
 from ace.core.storage.store_adapter import Store
 from ace.curator.curator import curate
 from ace.generator.generator import Generator
-from ace.generator.schemas import Trajectory
+from ace.generator.schemas import Trajectory, TrajectoryDoc
 from ace.llm import LLMClient
 from ace.reflector.reflector import Reflector
 from ace.reflector.schema import Reflection
@@ -133,8 +133,9 @@ class Pipeline:
             f"status={trajectory.final_status}"
         )
 
-        # 3. Reflector analyzes trajectory to produce insights
-        reflection = self.reflector.reflect_on_trajectory(trajectory)
+        # 3. Convert trajectory to TrajectoryDoc and reflect
+        trajectory_doc = trajectory.to_trajectory_doc()
+        reflection = self.reflector.reflect(trajectory_doc)
         logger.info(
             f"Reflection generated: {len(reflection.candidate_bullets)} candidate bullets, "
             f"{len(reflection.bullet_tags)} bullet tags"
@@ -225,14 +226,17 @@ class Pipeline:
             {"id": b.id, "content": b.content} for b in retrieved_bullets
         ]
 
-        # 3. Reflector with explicit feedback (no generator execution)
-        reflection = self.reflector.reflect(
+        # 3. Build TrajectoryDoc from explicit feedback (no generator execution)
+        trajectory_doc = TrajectoryDoc(
             query=query,
             retrieved_bullet_ids=retrieved_bullet_ids,
             code_diff=code_diff,
             test_output=test_output,
             logs=logs,
             env_meta=env_meta or {},
+        )
+        reflection = self.reflector.reflect(
+            trajectory_doc,
             retrieved_bullets=retrieved_bullet_dicts,
         )
         logger.info(

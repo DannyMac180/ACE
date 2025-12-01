@@ -181,14 +181,17 @@ class OnlineServer:
         start = time.time()
 
         try:
-            reflection = self.reflector.reflect(
+            from ace.generator.schemas import TrajectoryDoc
+
+            doc = TrajectoryDoc(
                 query=request.query,
                 retrieved_bullet_ids=request.retrieved_bullet_ids,
                 code_diff=request.code_diff,
                 test_output=request.test_output,
                 logs=request.logs,
-                env_meta=request.env_meta,
+                env_meta=request.env_meta or {},
             )
+            reflection = self.reflector.reflect(doc)
 
             playbook = self.store.load_playbook()
             delta = curate(reflection, existing_bullets=playbook.bullets)

@@ -9,7 +9,7 @@ from ace.core.merge import apply_delta
 from ace.core.retrieve import Retriever
 from ace.core.storage.store_adapter import Store
 from ace.curator.curator import curate
-from ace.generator.schemas import Trajectory
+from ace.generator.schemas import Trajectory, TrajectoryDoc
 from ace.pipeline import Pipeline
 from ace.refine.runner import refine
 from ace.reflector.reflector import Reflector
@@ -65,14 +65,15 @@ def ace_reflect(doc: dict[str, Any]) -> dict[str, Any]:
     Returns:
         Reflection dictionary
     """
-    reflection = reflector.reflect(
+    trajectory_doc = TrajectoryDoc(
         query=doc.get("query", ""),
         retrieved_bullet_ids=doc.get("retrieved_bullet_ids", []),
         code_diff=doc.get("code_diff", ""),
         test_output=doc.get("test_output", ""),
         logs=doc.get("logs", ""),
-        env_meta=doc.get("env_meta"),
+        env_meta=doc.get("env_meta") or {},
     )
+    reflection = reflector.reflect(trajectory_doc)
     return {
         "error_identification": reflection.error_identification,
         "root_cause_analysis": reflection.root_cause_analysis,
