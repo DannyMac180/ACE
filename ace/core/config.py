@@ -57,6 +57,12 @@ class MCPConfig:
 
 
 @dataclass
+class ReflectorConfig:
+    passes: int
+    similarity_threshold: float
+
+
+@dataclass
 class LLMConfig:
     provider: str
     model: str
@@ -73,6 +79,7 @@ class ACEConfig:
     training: TrainingConfig
     logging: LoggingConfig
     mcp: MCPConfig
+    reflector: ReflectorConfig
     llm: LLMConfig
 
 
@@ -117,6 +124,13 @@ def _validate_config(config: ACEConfig) -> None:
         raise ValueError(f"llm.temperature must be in [0.0, 2.0], got {config.llm.temperature}")
     if config.llm.max_tokens < 1:
         raise ValueError(f"llm.max_tokens must be >= 1, got {config.llm.max_tokens}")
+
+    # Validate reflector values
+    if config.reflector.passes < 1:
+        raise ValueError(f"reflector.passes must be >= 1, got {config.reflector.passes}")
+    if not 0.0 <= config.reflector.similarity_threshold <= 1.0:
+        val = config.reflector.similarity_threshold
+        raise ValueError(f"reflector.similarity_threshold must be in [0.0, 1.0], got {val}")
 
 
 def load_config(config_path: Path | None = None) -> ACEConfig:
@@ -177,6 +191,14 @@ def load_config(config_path: Path | None = None) -> ACEConfig:
     log_format = os.getenv("ACE_LOG_FORMAT", config_dict["logging"]["format"])
     mcp_transport = os.getenv("MCP_TRANSPORT", config_dict["mcp"]["transport"])
     mcp_port = int(os.getenv("MCP_PORT", config_dict["mcp"]["port"]))
+
+    reflector_dict = config_dict.get("reflector", {})
+    reflector_passes = int(os.getenv("ACE_REFLECTOR_PASSES", reflector_dict.get("passes", 1)))
+    sim_threshold_default = reflector_dict.get("similarity_threshold", 0.85)
+    reflector_sim_threshold = float(
+        os.getenv("ACE_REFLECTOR_SIMILARITY_THRESHOLD", sim_threshold_default)
+    )
+
     llm_provider = os.getenv("ACE_LLM_PROVIDER", config_dict["llm"]["provider"])
     llm_model = os.getenv("ACE_LLM_MODEL", config_dict["llm"]["model"])
     llm_temp = float(os.getenv("ACE_LLM_TEMPERATURE", config_dict["llm"]["temperature"]))
@@ -199,6 +221,10 @@ def load_config(config_path: Path | None = None) -> ACEConfig:
         ),
         logging=LoggingConfig(level=log_level, format=log_format),
         mcp=MCPConfig(transport=mcp_transport, port=mcp_port),
+        reflector=ReflectorConfig(
+            passes=reflector_passes,
+            similarity_threshold=reflector_sim_threshold,
+        ),
         llm=LLMConfig(
             provider=llm_provider,
             model=llm_model,
