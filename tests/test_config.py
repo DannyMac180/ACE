@@ -36,6 +36,9 @@ def test_env_override():
 
 def test_custom_config_path():
     """Test loading from custom config path."""
+    # Clear any env overrides for this test
+    old_llm_provider = os.environ.pop("ACE_LLM_PROVIDER", None)
+
     with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False) as f:
         f.write("""
 [database]
@@ -77,6 +80,9 @@ max_tokens = 4000
         assert config.llm.provider == "anthropic"
     finally:
         temp_path.unlink()
+        # Restore the env var if it was set
+        if old_llm_provider is not None:
+            os.environ["ACE_LLM_PROVIDER"] = old_llm_provider
 
 
 def test_config_types():
