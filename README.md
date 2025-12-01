@@ -172,6 +172,84 @@ reflector = Reflector()
 reflection = reflector.reflect(doc)
 ```
 
+## MCP Quickstart
+
+ACE provides an MCP (Model Context Protocol) server for integrating with Claude and other MCP-compatible clients.
+
+### Running the MCP Server
+
+```bash
+# Start the MCP server (stdio transport by default)
+python -m ace_mcp_server
+
+# Or use the Makefile
+make run-mcp
+```
+
+### Claude Desktop Configuration
+
+Add ACE to your Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+
+```json
+{
+  "mcpServers": {
+    "ace": {
+      "command": "python",
+      "args": ["-m", "ace_mcp_server"],
+      "cwd": "/path/to/ACE",
+      "env": {
+        "ACE_DB_URL": "sqlite:///ace.db"
+      }
+    }
+  }
+}
+```
+
+### Using with uv (recommended)
+
+If you're using `uv` for Python package management:
+
+```json
+{
+  "mcpServers": {
+    "ace": {
+      "command": "uv",
+      "args": ["run", "--directory", "/path/to/ACE", "python", "-m", "ace_mcp_server"]
+    }
+  }
+}
+```
+
+### Available MCP Tools
+
+| Tool | Description |
+|------|-------------|
+| `ace_retrieve` | Retrieve relevant playbook bullets for a query |
+| `ace_reflect` | Generate a reflection from task execution data |
+| `ace_curate` | Convert a reflection into delta operations |
+| `ace_commit` | Apply delta operations to the playbook |
+| `ace_refine` | Deduplicate and consolidate bullets |
+| `ace_stats` | Get playbook statistics |
+| `ace_record_trajectory` | Record a task execution trajectory |
+| `ace_pipeline` | Run the full ACE pipeline |
+
+### MCP Resource
+
+The server exposes the full playbook via the `ace://playbook.json` resource, which returns the same structure as `ace playbook dump`.
+
+### Example Usage in Claude
+
+Once configured, you can interact with ACE directly in Claude:
+
+```
+User: What strategies do you have for retrieval?
+
+Claude: [Uses ace_retrieve tool with query "retrieval strategies"]
+Found 3 relevant bullets:
+- strat-001: Prefer hybrid retrieval: BM25 + embedding for better recall
+- ...
+```
+
 ## Configuration
 
 See the full configuration guide with defaults, env var mappings, validation rules, and examples:
