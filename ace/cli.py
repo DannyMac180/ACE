@@ -79,8 +79,20 @@ def cmd_reflect(args: argparse.Namespace) -> None:
         env_meta=doc.get("env_meta") or {},
     )
 
+    config = load_config()
+    num_passes = args.passes if args.passes is not None else config.reflector.passes
+    similarity_threshold = config.reflector.similarity_threshold
+
     reflector = Reflector()
-    reflection = reflector.reflect(trajectory_doc)
+
+    if num_passes > 1:
+        reflection = reflector.reflect_multi(
+            trajectory_doc,
+            num_passes=num_passes,
+            similarity_threshold=similarity_threshold,
+        )
+    else:
+        reflection = reflector.reflect(trajectory_doc)
 
     print_output(asdict(reflection), as_json=args.json)
 
@@ -446,6 +458,12 @@ def main() -> NoReturn:
 
     reflect_parser = subparsers.add_parser("reflect", help="Generate reflection from task data")
     reflect_parser.add_argument("--doc", help="Path to JSON doc (or '-' for stdin)")
+    reflect_parser.add_argument(
+        "--passes",
+        type=int,
+        default=None,
+        help="Number of reflection passes (default: from config)",
+    )
     reflect_parser.add_argument("--json", action="store_true", help="Output as JSON")
     reflect_parser.set_defaults(func=cmd_reflect)
 

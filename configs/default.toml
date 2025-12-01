@@ -55,6 +55,13 @@ transport = "stdio"
 # HTTP port (only if transport=http)
 port = 8000
 
+[reflector]
+# Number of reflection passes for multi-pass reflection (1 = single pass)
+passes = 1
+
+# Similarity threshold for deduplicating candidate bullets (0.0-1.0)
+similarity_threshold = 0.85
+
 [llm]
 # Default LLM provider (openai, anthropic, etc.)
 provider = "openai"

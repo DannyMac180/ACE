@@ -31,6 +31,8 @@ class Reflection:
     key_insight: str | None = None
     bullet_tags: list[BulletTag] = field(default_factory=list)
     candidate_bullets: list[CandidateBullet] = field(default_factory=list)
+    iteration: int = 0
+    parent_id: str | None = None
 
 
 @dataclass

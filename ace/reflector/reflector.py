@@ -1,11 +1,13 @@
 # ace/reflector/reflector.py
+import uuid
+from collections import Counter
 from typing import TYPE_CHECKING
 
 from ace.llm import LLMClient, Message, create_llm_client
 
 from .parser import QualityParseError, ReflectionParseError, parse_quality, parse_reflection
 from .prompts import format_quality_eval_prompt, format_refinement_prompt, format_reflector_prompt
-from .schema import RefinementQuality, Reflection
+from .schema import BulletTag, CandidateBullet, RefinementQuality, Reflection
 
 if TYPE_CHECKING:
     from ace.generator.schemas import Trajectory, TrajectoryDoc
@@ -113,6 +115,171 @@ class Reflector:
             reflection = self._refine_reflection(query, reflection, quality.feedback)
 
         return reflection
+
+    def reflect_multi(
+        self,
+        doc_or_query: "TrajectoryDoc | str",
+        num_passes: int = 2,
+        retrieved_bullet_ids: list[str] | None = None,
+        code_diff: str = "",
+        test_output: str = "",
+        logs: str = "",
+        env_meta: dict | None = None,
+        retrieved_bullets: list[dict[str, str]] | None = None,
+        similarity_threshold: float = 0.85,
+    ) -> Reflection:
+        """Generate multiple reflections and merge/deduplicate results.
+
+        Runs multiple independent LLM reflection passes, then:
+        - Merges and deduplicates candidate_bullets based on content similarity
+        - Aggregates bullet_tags using majority vote
+        - Combines insights from all passes
+
+        Args:
+            doc_or_query: TrajectoryDoc or query string
+            num_passes: Number of independent reflection passes to run
+            retrieved_bullet_ids: IDs of bullets retrieved for this task
+            code_diff: Code changes made during execution
+            test_output: Test results or output
+            logs: Execution logs
+            env_meta: Additional environment metadata
+            retrieved_bullets: List of dicts with 'id' and 'content' for redundancy check
+            similarity_threshold: Threshold for considering bullets as duplicates (0.0-1.0)
+
+        Returns:
+            Merged Reflection with deduplicated candidate_bullets and aggregated tags
+        """
+        if num_passes < 1:
+            num_passes = 1
+
+        parent_id = str(uuid.uuid4())
+        reflections: list[Reflection] = []
+
+        for iteration in range(num_passes):
+            reflection = self.reflect(
+                doc_or_query=doc_or_query,
+                retrieved_bullet_ids=retrieved_bullet_ids,
+                code_diff=code_diff,
+                test_output=test_output,
+                logs=logs,
+                env_meta=env_meta,
+                retrieved_bullets=retrieved_bullets,
+            )
+            reflection.iteration = iteration
+            reflection.parent_id = parent_id
+            reflections.append(reflection)
+
+        if len(reflections) == 1:
+            return reflections[0]
+
+        return self._merge_reflections(reflections, parent_id, similarity_threshold)
+
+    def _merge_reflections(
+        self,
+        reflections: list[Reflection],
+        parent_id: str,
+        similarity_threshold: float = 0.85,
+    ) -> Reflection:
+        """Merge multiple reflections into one.
+
+        Deduplicates candidate_bullets and aggregates bullet_tags.
+        """
+        error_ids = [r.error_identification for r in reflections if r.error_identification]
+        root_causes = [r.root_cause_analysis for r in reflections if r.root_cause_analysis]
+        approaches = [r.correct_approach for r in reflections if r.correct_approach]
+        insights = [r.key_insight for r in reflections if r.key_insight]
+
+        merged = Reflection(
+            error_identification=error_ids[0] if error_ids else None,
+            root_cause_analysis=root_causes[0] if root_causes else None,
+            correct_approach=approaches[0] if approaches else None,
+            key_insight=insights[0] if insights else None,
+            bullet_tags=self._aggregate_bullet_tags(reflections),
+            candidate_bullets=self._deduplicate_candidate_bullets(
+                reflections, similarity_threshold
+            ),
+            iteration=len(reflections),
+            parent_id=parent_id,
+        )
+
+        return merged
+
+    def _aggregate_bullet_tags(
+        self,
+        reflections: list[Reflection],
+    ) -> list[BulletTag]:
+        """Aggregate bullet_tags across reflections using majority vote.
+
+        For each bullet_id, count helpful vs harmful tags. The tag with more
+        votes wins. Ties go to 'helpful'.
+        """
+        tag_votes: dict[str, Counter[str]] = {}
+
+        for reflection in reflections:
+            for bt in reflection.bullet_tags:
+                if bt.id not in tag_votes:
+                    tag_votes[bt.id] = Counter()
+                tag_votes[bt.id][bt.tag] += 1
+
+        aggregated: list[BulletTag] = []
+        for bullet_id, votes in tag_votes.items():
+            helpful_count = votes.get("helpful", 0)
+            harmful_count = votes.get("harmful", 0)
+            winner = "helpful" if helpful_count >= harmful_count else "harmful"
+            aggregated.append(BulletTag(id=bullet_id, tag=winner))  # type: ignore[arg-type]
+
+        return aggregated
+
+    def _deduplicate_candidate_bullets(
+        self,
+        reflections: list[Reflection],
+        similarity_threshold: float = 0.85,
+    ) -> list[CandidateBullet]:
+        """Deduplicate candidate_bullets across reflections.
+
+        Uses simple text similarity (Jaccard on word sets) to detect near-duplicates.
+        Keeps the first occurrence and merges tags.
+        """
+        all_bullets: list[CandidateBullet] = []
+        for reflection in reflections:
+            all_bullets.extend(reflection.candidate_bullets)
+
+        if not all_bullets:
+            return []
+
+        deduped: list[CandidateBullet] = []
+        for bullet in all_bullets:
+            is_dup = False
+            for existing in deduped:
+                if existing.section != bullet.section:
+                    continue
+                similarity = self._text_similarity(bullet.content, existing.content)
+                if similarity >= similarity_threshold:
+                    existing.tags = list(set(existing.tags) | set(bullet.tags))
+                    is_dup = True
+                    break
+            if not is_dup:
+                deduped.append(
+                    CandidateBullet(
+                        section=bullet.section,
+                        content=bullet.content,
+                        tags=list(bullet.tags),
+                    )
+                )
+
+        return deduped
+
+    def _text_similarity(self, text1: str, text2: str) -> float:
+        """Compute Jaccard similarity between two texts based on word sets."""
+        words1 = set(text1.lower().split())
+        words2 = set(text2.lower().split())
+        if not words1 and not words2:
+            return 1.0
+        if not words1 or not words2:
+            return 0.0
+        intersection = words1 & words2
+        union = words1 | words2
+        return len(intersection) / len(union)
 
     def _generate_initial_reflection(
         self,

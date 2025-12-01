@@ -628,3 +628,253 @@ class TestIterativeRefinement:
 
         reflector2 = Reflector(llm_client=mock_client, refinement_rounds=-5)
         assert reflector2.refinement_rounds == 1
+
+
+# --- Tests for multi-pass reflection ---
+
+
+class TestMultiPassReflection:
+    """Tests for reflect_multi method."""
+
+    def test_reflect_multi_single_pass_returns_single_reflection(self):
+        """Test that num_passes=1 returns single reflection with correct fields."""
+        mock_client = MagicMock(spec=LLMClient)
+        response_json = (
+            '{"error_identification": "Test error", '
+            '"bullet_tags": [{"id": "strat-001", "tag": "helpful"}], '
+            '"candidate_bullets": [{"section": "strategies_and_hard_rules", '
+            '"content": "Test bullet", "tags": ["topic:test"]}]}'
+        )
+        mock_client.complete.return_value = CompletionResponse(text=response_json)
+
+        reflector = Reflector(llm_client=mock_client)
+        doc = TrajectoryDoc(query="test query", retrieved_bullet_ids=[])
+        reflection = reflector.reflect_multi(doc, num_passes=1)
+
+        assert reflection.error_identification == "Test error"
+        assert reflection.iteration == 0
+        assert reflection.parent_id is not None
+        assert mock_client.complete.call_count == 1
+
+    def test_reflect_multi_multiple_passes(self):
+        """Test that multiple passes are executed."""
+        mock_client = MagicMock(spec=LLMClient)
+        response_json = (
+            '{"error_identification": "Test error", '
+            '"bullet_tags": [], "candidate_bullets": []}'
+        )
+        mock_client.complete.return_value = CompletionResponse(text=response_json)
+
+        reflector = Reflector(llm_client=mock_client)
+        doc = TrajectoryDoc(query="test query", retrieved_bullet_ids=[])
+        reflection = reflector.reflect_multi(doc, num_passes=3)
+
+        assert mock_client.complete.call_count == 3
+        assert reflection.iteration == 3  # Number of passes
+        assert reflection.parent_id is not None
+
+    def test_reflect_multi_deduplicates_candidate_bullets(self):
+        """Test that similar candidate bullets are deduplicated."""
+        mock_client = MagicMock(spec=LLMClient)
+
+        response1 = (
+            '{"error_identification": "Error", "bullet_tags": [], '
+            '"candidate_bullets": [{"section": "strategies_and_hard_rules", '
+            '"content": "Use hybrid retrieval for better results", "tags": ["topic:retrieval"]}]}'
+        )
+        response2 = (
+            '{"error_identification": "Error", "bullet_tags": [], '
+            '"candidate_bullets": [{"section": "strategies_and_hard_rules", '
+            '"content": "Use hybrid retrieval for improved results", "tags": ["topic:search"]}]}'
+        )
+
+        mock_client.complete.side_effect = [
+            CompletionResponse(text=response1),
+            CompletionResponse(text=response2),
+        ]
+
+        reflector = Reflector(llm_client=mock_client)
+        doc = TrajectoryDoc(query="test query", retrieved_bullet_ids=[])
+        reflection = reflector.reflect_multi(doc, num_passes=2, similarity_threshold=0.5)
+
+        # Should deduplicate to 1 bullet and merge tags
+        assert len(reflection.candidate_bullets) == 1
+        assert "topic:retrieval" in reflection.candidate_bullets[0].tags
+        assert "topic:search" in reflection.candidate_bullets[0].tags
+
+    def test_reflect_multi_keeps_distinct_bullets(self):
+        """Test that distinct bullets are kept separate."""
+        mock_client = MagicMock(spec=LLMClient)
+
+        response1 = (
+            '{"error_identification": "Error", "bullet_tags": [], '
+            '"candidate_bullets": [{"section": "strategies_and_hard_rules", '
+            '"content": "Use caching for performance", "tags": ["topic:perf"]}]}'
+        )
+        response2 = (
+            '{"error_identification": "Error", "bullet_tags": [], '
+            '"candidate_bullets": [{"section": "troubleshooting_and_pitfalls", '
+            '"content": "Check database connections on startup", "tags": ["topic:db"]}]}'
+        )
+
+        mock_client.complete.side_effect = [
+            CompletionResponse(text=response1),
+            CompletionResponse(text=response2),
+        ]
+
+        reflector = Reflector(llm_client=mock_client)
+        doc = TrajectoryDoc(query="test query", retrieved_bullet_ids=[])
+        reflection = reflector.reflect_multi(doc, num_passes=2)
+
+        # Different sections, should keep both
+        assert len(reflection.candidate_bullets) == 2
+
+    def test_reflect_multi_aggregates_bullet_tags_majority_vote(self):
+        """Test that bullet_tags are aggregated using majority vote."""
+        mock_client = MagicMock(spec=LLMClient)
+
+        # 2 helpful, 1 harmful -> helpful wins
+        response1 = (
+            '{"error_identification": "Error", '
+            '"bullet_tags": [{"id": "strat-001", "tag": "helpful"}], '
+            '"candidate_bullets": []}'
+        )
+        response2 = (
+            '{"error_identification": "Error", '
+            '"bullet_tags": [{"id": "strat-001", "tag": "helpful"}], '
+            '"candidate_bullets": []}'
+        )
+        response3 = (
+            '{"error_identification": "Error", '
+            '"bullet_tags": [{"id": "strat-001", "tag": "harmful"}], '
+            '"candidate_bullets": []}'
+        )
+
+        mock_client.complete.side_effect = [
+            CompletionResponse(text=response1),
+            CompletionResponse(text=response2),
+            CompletionResponse(text=response3),
+        ]
+
+        reflector = Reflector(llm_client=mock_client)
+        doc = TrajectoryDoc(query="test query", retrieved_bullet_ids=[])
+        reflection = reflector.reflect_multi(doc, num_passes=3)
+
+        assert len(reflection.bullet_tags) == 1
+        assert reflection.bullet_tags[0].id == "strat-001"
+        assert reflection.bullet_tags[0].tag == "helpful"
+
+    def test_reflect_multi_tie_goes_to_helpful(self):
+        """Test that ties in bullet_tags voting go to helpful."""
+        mock_client = MagicMock(spec=LLMClient)
+
+        response1 = (
+            '{"error_identification": "Error", '
+            '"bullet_tags": [{"id": "strat-001", "tag": "helpful"}], '
+            '"candidate_bullets": []}'
+        )
+        response2 = (
+            '{"error_identification": "Error", '
+            '"bullet_tags": [{"id": "strat-001", "tag": "harmful"}], '
+            '"candidate_bullets": []}'
+        )
+
+        mock_client.complete.side_effect = [
+            CompletionResponse(text=response1),
+            CompletionResponse(text=response2),
+        ]
+
+        reflector = Reflector(llm_client=mock_client)
+        doc = TrajectoryDoc(query="test query", retrieved_bullet_ids=[])
+        reflection = reflector.reflect_multi(doc, num_passes=2)
+
+        assert len(reflection.bullet_tags) == 1
+        assert reflection.bullet_tags[0].tag == "helpful"
+
+    def test_reflect_multi_num_passes_zero_treated_as_one(self):
+        """Test that num_passes < 1 is treated as 1."""
+        mock_client = MagicMock(spec=LLMClient)
+        response_json = '{"bullet_tags": [], "candidate_bullets": []}'
+        mock_client.complete.return_value = CompletionResponse(text=response_json)
+
+        reflector = Reflector(llm_client=mock_client)
+        doc = TrajectoryDoc(query="test", retrieved_bullet_ids=[])
+        reflection = reflector.reflect_multi(doc, num_passes=0)
+
+        assert mock_client.complete.call_count == 1
+        assert reflection.iteration == 0
+
+
+class TestTextSimilarity:
+    """Tests for _text_similarity helper method."""
+
+    def test_identical_texts(self):
+        """Test identical texts have similarity 1.0."""
+        mock_client = MockLLMClient()
+        reflector = Reflector(llm_client=mock_client)
+
+        similarity = reflector._text_similarity(
+            "hello world foo bar",
+            "hello world foo bar"
+        )
+        assert similarity == 1.0
+
+    def test_completely_different_texts(self):
+        """Test completely different texts have similarity 0.0."""
+        mock_client = MockLLMClient()
+        reflector = Reflector(llm_client=mock_client)
+
+        similarity = reflector._text_similarity(
+            "hello world",
+            "goodbye universe"
+        )
+        assert similarity == 0.0
+
+    def test_partial_overlap(self):
+        """Test partial overlap gives expected similarity."""
+        mock_client = MockLLMClient()
+        reflector = Reflector(llm_client=mock_client)
+
+        # "hello world" vs "hello there" -> intersection={hello}, union={hello,world,there}
+        similarity = reflector._text_similarity("hello world", "hello there")
+        assert abs(similarity - 1 / 3) < 0.01
+
+    def test_empty_texts(self):
+        """Test empty texts."""
+        mock_client = MockLLMClient()
+        reflector = Reflector(llm_client=mock_client)
+
+        assert reflector._text_similarity("", "") == 1.0
+        assert reflector._text_similarity("hello", "") == 0.0
+        assert reflector._text_similarity("", "world") == 0.0
+
+    def test_case_insensitive(self):
+        """Test similarity is case-insensitive."""
+        mock_client = MockLLMClient()
+        reflector = Reflector(llm_client=mock_client)
+
+        similarity = reflector._text_similarity("Hello World", "hello world")
+        assert similarity == 1.0
+
+
+class TestReflectionSchema:
+    """Tests for Reflection schema with iteration and parent_id."""
+
+    def test_reflection_has_iteration_field(self):
+        """Test Reflection has iteration field with default 0."""
+        reflection = Reflection()
+        assert reflection.iteration == 0
+
+    def test_reflection_has_parent_id_field(self):
+        """Test Reflection has parent_id field with default None."""
+        reflection = Reflection()
+        assert reflection.parent_id is None
+
+    def test_reflection_iteration_and_parent_set(self):
+        """Test Reflection can have iteration and parent_id set."""
+        reflection = Reflection(
+            iteration=2,
+            parent_id="parent-abc-123",
+        )
+        assert reflection.iteration == 2
+        assert reflection.parent_id == "parent-abc-123"
