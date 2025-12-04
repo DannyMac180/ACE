@@ -6,6 +6,7 @@ import sys
 from dataclasses import asdict
 from typing import Any, NoReturn
 
+from ace import __version__
 from ace.core.config import load_config
 from ace.core.merge import Delta as MergeDelta
 from ace.core.merge import apply_delta
@@ -403,6 +404,11 @@ def cmd_pipeline(args: argparse.Namespace) -> None:
             print("  (DRY RUN - no changes committed)")
 
 
+def cmd_version(args: argparse.Namespace) -> None:
+    """Print the ACE version."""
+    print(__version__)
+
+
 def cmd_eval_run(args: argparse.Namespace) -> None:
     """Run evaluation benchmarks."""
     try:
@@ -449,6 +455,9 @@ def main() -> NoReturn:
         description="ACE (Agentic Context Engineering) - evolve LLM context via playbook deltas",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    version_parser = subparsers.add_parser("version", help="Print the ACE version")
+    version_parser.set_defaults(func=cmd_version)
 
     retrieve_parser = subparsers.add_parser("retrieve", help="Retrieve bullets matching a query")
     retrieve_parser.add_argument("query", help="Query string")
