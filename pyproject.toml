@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ace"
-version = "0.1.0"
+version = "0.1.0a1"
 description = "Agentic Context Engineering - evolve LLM context via playbook deltas"
 readme = "README.md"
 authors = [
