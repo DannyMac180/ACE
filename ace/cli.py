@@ -448,6 +448,80 @@ def cmd_eval_run(args: argparse.Namespace) -> None:
         runner.print_results(results)
 
 
+def cmd_smoke_test_model(args: argparse.Namespace) -> None:
+    """Test LLM provider connectivity with a simple request."""
+    from ace.llm.factory import create_llm_client
+    from ace.llm.schemas import Message
+
+    config = load_config()
+
+    print(f"Testing LLM provider: {config.llm.provider}")
+    print(f"Model: {config.llm.model}")
+    print(f"Temperature: {config.llm.temperature}")
+    print(f"Max tokens: {config.llm.max_tokens}")
+    print()
+
+    try:
+        # Create client from config
+        client = create_llm_client(config.llm)
+        print("✓ LLM client created successfully")
+
+        # Simple test prompt
+        test_messages = [
+            Message(role="user", content="Say 'Hello from ACE!' if you can read this.")
+        ]
+
+        print("Sending test request to LLM...")
+        response = client.complete(test_messages)
+
+        print("✓ LLM request successful")
+        print()
+        print("Response:")
+        print("-" * 60)
+        print(response.text)
+        print("-" * 60)
+        print()
+
+        result: dict[str, Any] = {
+            "status": "success",
+            "provider": config.llm.provider,
+            "model": config.llm.model,
+            "response_length": len(response.text),
+        }
+
+        if args.json:
+            print_output(result, as_json=True)
+        else:
+            print("✓ Smoke test PASSED")
+            print(f"  Provider '{config.llm.provider}' is working correctly")
+
+    except ValueError as e:
+        error_msg = str(e)
+        print(f"✗ Configuration error: {error_msg}")
+        if args.json:
+            print_output({"status": "error", "error": error_msg}, as_json=True)
+        sys.exit(1)
+
+    except Exception as e:
+        error_msg = str(e)
+        print(f"✗ LLM request failed: {error_msg}")
+        print()
+        print("Troubleshooting tips:")
+        print("  1. Check your API key environment variable")
+
+        if config.llm.provider == "openrouter":
+            print("     - For OpenRouter: OPENROUTER_API_KEY")
+
+        print("  2. Verify your network connection")
+        print("  3. Ensure the model name is correct")
+        print(f"     - Current model: {config.llm.model}")
+
+        if args.json:
+            print_output({"status": "error", "error": error_msg}, as_json=True)
+
+        sys.exit(1)
+
+
 def main() -> NoReturn:
     """Main CLI entrypoint."""
     parser = argparse.ArgumentParser(
@@ -666,6 +740,13 @@ def main() -> NoReturn:
         help="Exit with error code if regression detected",
     )
     eval_run.set_defaults(func=cmd_eval_run)
+
+    smoke_test_parser = subparsers.add_parser(
+        "smoke-test-model",
+        help="Test LLM provider connectivity with a simple request",
+    )
+    smoke_test_parser.add_argument("--json", action="store_true", help="Output as JSON")
+    smoke_test_parser.set_defaults(func=cmd_smoke_test_model)
 
     args = parser.parse_args()
     args.func(args)

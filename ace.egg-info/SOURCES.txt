@@ -2,6 +2,7 @@ README.md
 pyproject.toml
 ace/__init__.py
 ace/cli.py
+ace/pipeline.py
 ace.egg-info/PKG-INFO
 ace.egg-info/SOURCES.txt
 ace.egg-info/dependency_links.txt
@@ -35,6 +36,7 @@ ace/generator/generator.py
 ace/generator/schemas.py
 ace/llm/__init__.py
 ace/llm/client.py
+ace/llm/factory.py
 ace/llm/schemas.py
 ace/mcp/__init__.py
 ace/mcp/server.py
@@ -62,9 +64,12 @@ tests/test_eval_harness.py
 tests/test_generator.py
 tests/test_harness_integration.py
 tests/test_llm_client.py
+tests/test_llm_factory.py
 tests/test_llm_integration.py
+tests/test_mcp_server.py
 tests/test_merge.py
 tests/test_metrics.py
+tests/test_pipeline.py
 tests/test_pipeline_integration.py
 tests/test_refiner.py
 tests/test_reflector.py
