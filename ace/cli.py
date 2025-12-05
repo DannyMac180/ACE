@@ -8,18 +8,6 @@ from typing import Any, NoReturn
 
 from ace import __version__
 from ace.core.config import load_config
-from ace.core.merge import Delta as MergeDelta
-from ace.core.merge import apply_delta
-from ace.core.retrieve import Retriever
-from ace.core.schema import Playbook
-from ace.core.storage.store_adapter import Store
-from ace.curator.curator import curate
-from ace.pipeline import Pipeline
-from ace.refine.runner import refine
-from ace.reflector.reflector import Reflector
-from ace.reflector.schema import Reflection
-from ace.serve.runner import run_server as run_online_server
-from ace.train.runner import TrainingRunner
 
 
 def read_json_input(path_or_stdin: str | None) -> dict[str, Any]:
@@ -49,6 +37,9 @@ def print_output(data: Any, as_json: bool) -> None:
 
 def cmd_retrieve(args: argparse.Namespace) -> None:
     """Retrieve bullets matching a query."""
+    from ace.core.retrieve import Retriever
+    from ace.core.storage.store_adapter import Store
+
     config = load_config()
     store = Store(config.database.url)
     retriever = Retriever(store)
@@ -68,6 +59,7 @@ def cmd_retrieve(args: argparse.Namespace) -> None:
 def cmd_reflect(args: argparse.Namespace) -> None:
     """Generate reflection from task execution data."""
     from ace.generator.schemas import TrajectoryDoc
+    from ace.reflector.reflector import Reflector
 
     doc = read_json_input(args.doc)
 
@@ -100,6 +92,9 @@ def cmd_reflect(args: argparse.Namespace) -> None:
 
 def cmd_curate(args: argparse.Namespace) -> None:
     """Convert reflection to delta operations."""
+    from ace.curator.curator import curate
+    from ace.reflector.schema import Reflection
+
     reflection_data = read_json_input(args.reflection)
     reflection = Reflection(**reflection_data)
 
@@ -109,6 +104,10 @@ def cmd_curate(args: argparse.Namespace) -> None:
 
 def cmd_commit(args: argparse.Namespace) -> None:
     """Apply delta operations to playbook."""
+    from ace.core.merge import Delta as MergeDelta
+    from ace.core.merge import apply_delta
+    from ace.core.storage.store_adapter import Store
+
     config = load_config()
     store = Store(config.database.url)
     delta_data = read_json_input(args.delta)
@@ -130,6 +129,8 @@ def cmd_commit(args: argparse.Namespace) -> None:
 
 def cmd_playbook_dump(args: argparse.Namespace) -> None:
     """Dump full playbook JSON."""
+    from ace.core.storage.store_adapter import Store
+
     config = load_config()
     store = Store(config.database.url)
     playbook = store.load_playbook()
@@ -146,6 +147,9 @@ def cmd_playbook_dump(args: argparse.Namespace) -> None:
 
 def cmd_playbook_import(args: argparse.Namespace) -> None:
     """Import playbook JSON into the store."""
+    from ace.core.schema import Playbook
+    from ace.core.storage.store_adapter import Store
+
     config = load_config()
     store = Store(config.database.url)
 
@@ -163,6 +167,10 @@ def cmd_playbook_import(args: argparse.Namespace) -> None:
 
 def cmd_tag(args: argparse.Namespace) -> None:
     """Tag a bullet as helpful or harmful."""
+    from ace.core.merge import Delta as MergeDelta
+    from ace.core.merge import apply_delta
+    from ace.core.storage.store_adapter import Store
+
     config = load_config()
     store = Store(config.database.url)
 
@@ -185,7 +193,12 @@ def cmd_tag(args: argparse.Namespace) -> None:
 
 def cmd_evolve(args: argparse.Namespace) -> None:
     """Run full reflect→curate→commit pipeline."""
+    from ace.core.merge import Delta as MergeDelta
+    from ace.core.merge import apply_delta
+    from ace.core.storage.store_adapter import Store
+    from ace.curator.curator import curate
     from ace.generator.schemas import TrajectoryDoc
+    from ace.reflector.reflector import Reflector
 
     doc = read_json_input(args.doc)
 
@@ -227,6 +240,10 @@ def cmd_evolve(args: argparse.Namespace) -> None:
 
 def cmd_refine(args: argparse.Namespace) -> None:
     """Run refine to deduplicate and consolidate bullets."""
+    from ace.core.storage.store_adapter import Store
+    from ace.refine.runner import refine
+    from ace.reflector.schema import Reflection
+
     config = load_config()
     store = Store(config.database.url)
     playbook = store.load_playbook()
@@ -247,6 +264,8 @@ def cmd_refine(args: argparse.Namespace) -> None:
 
 def cmd_stats(args: argparse.Namespace) -> None:
     """Show playbook statistics."""
+    from ace.core.storage.store_adapter import Store
+
     config = load_config()
     store = Store(config.database.url)
     playbook = store.load_playbook()
@@ -285,6 +304,8 @@ def cmd_stats(args: argparse.Namespace) -> None:
 
 def cmd_serve(args: argparse.Namespace) -> None:
     """Start the online serving server for test-time adaptation."""
+    from ace.serve.runner import run_server as run_online_server
+
     print(f"Starting ACE online server on {args.host}:{args.port}")
     print(f"  Mode: {'online' if args.online else 'offline'}")
     print(f"  Auto-adapt: {not args.no_adapt}")
@@ -308,6 +329,8 @@ def cmd_serve(args: argparse.Namespace) -> None:
 
 def cmd_train(args: argparse.Namespace) -> None:
     """Run multi-epoch offline adaptation training."""
+    from ace.train.runner import TrainingRunner
+
     resume_state = None
     if args.resume:
         try:
@@ -358,6 +381,8 @@ def cmd_train(args: argparse.Namespace) -> None:
 
 def cmd_pipeline(args: argparse.Namespace) -> None:
     """Run the full ACE pipeline: retrieve→generate→reflect→curate→merge."""
+    from ace.pipeline import Pipeline
+
     config = load_config()
     pipeline = Pipeline(db_path=config.database.url)
 

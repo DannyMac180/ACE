@@ -77,5 +77,6 @@ tests/test_regression.py
 tests/test_retrieval_metrics.py
 tests/test_schema.py
 tests/test_serve.py
+tests/test_smoke_test_command.py
 tests/test_store.py
 tests/test_train.py
