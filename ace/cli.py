@@ -429,6 +429,191 @@ def cmd_pipeline(args: argparse.Namespace) -> None:
             print("  (DRY RUN - no changes committed)")
 
 
+def cmd_init(args: argparse.Namespace) -> None:
+    """Initialize a new ACE playbook database."""
+    import os
+    from pathlib import Path
+
+    from ace.core.storage.store_adapter import Store
+
+    config = load_config()
+
+    # Extract db path from URL (handle sqlite:///path format)
+    db_url = config.database.url
+    if db_url.startswith("sqlite:///"):
+        db_path = db_url[10:]  # Remove sqlite:/// prefix
+    elif db_url.startswith("sqlite://"):
+        db_path = db_url[9:]  # Remove sqlite:// prefix
+    else:
+        # For non-SQLite databases, we can't check file existence
+        db_path = None
+
+    # Check if database already exists
+    if db_path and Path(db_path).exists() and not args.force:
+        print(f"Error: Database already exists at {db_path}")
+        print("Use --force to reinitialize (this will clear existing data)")
+        sys.exit(1)
+
+    # Remove existing database if --force is used
+    if db_path and args.force and Path(db_path).exists():
+        print(f"Removing existing database at {db_path}")
+        os.remove(db_path)
+        # Also remove the FAISS index if it exists
+        faiss_index_path = Path(db_path).with_suffix(".faiss")
+        if faiss_index_path.exists():
+            os.remove(faiss_index_path)
+
+    # Initialize the store (creates schema)
+    print("Initializing ACE database...")
+    store = Store(db_url)
+
+    if args.seed:
+        # Import seed bullets
+        from ace.core.schema import Bullet
+
+        seed_bullets = [
+            Bullet(
+                id="strat-00001",
+                section="strategies_and_hard_rules",
+                content=(
+                    "Prefer hybrid retrieval: BM25 + embedding; rerank by lexical "
+                    "overlap with query terms; default top_k=24."
+                ),
+                tags=["topic:retrieval", "stack:python"],
+            ),
+            Bullet(
+                id="strat-00002",
+                section="strategies_and_hard_rules",
+                content=(
+                    "Never rewrite the whole playbook. Only ADD/PATCH/DEPRECATE "
+                    "bullets; run refine for dedup."
+                ),
+                tags=["topic:curation", "policy"],
+            ),
+            Bullet(
+                id="strat-00003",
+                section="strategies_and_hard_rules",
+                content=(
+                    "Consider bullets near-duplicate if cosine>0.90 OR minhash "
+                    "Jaccard>0.85; keep clearer text; transfer counters."
+                ),
+                tags=["topic:refine", "retrieval"],
+            ),
+            Bullet(
+                id="trbl-00001",
+                section="troubleshooting_and_pitfalls",
+                content=(
+                    "Reflector/Curator must emit valid JSON without markdown "
+                    "fencing; reject and retry on parse errors."
+                ),
+                tags=["topic:parsing", "robustness"],
+            ),
+            Bullet(
+                id="tmpl-00001",
+                section="code_snippets_and_templates",
+                content=(
+                    "Unit test template for merge: apply Delta ops and assert "
+                    "version increment + idempotency."
+                ),
+                tags=["topic:testing"],
+            ),
+            Bullet(
+                id="code-00001",
+                section="code_snippets_and_templates",
+                content="Expose MCP tools 'ace.retrieve|reflect|curate|commit|refine|stats'; resource 'ace://playbook.json'.",
+                tags=["topic:mcp"],
+            ),
+            Bullet(
+                id="seed-retrieval-hygiene",
+                section="strategies_and_hard_rules",
+                content=(
+                    "Ensure retrieval queries are specific and context-aware to "
+                    "prevent irrelevant or conflicting information from polluting "
+                    "the context."
+                ),
+                tags=["topic:retrieval", "discipline:hygiene"],
+            ),
+            Bullet(
+                id="strat-00004",
+                section="strategies_and_hard_rules",
+                content=(
+                    "Always write a failing test before implementing new "
+                    "functionality or fixing a bug."
+                ),
+                tags=["topic:testing", "discipline:hygiene"],
+            ),
+            Bullet(
+                id="code-00002",
+                section="code_snippets_and_templates",
+                content=(
+                    "The MCP tool shape is defined by the following JSON schema: "
+                    "{ 'type': 'object', 'properties': { 'tool_name': "
+                    "{'type': 'string', 'description': 'Name of the tool'}, "
+                    "'tool_description': {'type': 'string', 'description': "
+                    "'Description of the tool'}, 'tool_parameters': "
+                    "{'type': 'object', 'description': 'JSON schema for tool "
+                    "parameters'} } }"
+                ),
+                tags=["topic:mcp", "type:tool_shape"],
+            ),
+            Bullet(
+                id="strat-00005",
+                section="strategies_and_hard_rules",
+                content=(
+                    "Bullets are considered near-duplicates if their embedding "
+                    "cosine similarity exceeds 0.90 or their minhash Jaccard "
+                    "index exceeds 0.85. The bullet with the clearer, more "
+                    "concise text should be retained."
+                ),
+                tags=["topic:refine", "policy:deduplication"],
+            ),
+            Bullet(
+                id="strat-00006",
+                section="strategies_and_hard_rules",
+                content=(
+                    "When generating structured output, especially tool calls or "
+                    "data schemas, always ensure the output is strictly valid "
+                    "JSON, enclosed in triple backticks if necessary, and avoid "
+                    "extraneous text."
+                ),
+                tags=["topic:generation", "policy:json_strictness"],
+            ),
+        ]
+
+        print(f"Seeding with {len(seed_bullets)} starter bullets...")
+        for bullet in seed_bullets:
+            store.save_bullet(bullet)
+
+    # Get final stats
+    version = store.get_version()
+    num_bullets = len(store.get_bullets())
+
+    store.close()
+
+    # Output results
+    result: dict[str, Any] = {
+        "status": "success",
+        "database": db_path or db_url,
+        "version": version,
+        "total_bullets": num_bullets,
+    }
+
+    if args.json:
+        print_output(result, as_json=True)
+    else:
+        print("\n✓ ACE playbook initialized successfully!")
+        if db_path:
+            print(f"  Database: {db_path}")
+        else:
+            print(f"  Database: {db_url}")
+        print(f"  Version: {version}")
+        print(f"  Bullets: {num_bullets}")
+        if num_bullets > 0:
+            print("\nYou can now use 'ace retrieve', 'ace pipeline', and other commands.")
+        else:
+            print("\nRun 'ace init --seed' to add starter bullets.")
+
+
 def cmd_version(args: argparse.Namespace) -> None:
     """Print the ACE version."""
     print(__version__)
@@ -554,6 +739,27 @@ def main() -> NoReturn:
         description="ACE (Agentic Context Engineering) - evolve LLM context via playbook deltas",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    init_parser = subparsers.add_parser("init", help="Initialize a new ACE playbook database")
+    init_parser.add_argument(
+        "--seed",
+        action="store_true",
+        default=True,
+        help="Seed with starter bullets (default: true)",
+    )
+    init_parser.add_argument(
+        "--no-seed",
+        action="store_false",
+        dest="seed",
+        help="Skip seeding with starter bullets",
+    )
+    init_parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Force reinitialize even if database exists (clears existing data)",
+    )
+    init_parser.add_argument("--json", action="store_true", help="Output as JSON")
+    init_parser.set_defaults(func=cmd_init)
 
     version_parser = subparsers.add_parser("version", help="Print the ACE version")
     version_parser.set_defaults(func=cmd_version)
