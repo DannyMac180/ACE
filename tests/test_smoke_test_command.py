@@ -3,9 +3,6 @@
 import json
 import subprocess
 import sys
-from unittest.mock import MagicMock, patch
-
-import pytest
 
 
 def test_smoke_test_model_with_mock_provider():
@@ -65,7 +62,7 @@ def test_smoke_test_model_json_output_with_mock():
             output = json.loads(json_line)
             assert output["status"] == "success"
             assert output["provider"] == "mock"
-    except (json.JSONDecodeError, KeyError) as e:
+    except (json.JSONDecodeError, KeyError):
         # If JSON parsing fails, at least check that success indicators are present
         assert '"status": "success"' in result.stdout or '"status":"success"' in result.stdout
 
