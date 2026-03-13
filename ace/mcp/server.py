@@ -10,6 +10,8 @@ from typing import Any
 
 from fastmcp import FastMCP
 
+from ace.core.config import load_config
+from ace.core.logging_utils import configure_logging
 from ace.core.merge import Delta, apply_delta
 from ace.core.storage.store_adapter import Store
 from ace.generator.schemas import TrajectoryDoc
@@ -173,6 +175,8 @@ def main() -> None:
     """
     import uvicorn
 
+    config = load_config()
+    configure_logging(config.logging.level, config.logging.format)
     uvicorn.run("ace.mcp.server:mcp", host="127.0.0.1", port=8000, reload=True)
 
 

@@ -3,6 +3,7 @@ import uuid
 from collections import Counter
 from typing import TYPE_CHECKING
 
+from ace.core.config import load_config
 from ace.llm import LLMClient, Message, create_llm_client
 
 from .parser import QualityParseError, ReflectionParseError, parse_quality, parse_reflection
@@ -21,8 +22,8 @@ class Reflector:
         llm_client: LLMClient | None = None,
         max_retries: int = 3,
         temperature: float = 0.3,
-        refinement_rounds: int = 1,
-        quality_threshold: float = 0.7,
+        refinement_rounds: int | None = None,
+        quality_threshold: float | None = None,
     ):
         """Initialize Reflector.
 
@@ -34,10 +35,25 @@ class Reflector:
             refinement_rounds: Maximum refinement iterations (1 = no refinement)
             quality_threshold: Quality score threshold (0-1) to stop early
         """
+        reflector_config = load_config().reflector if (
+            refinement_rounds is None or quality_threshold is None
+        ) else None
+        if refinement_rounds is None:
+            assert reflector_config is not None
+            resolved_refinement_rounds = reflector_config.refinement_rounds
+        else:
+            resolved_refinement_rounds = refinement_rounds
+
+        if quality_threshold is None:
+            assert reflector_config is not None
+            resolved_quality_threshold = reflector_config.quality_threshold
+        else:
+            resolved_quality_threshold = quality_threshold
+
         self.max_retries = max_retries
         self.temperature = temperature
-        self.refinement_rounds = max(1, refinement_rounds)
-        self.quality_threshold = quality_threshold
+        self.refinement_rounds = max(1, resolved_refinement_rounds)
+        self.quality_threshold = resolved_quality_threshold
         self.client = llm_client if llm_client is not None else create_llm_client()
 
     def reflect(

@@ -195,6 +195,41 @@ class EvalRunner:
 
         return {"status": "no_regression", "baseline_loaded": True}
 
+    def extract_baseline(self, results: dict[str, Any]) -> dict[str, float]:
+        """Extract a flat numeric baseline snapshot from evaluation results."""
+        baseline: dict[str, float] = {}
+        self._collect_numeric_metrics(results.get("summary", {}), baseline)
+        self._collect_numeric_metrics(results.get("details", {}), baseline)
+        return baseline
+
+    def write_baseline(self, results: dict[str, Any], output_path: str) -> dict[str, float]:
+        """Write a baseline JSON file containing flattened numeric metrics."""
+        baseline = self.extract_baseline(results)
+        path = Path(output_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("w", encoding="utf-8") as f:
+            json.dump(baseline, f, indent=2, sort_keys=True)
+        return baseline
+
+    @staticmethod
+    def _collect_numeric_metrics(
+        value: Any,
+        output: dict[str, float],
+        prefix: str = "",
+    ) -> None:
+        """Flatten nested numeric metrics into dot-delimited keys."""
+        if isinstance(value, dict):
+            for key, item in value.items():
+                metric_key = f"{prefix}.{key}" if prefix else str(key)
+                EvalRunner._collect_numeric_metrics(item, output, metric_key)
+            return
+
+        if isinstance(value, bool):
+            return
+
+        if isinstance(value, (int, float)) and prefix:
+            output[prefix] = float(value)
+
     def format_markdown(self, results: dict[str, Any]) -> str:
         """Format results as markdown report"""
         lines = [

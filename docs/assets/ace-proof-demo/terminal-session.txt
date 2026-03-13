@@ -1,0 +1,108 @@
+$ /home/dan-mcateer/dev/ACE/.venv/bin/python /home/dan-mcateer/dev/ACE/scripts/seed.py
+
+✓ Seeded 11 initial bullets
+  Version: 0
+  Total bullets in store: 11
+
+$ ACE_DB_URL=ace.db .venv/bin/python -m ace.cli retrieve "hybrid retrieval" --top-k 3
+
+Found 3 bullets:
+[strat-00001] (strategies_and_hard_rules)
+  Prefer hybrid retrieval: BM25 + embedding; rerank by lexical overlap with query terms; default top_k=24.
+  Tags: topic:retrieval, stack:python
+  Helpful: 0 | Harmful: 0
+[seed-retrieval-hygiene] (strategies_and_hard_rules)
+  Ensure retrieval queries are specific and context-aware to prevent irrelevant or conflicting information from polluting the context.
+  Tags: topic:retrieval, discipline:hygiene
+  Helpful: 0 | Harmful: 0
+[strat-00003] (strategies_and_hard_rules)
+  Consider bullets near-duplicate if cosine>0.90 OR minhash Jaccard>0.85; keep clearer text; transfer counters.
+  Tags: topic:refine, retrieval
+  Helpful: 0 | Harmful: 0
+
+$ /home/dan-mcateer/dev/ACE/.venv/bin/python /home/dan-mcateer/dev/ACE/scripts/demo_reflect.py demo-task.json
+
+{
+  "error_identification": "The first retrieval attempt was too generic.",
+  "root_cause_analysis": "The query omitted the concrete ACE action and tool surface.",
+  "correct_approach": "Include the exact task outcome and CLI surface in the retrieval query before reflecting on the run.",
+  "key_insight": "Specific task wording helps ACE surface tactical bullets instead of broad hygiene advice.",
+  "bullet_tags": [
+    {
+      "id": "strat-00001",
+      "tag": "helpful"
+    },
+    {
+      "id": "seed-retrieval-hygiene",
+      "tag": "helpful"
+    }
+  ],
+  "candidate_bullets": [
+    {
+      "section": "strategies_and_hard_rules",
+      "content": "When retrieval returns a generic result, tighten the query with the concrete task and tool names before reflecting.",
+      "tags": [
+        "repo:ace",
+        "topic:retrieval",
+        "tool:cli"
+      ]
+    }
+  ],
+  "iteration": 0,
+  "parent_id": null
+}
+
+$ ACE_DB_URL=ace.db .venv/bin/python -m ace.cli curate --reflection reflection.json --json
+
+{
+  "ops": [
+    {
+      "op": "INCR_HELPFUL",
+      "target_id": "strat-00001",
+      "new_bullet": null,
+      "patch": null
+    },
+    {
+      "op": "INCR_HELPFUL",
+      "target_id": "seed-retrieval-hygiene",
+      "new_bullet": null,
+      "patch": null
+    },
+    {
+      "op": "ADD",
+      "target_id": null,
+      "new_bullet": {
+        "id": "stra-6d8ad1c6",
+        "section": "strategies_and_hard_rules",
+        "content": "When retrieval returns a generic result, tighten the query with the concrete task and tool names before reflecting.",
+        "tags": [
+          "repo:ace",
+          "topic:retrieval",
+          "tool:cli"
+        ]
+      },
+      "patch": null
+    }
+  ]
+}
+
+$ ACE_DB_URL=ace.db .venv/bin/python -m ace.cli commit --delta delta.json --json
+
+{
+  "version": 1
+}
+
+$ ACE_DB_URL=ace.db .venv/bin/python -m ace.cli stats --json
+
+{
+  "version": 1,
+  "total_bullets": 12,
+  "helpful": 2,
+  "harmful": 0,
+  "helpful_ratio": 1.0,
+  "sections": {
+    "strategies_and_hard_rules": 8,
+    "troubleshooting_and_pitfalls": 1,
+    "code_snippets_and_templates": 3
+  }
+}

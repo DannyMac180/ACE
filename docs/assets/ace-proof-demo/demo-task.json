@@ -1,0 +1,15 @@
+{
+  "query": "Improve the ACE retrieval wording for a CLI proof post demo",
+  "retrieved_bullet_ids": [
+    "strat-00001",
+    "seed-retrieval-hygiene"
+  ],
+  "code_diff": "",
+  "test_output": "Initial retrieve surfaced one tactical bullet and one broad hygiene bullet.",
+  "logs": "No runtime failure. Feedback focused on tightening the retrieval query.",
+  "env_meta": {
+    "final_status": "success",
+    "source": "launch-proof-demo",
+    "surface": "cli"
+  }
+}

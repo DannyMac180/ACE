@@ -62,6 +62,12 @@ passes = 1
 # Similarity threshold for deduplicating candidate bullets (0.0-1.0)
 similarity_threshold = 0.85
 
+# Maximum refinement iterations for a single reflection (1 = no refinement)
+refinement_rounds = 1
+
+# Minimum quality score before stopping refinement early
+quality_threshold = 0.7
+
 [llm]
 # Default LLM provider (openai, anthropic, etc.)
 provider = "openai"

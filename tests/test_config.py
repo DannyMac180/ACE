@@ -18,20 +18,28 @@ def test_load_default_config():
     assert config.retrieval.top_k == 24
     assert config.refine.threshold == 0.90
     assert config.logging.level == "INFO"
+    assert config.reflector.refinement_rounds == 1
+    assert config.reflector.quality_threshold == 0.7
 
 
 def test_env_override():
     """Test environment variable overrides."""
     os.environ["ACE_DB_URL"] = "postgres://test"
     os.environ["ACE_RETRIEVAL_TOPK"] = "50"
+    os.environ["ACE_REFLECTOR_REFINEMENT_ROUNDS"] = "3"
+    os.environ["ACE_REFLECTOR_QUALITY_THRESHOLD"] = "0.8"
 
     try:
         config = load_config()
         assert config.database.url == "postgres://test"
         assert config.retrieval.top_k == 50
+        assert config.reflector.refinement_rounds == 3
+        assert config.reflector.quality_threshold == 0.8
     finally:
         del os.environ["ACE_DB_URL"]
         del os.environ["ACE_RETRIEVAL_TOPK"]
+        del os.environ["ACE_REFLECTOR_REFINEMENT_ROUNDS"]
+        del os.environ["ACE_REFLECTOR_QUALITY_THRESHOLD"]
 
 
 def test_custom_config_path():
@@ -95,6 +103,8 @@ def test_config_types():
     assert isinstance(config.mcp.port, int)
     assert isinstance(config.llm.temperature, float)
     assert isinstance(config.llm.max_tokens, int)
+    assert isinstance(config.reflector.refinement_rounds, int)
+    assert isinstance(config.reflector.quality_threshold, float)
 
 
 def test_validation_retrieval_top_k():
@@ -197,6 +207,86 @@ max_tokens = 1000
 
     try:
         with pytest.raises(ValueError, match="logging.level must be one of"):
+            load_config(temp_path)
+    finally:
+        temp_path.unlink()
+
+
+def test_validation_invalid_refinement_rounds():
+    """Test validation of reflector.refinement_rounds."""
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False) as f:
+        f.write("""
+[database]
+url = "sqlite:///test.db"
+[embeddings]
+model = "test"
+[retrieval]
+top_k = 10
+lexical_weight = 0.5
+[refine]
+threshold = 0.9
+minhash_threshold = 0.85
+[logging]
+level = "INFO"
+format = "json"
+[mcp]
+transport = "stdio"
+port = 8000
+[reflector]
+passes = 1
+similarity_threshold = 0.85
+refinement_rounds = 0
+quality_threshold = 0.7
+[llm]
+provider = "openai"
+model = "gpt-4"
+temperature = 0.0
+max_tokens = 1000
+""")
+        temp_path = Path(f.name)
+
+    try:
+        with pytest.raises(ValueError, match="reflector.refinement_rounds must be >= 1"):
+            load_config(temp_path)
+    finally:
+        temp_path.unlink()
+
+
+def test_validation_invalid_quality_threshold():
+    """Test validation of reflector.quality_threshold."""
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False) as f:
+        f.write("""
+[database]
+url = "sqlite:///test.db"
+[embeddings]
+model = "test"
+[retrieval]
+top_k = 10
+lexical_weight = 0.5
+[refine]
+threshold = 0.9
+minhash_threshold = 0.85
+[logging]
+level = "INFO"
+format = "json"
+[mcp]
+transport = "stdio"
+port = 8000
+[reflector]
+passes = 1
+similarity_threshold = 0.85
+refinement_rounds = 2
+quality_threshold = 1.1
+[llm]
+provider = "openai"
+model = "gpt-4"
+temperature = 0.0
+max_tokens = 1000
+""")
+        temp_path = Path(f.name)
+
+    try:
+        with pytest.raises(ValueError, match="reflector.quality_threshold must be in"):
             load_config(temp_path)
     finally:
         temp_path.unlink()

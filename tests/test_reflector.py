@@ -523,6 +523,32 @@ class TestLLMClientInjection:
 class TestIterativeRefinement:
     """Tests for iterative refinement in Reflector."""
 
+    def test_reflector_skips_config_load_when_explicit_thresholds_provided(self):
+        """Explicit refinement settings should not require config access."""
+        mock_client = MockLLMClient()
+
+        with patch("ace.reflector.reflector.load_config") as mock_load_config:
+            reflector = Reflector(
+                llm_client=mock_client,
+                refinement_rounds=2,
+                quality_threshold=0.85,
+            )
+
+        mock_load_config.assert_not_called()
+        assert reflector.refinement_rounds == 2
+        assert reflector.quality_threshold == 0.85
+
+    def test_reflector_loads_refinement_config_defaults(self, monkeypatch):
+        """Test Reflector uses config-backed refinement defaults when unset."""
+        monkeypatch.setenv("ACE_REFLECTOR_REFINEMENT_ROUNDS", "4")
+        monkeypatch.setenv("ACE_REFLECTOR_QUALITY_THRESHOLD", "0.9")
+
+        mock_client = MockLLMClient()
+        reflector = Reflector(llm_client=mock_client)
+
+        assert reflector.refinement_rounds == 4
+        assert reflector.quality_threshold == 0.9
+
     def test_refinement_rounds_default(self):
         """Test default refinement_rounds is 1 (no refinement)."""
         mock_client = MagicMock(spec=LLMClient)

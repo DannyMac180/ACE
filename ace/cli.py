@@ -8,6 +8,7 @@ from typing import Any, NoReturn
 
 from ace import __version__
 from ace.core.config import load_config
+from ace.core.logging_utils import configure_logging
 
 
 def read_json_input(path_or_stdin: str | None) -> dict[str, Any]:
@@ -93,10 +94,29 @@ def cmd_reflect(args: argparse.Namespace) -> None:
 def cmd_curate(args: argparse.Namespace) -> None:
     """Convert reflection to delta operations."""
     from ace.curator.curator import curate
-    from ace.reflector.schema import Reflection
+    from ace.reflector.schema import BulletTag, CandidateBullet, Reflection
 
     reflection_data = read_json_input(args.reflection)
-    reflection = Reflection(**reflection_data)
+    reflection = Reflection(
+        error_identification=reflection_data.get("error_identification"),
+        root_cause_analysis=reflection_data.get("root_cause_analysis"),
+        correct_approach=reflection_data.get("correct_approach"),
+        key_insight=reflection_data.get("key_insight"),
+        bullet_tags=[
+            BulletTag(id=tag["id"], tag=tag["tag"])
+            for tag in reflection_data.get("bullet_tags", [])
+        ],
+        candidate_bullets=[
+            CandidateBullet(
+                section=bullet["section"],
+                content=bullet["content"],
+                tags=bullet.get("tags", []),
+            )
+            for bullet in reflection_data.get("candidate_bullets", [])
+        ],
+        iteration=reflection_data.get("iteration", 0),
+        parent_id=reflection_data.get("parent_id"),
+    )
 
     delta = curate(reflection)
     print_output(delta.model_dump(), as_json=args.json)
@@ -452,6 +472,9 @@ def cmd_eval_run(args: argparse.Namespace) -> None:
         fail_on_regression=args.fail_on_regression,
     )
 
+    if args.write_baseline:
+        runner.write_baseline(results, args.write_baseline)
+
     # Format output
     if args.format == "json" or args.json:
         output_data = results
@@ -760,6 +783,10 @@ def main() -> NoReturn:
     eval_run.add_argument("--out", help="Output file path (default: stdout)")
     eval_run.add_argument("--baseline", help="Baseline JSON for regression detection")
     eval_run.add_argument(
+        "--write-baseline",
+        help="Write a flattened baseline JSON file from the current evaluation run",
+    )
+    eval_run.add_argument(
         "--fail-on-regression",
         action="store_true",
         help="Exit with error code if regression detected",
@@ -774,6 +801,9 @@ def main() -> NoReturn:
     smoke_test_parser.set_defaults(func=cmd_smoke_test_model)
 
     args = parser.parse_args()
+    if args.func is not cmd_version:
+        config = load_config()
+        configure_logging(config.logging.level, config.logging.format)
     args.func(args)
     sys.exit(0)
 

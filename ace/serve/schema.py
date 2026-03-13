@@ -1,7 +1,7 @@
 """Schemas for online serving mode."""
 
 from datetime import UTC, datetime
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel, Field
 
@@ -11,7 +11,7 @@ def _utcnow() -> datetime:
     return datetime.now(UTC)
 
 
-class AdaptationMode(str, Enum):
+class AdaptationMode(StrEnum):
     """Adaptation mode for ACE.
 
     - OFFLINE: Batch processing with ground-truth labels available
@@ -49,7 +49,7 @@ class FeedbackResponse(BaseModel):
     message: str = ""
 
 
-class WarmupSource(str, Enum):
+class WarmupSource(StrEnum):
     """Source of warmup data.
 
     - NONE: Cold start, no preloaded playbook

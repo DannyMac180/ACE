@@ -120,3 +120,50 @@ class TestEvalRunner:
         assert "retrieval" in result["details"]
         assert result["details"]["retrieval"]["status"] == "complete"
         assert result["details"]["retrieval"]["cases_run"] == 5
+
+    def test_extract_baseline_flattens_numeric_metrics(self) -> None:
+        """Baseline extraction should flatten nested numeric metrics only."""
+        runner = EvalRunner()
+        results = {
+            "summary": {
+                "retrieval.mrr": 0.91,
+                "reflection_status": "not_implemented",
+            },
+            "details": {
+                "retrieval": {
+                    "cases_run": 5,
+                    "status": "complete",
+                    "metrics": {
+                        "recall_at_5": 0.8,
+                    },
+                },
+                "e2e": {
+                    "passed": True,
+                },
+            },
+        }
+
+        baseline = runner.extract_baseline(results)
+
+        assert baseline == {
+            "retrieval.mrr": 0.91,
+            "retrieval.cases_run": 5.0,
+            "retrieval.metrics.recall_at_5": 0.8,
+        }
+
+    def test_write_baseline_writes_flattened_json(self, tmp_path: Path) -> None:
+        """Baseline writer should persist flattened metrics to disk."""
+        runner = EvalRunner()
+        results = {
+            "summary": {"latency_ms": 101.5},
+            "details": {"retrieval": {"cases_run": 5}},
+        }
+        output_path = tmp_path / "baseline.json"
+
+        baseline = runner.write_baseline(results, str(output_path))
+
+        assert baseline == {
+            "latency_ms": 101.5,
+            "retrieval.cases_run": 5.0,
+        }
+        assert json.loads(output_path.read_text()) == baseline
