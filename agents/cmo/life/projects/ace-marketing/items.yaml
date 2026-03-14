@@ -20,10 +20,16 @@
   source: "agents/cmo/memory/2026-03-11.md"
   recorded_at: "2026-03-11"
 - id: ace-marketing-2026-03-11-blockers-v2
-  status: active
+  status: superseded
+  superseded_by: ace-marketing-2026-03-14-tooling-state-v3
   fact: "Heartbeat shells now expose live Paperclip runtime access again, but the bd and qmd CLIs are still unavailable, so governed task work still depends on receiving an assigned issue and memory recall still uses local-file fallback."
   source: "agents/cmo/memory/2026-03-11.md"
   recorded_at: "2026-03-11"
+- id: ace-marketing-2026-03-14-tooling-state-v3
+  status: active
+  fact: "On March 14, 2026, the CMO confirmed heartbeat shells expose live Paperclip runtime access and the bd CLI is available again, while qmd is still unavailable; issue continuity can now use both Paperclip and bd, but memory recall still requires local-file fallback."
+  source: "agents/cmo/memory/2026-03-14.md"
+  recorded_at: "2026-03-14"
 - id: ace-marketing-2026-03-11-campaign-system
   status: active
   fact: "ACE now has a concrete four-week campaign system with a fixed message stack, weekly category-proof-adoption cadence, founder-led reply strategy, CTA ladder, and a weekly scoreboard for qualified impressions, clicks, adoption signals, serious conversations, and repeat-user signals."

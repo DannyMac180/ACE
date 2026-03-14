@@ -53,7 +53,7 @@ Current conversion thesis:
 
 Current workflow constraint:
 
-- Paperclip coordination is live again in heartbeat shells, but `bd` plus `qmd` are still unavailable here, so repo-local plans and daily notes remain the fallback for issue and memory continuity.
+- Paperclip coordination is live again in heartbeat shells, and `bd` is available again for issue lookup, but `qmd` is still unavailable here, so repo-local daily notes remain the fallback for memory recall while governed issue continuity can use both Paperclip and `bd`.
 - The active CMO execution issue is now `ACE-10`; the current job is launch preflight and disciplined week-one operations, while `ACE-9` stays with the CEO for parent oversight and Friday scoreboard accountability.
 - The highest-value remaining preflight work is now real-world operator completion on X: apply the governed profile surface, import the launch calendar, load the three scheduled drafts, and confirm the best URL-backed watchlist rows still look live before the Sunday, March 15, 2026 `20:00` ET gate.
 - The fastest execution surface for those remaining operator tasks is now `plans/2026-03-14-cmo-sunday-preflight-command-card.md`; the launch log remains the canonical proof and scoreboard source of truth.
