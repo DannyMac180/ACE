@@ -157,6 +157,21 @@ explicitly instead of leaving the row blank.
 | Monday, Wednesday, and Friday drafts pasted into live composer or scheduler |  | scheduler name or draft confirmation | `plans/2026-03-13-cmo-week-one-publishing-surface.md` | pending | confirm Monday is loaded as a connected `9`-post thread and the tracked URLs were not edited |
 | Tuesday and Thursday watchlist validated against live conversations |  | source handles, search notes, or validation note | `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` | pending | keep at least `5` Tuesday targets plus `5` Thursday targets after replacing colder seeds with warmer live prospects where possible |
 
+## Audience Baseline Snapshot
+
+Use this on Sunday, March 15, 2026 before the first week-one post goes live.
+
+This locks the exact starting audience numbers that later week-one profile and
+follow snapshots should be compared against.
+
+If X only shows a rolling or partial analytics surface, record the exact view
+used in `Source surface` and keep the timestamp precise so later comparisons do
+not drift.
+
+| Captured at | Starting follower count | Starting profile-visits reading | Source surface | Logged by | Status | Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+|  |  |  |  | Dan | pending | capture this immediately after the governed week-one bio and website link are applied on Sunday, March 15, 2026 |
+
 ## Sunday Go Or No-Go Gate
 
 Use this rule on Sunday, March 15, 2026 so Monday, March 16, 2026 launch does
@@ -297,7 +312,7 @@ post changes that affect profile conversion.
 
 | Date | Motion | Code | Live profile or pinned post URL | Metric snapshot | Next check due by | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2026-03-15 | apply the governed week-one bio and website link | `profile_w1_readme` |  | baseline profile visits and follows before Monday publish | 2026-03-16 | pending | confirm the website field uses the exact `profile_w1_readme` URL and note any bio shortening forced by X character limits |
+| 2026-03-15 | apply the governed week-one bio and website link | `profile_w1_readme` |  | baseline snapshot recorded in `Audience Baseline Snapshot` before Monday publish | 2026-03-16 | pending | confirm the website field uses the exact `profile_w1_readme` URL, note any bio shortening forced by X character limits, and point to the Sunday baseline row |
 | 2026-03-16 | pin the Monday anchor thread after live URL verification | `profile_w1_readme` |  | `+3h` and `EOD` Monday profile visits plus new follows after the pin lands | 2026-03-17 | pending | log the live pinned-thread URL and leave the website field on `profile_w1_readme` through Friday close unless an exception is logged first |
 
 ## Distribution Pass Log
@@ -381,7 +396,7 @@ Use these definitions when filling the Friday scoreboard row.
 | Engagement rate | the platform-reported engagement rate for the governed launch posts | a hand-added blend of different post types or raw reply counts without the platform denominator |
 | Outbound clicks | total tracked clicks across all approved week-one launch URLs | untracked clicks, profile taps without a tracked destination, or estimates from memory |
 | Profile visits | total profile visits attributed to governed week-one post snapshots, Monday pinning checks, and logged Tuesday or Thursday distribution effects | baseline account traffic outside governed launch windows or guessed profile interest without a captured snapshot |
-| New follows | total new follows observed during governed week-one post snapshots and profile-surface checks after baseline is captured on Sunday, March 15, 2026 | historical follower growth outside launch week, unfalsifiable estimates, or repeat touches from existing followers |
+| New follows | total new follows observed during governed week-one post snapshots and profile-surface checks after the Sunday, March 15, 2026 baseline snapshot is captured | historical follower growth outside launch week, unfalsifiable estimates, or repeat touches from existing followers |
 | README clicks | tracked clicks on `w1_thread_readme`, `reply_w1_thread_readme`, `dm_w1_readme`, and `profile_w1_readme` | clicks to proof, example, MCP, or API destinations |
 | Proof clicks | tracked clicks on `w1_proof_demo` and `reply_w1_proof_demo` | README or example clicks, even if they came from the Wednesday audience |
 | Setup starts | a unique builder who asks for or begins a concrete setup path through the worked example, MCP guide, API route, or a live issue during launch week | vague curiosity, passive likes, or category-only replies with no setup intent |
@@ -404,8 +419,9 @@ Use this file as the only shared scoreboard source of truth.
    When available, include profile visits and new follows in the metric
    snapshot or notes so week-one audience growth is attributable alongside
    clicks and replies.
-3. CMO adds one row to the `Profile Surface Log` whenever the week-one bio,
-   website link, or pinned post changes, and records the Monday `+3h` and
+3. CMO records one Sunday row in `Audience Baseline Snapshot` before Monday
+   launch, then adds one row to the `Profile Surface Log` whenever the week-one
+   bio, website link, or pinned post changes, including the Monday `+3h` and
    `EOD` profile-lift snapshot after the anchor thread pin lands.
 4. CMO adds one row to the `Workflow Intake Log` for every GitHub issue or
    discussion opened from launch-week traffic.
@@ -435,6 +451,8 @@ Every qualified public reply or DM must be logged in this file within 24 hours.
 Minimum capture standard:
 
 - add the source post to the `Execution Log` above if it is not already there
+- confirm the Sunday `Audience Baseline Snapshot` is filled before counting any
+  launch-week `New follows` lift
 - add the profile action to the `Profile Surface Log` if the bio, website link,
   or pinned post changed
 - add the distribution session to the `Distribution Pass Log` if the

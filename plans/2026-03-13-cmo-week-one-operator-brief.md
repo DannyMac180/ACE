@@ -90,7 +90,8 @@ Before launch week starts:
 2. apply `plans/2026-03-13-cmo-week-one-profile-surface.md` first so the X bio
    and website link match the ACE category thesis before launch traffic lands,
    leave the existing pin in place until the Monday anchor thread is live, and
-   record the baseline profile visits plus follows in
+   record the starting follower count plus profile-visits reading in the
+   `Audience Baseline Snapshot` section of
    `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`
 3. copy the approved Monday, Wednesday, and Friday post drafts into the
    actual X composer or scheduler from

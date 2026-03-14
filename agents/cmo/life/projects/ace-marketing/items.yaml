@@ -201,3 +201,8 @@
   fact: "On Saturday, March 14, 2026, the CMO promoted `Profile visits` and `New follows` to first-class governed week-one metrics by adding them to the launch scoreboard definitions, raw capture tables, and editorial targets, so ACE week-one can measure owned-audience growth alongside clicks, setup intent, and conversations."
   source: "agents/cmo/memory/2026-03-14.md"
   recorded_at: "2026-03-14"
+- id: ace-marketing-2026-03-14-audience-baseline-snapshot
+  status: active
+  fact: "Later on Saturday, March 14, 2026, the CMO added a governed Sunday audience-baseline snapshot to the week-one launch stack so Dan must record the starting follower count, starting profile-visits reading, timestamp, and source surface before Monday launch-week audience-growth comparisons begin."
+  source: "agents/cmo/memory/2026-03-14.md"
+  recorded_at: "2026-03-14"

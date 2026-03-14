@@ -84,8 +84,8 @@ Before launch week starts:
    thesis instead of a generic builder message
 4. leave the current pinned post alone until the Monday anchor thread is live
 5. note any deviation in `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`
-   before launch week starts, and record the baseline profile visits plus new
-   follows in the `Profile Surface Raw Capture` table there
+   before launch week starts, and record the starting follower count plus
+   profile-visits reading in the `Audience Baseline Snapshot` section there
 
 ## Monday, March 16, 2026 Follow-Through
 

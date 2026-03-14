@@ -174,6 +174,22 @@ This is the raw note that feeds the canonical `Sunday Go Or No-Go Gate` in
 | --- | --- | --- | --- | --- | --- |
 | 2026-03-15 20:00 ET | pending |  |  | pending | mark `go` only if the governed profile, calendar, scheduler drafts, and validated watchlist are all complete with evidence |
 
+## Audience Baseline Snapshot
+
+Capture this once on Sunday, March 15, 2026 after the governed week-one bio
+and website link are live.
+
+This is the raw note that feeds the `Audience Baseline Snapshot` in
+`plans/2026-03-16-cmo-launch-operations-log.md`.
+
+If X only shows a rolling or partial view, record the exact surface and
+timestamp so later `Profile visits` and `New follows` comparisons are still
+auditable.
+
+| Captured at | Starting follower count | Starting profile-visits reading | Source surface | Transferred to launch log | Notes |
+| --- | --- | --- | --- | --- | --- |
+|  |  |  |  | pending | fill this immediately after the Sunday profile update so Monday through Friday audience lift has a fixed starting point |
+
 ## Profile Surface Raw Capture
 
 Use this table for the governed week-one bio, website link, and Monday pinning
@@ -182,7 +198,7 @@ motions before transferring the final details into the `Profile Surface Log` in
 
 | Date | Motion | Code | Live profile or pinned post URL | Profile visits snapshot | New follows snapshot | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2026-03-15 | apply week-one bio and website link | `profile_w1_readme` |  | baseline before Monday publish | baseline before Monday publish | pending | paste the live website-field URL here and note if the bio had to be shortened for X character limits |
+| 2026-03-15 | apply week-one bio and website link | `profile_w1_readme` |  | baseline snapshot recorded above before Monday publish | baseline snapshot recorded above before Monday publish | pending | paste the live website-field URL here, note if the bio had to be shortened for X character limits, and make sure the audience baseline row above is filled |
 | 2026-03-16 | pin the Monday anchor thread after URL verification | `profile_w1_readme` |  | `+3h` and `EOD` Monday profile visits | `+3h` and `EOD` Monday follows | pending | leave the README-first website link in place through Friday unless the launch log records an exception |
 
 ## Tuesday And Thursday Watchlist
