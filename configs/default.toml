@@ -69,11 +69,11 @@ refinement_rounds = 1
 quality_threshold = 0.7
 
 [llm]
-# Default LLM provider (openai, anthropic, etc.)
-provider = "openai"
+# Default LLM provider (supported: mock, openrouter)
+provider = "openrouter"
 
-# Model name
-model = "gpt-4o-mini"
+# Model name for the configured provider
+model = "openai/gpt-4o-mini"
 
 # Temperature for reflection/curation
 temperature = 0.0

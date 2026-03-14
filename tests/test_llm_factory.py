@@ -1,9 +1,9 @@
-# tests/test_llm_factory.py
+import os
 from unittest.mock import patch
 
 import pytest
 
-from ace.core.config import LLMConfig
+from ace.core.config import LLMConfig, load_config
 from ace.llm import MockLLMClient, OpenRouterClient, create_llm_client
 
 
@@ -80,3 +80,26 @@ class TestCreateLLMClient:
 
         mock_get_config.assert_called_once()
         assert isinstance(client, MockLLMClient)
+
+    @patch.dict("os.environ", {"OPENROUTER_API_KEY": "test-key"})
+    def test_default_config_creates_supported_client(self):
+        """Test factory can build a client from the default config."""
+        overridden_keys = (
+            "ACE_LLM_PROVIDER",
+            "ACE_LLM_MODEL",
+            "ACE_LLM_TEMPERATURE",
+            "ACE_LLM_MAX_TOKENS",
+        )
+        previous_values = {key: os.environ.pop(key, None) for key in overridden_keys}
+
+        try:
+            config = load_config()
+        finally:
+            for key, value in previous_values.items():
+                if value is not None:
+                    os.environ[key] = value
+
+        client = create_llm_client(config.llm)
+
+        assert isinstance(client, OpenRouterClient)
+        assert client.model == "openai/gpt-4o-mini"

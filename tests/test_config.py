@@ -11,13 +11,28 @@ from ace.core.config import SUPPORTED_ENV_VARS, load_config
 
 def test_load_default_config():
     """Test loading default config file."""
-    config = load_config()
+    overridden_keys = (
+        "ACE_LLM_PROVIDER",
+        "ACE_LLM_MODEL",
+        "ACE_LLM_TEMPERATURE",
+        "ACE_LLM_MAX_TOKENS",
+    )
+    previous_values = {key: os.environ.pop(key, None) for key in overridden_keys}
+
+    try:
+        config = load_config()
+    finally:
+        for key, value in previous_values.items():
+            if value is not None:
+                os.environ[key] = value
 
     assert config.database.url == "sqlite:///ace.db"
     assert config.embeddings.model == "bge-small"
     assert config.retrieval.top_k == 24
     assert config.refine.threshold == 0.90
     assert config.logging.level == "INFO"
+    assert config.llm.provider == "openrouter"
+    assert config.llm.model == "openai/gpt-4o-mini"
     assert config.reflector.refinement_rounds == 1
     assert config.reflector.quality_threshold == 0.7
 
@@ -301,4 +316,5 @@ def test_env_example_covers_supported_env_vars():
         if line.strip() and not line.lstrip().startswith("#")
     }
 
-    assert entries == SUPPORTED_ENV_VARS
+    assert SUPPORTED_ENV_VARS.issubset(entries)
+    assert entries - SUPPORTED_ENV_VARS == {"OPENROUTER_API_KEY"}
