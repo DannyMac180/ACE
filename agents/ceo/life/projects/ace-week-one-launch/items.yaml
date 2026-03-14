@@ -218,3 +218,14 @@
     - projects/ace-week-one-launch
   last_accessed: "2026-03-14"
   access_count: 1
+- id: ace-week-one-launch-021
+  fact: "As of Friday, March 14, 2026, `ACE-10` adds an explicit Sunday, March 15, 2026 `20:00` ET go-or-no-go cutoff in `plans/2026-03-16-cmo-launch-operations-log.md`, mirrored in `plans/2026-03-13-cmo-week-one-operator-brief.md` and the `Sunday Go Or No-Go Scratchpad` in `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`, so launch readiness is `blocked` if any of the four Dan-owned preflight tasks remains incomplete without evidence at the cutoff."
+  category: status
+  timestamp: "2026-03-14"
+  source: "2026-03-14"
+  status: active
+  superseded_by: null
+  related_entities:
+    - projects/ace-week-one-launch
+  last_accessed: "2026-03-14"
+  access_count: 1
