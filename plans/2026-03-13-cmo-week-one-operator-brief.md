@@ -117,10 +117,13 @@ Before launch week starts:
     `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` with at least `5`
     live Tuesday targets before launch week starts, using the seeded builder
     pool plus the source-pool order and search seeds in that file instead of
-    starting from a blank X search
+    starting from a blank X search, and paste a concrete post URL or dated
+    search note into each validated row so Sunday proof is based on live
+    threads rather than handle memory
 11. validate the Thursday watchlist in the same file with at least `5` live
     Thursday targets, replacing colder seeds with warmer Wednesday engagers
-    first when possible
+    first when possible, and paste a concrete post URL or dated search note
+    into each validated row before marking the task complete
 12. complete the `Sunday Preflight Completion Receipt` in
    `plans/2026-03-16-cmo-launch-operations-log.md` before Sunday close so the
    profile update, calendar import, each scheduler draft, and each watchlist
@@ -291,6 +294,9 @@ Same-day follow-up:
 - work from the prefilled Tuesday watchlist in the live capture sheet before
   searching for new conversations from scratch; if the initial queue is weak,
   use the watchlist search seeds in that same file in priority order
+- treat handle-only seed rows as a starting pool, not a validated queue; before
+  the pass starts, prefer rows that already carry a live post URL or a dated
+  search note from the last `72h`
 - log each distribution pass, qualified reply burst, and DM thread before the
   day ends
 - capture the sharpest Tuesday objection or reply wording for reuse so the
@@ -368,6 +374,9 @@ Same-day follow-up:
 - start with the Thursday watchlist in the live capture sheet so proof
   responders and unresolved Monday prospects are triaged in priority order; use
   the Thursday search seeds only after those warmer targets are exhausted
+- prefer rows that already carry a live post URL or a dated validation note so
+  Thursday follow-up starts from concrete proof or workflow threads, not a
+  generic account list
 - note the strongest repeated setup objection so Friday copy and replies can
   meet it directly
 - promote the strongest Thursday setup objection or workflow-fit question into

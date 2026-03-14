@@ -241,6 +241,14 @@ Selection rules:
 - replace stale or low-signal targets during the week, but keep the original
   notes so the watchlist becomes future distribution memory
 
+Validation evidence rule:
+
+- do not mark the Tuesday or Thursday watchlist `prepared` from handles alone
+- before Sunday close, every validated target should include either one
+  concrete live post URL or one dated search note from the last `72h`
+- keep the older seed rows when they are still useful, but add the live-thread
+  evidence in the same row before treating that target as launch-ready
+
 ## Watchlist Search Seeds
 
 Use these search prompts to find adjacent conversations faster on X when the
@@ -272,18 +280,18 @@ Current seed-pool rule:
 - before Thursday, replace any colder seed with warmer Monday or Wednesday
   engagers first; the seed pool exists so Dan does not start from a blank tab
 
-| Day | Handle or post URL | Why this target fits ACE | Pain signal to match | Likely first code | Backup code | Status | Notes |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Tuesday | `@simonw` | practical coding-agent and agent-loop notes attract builders who care about inspectability and real tool behavior | agentic-loop safety, context drift, or tool reliability | `reply_w1_thread_readme` | `dm_w1_readme` | queued | prioritize when the thread already names failures, prompts, or long-lived agent state |
-| Tuesday | `@swyx` | high-signal AI-engineering audience discussing MCP, tooling, and agent stacks can compound category reach fast | MCP workflow design or prompt-architecture drift | `reply_w1_adoption_example` | `dm_w1_example_doc` | queued | best when the conversation is operational rather than category-only |
-| Tuesday | `@jxnlco` | practical evals and LLM-ops audience where failure-pattern language lands well | eval regressions, weak reliability, or repeated failures | `reply_w1_thread_readme` | `dm_w1_readme` | queued | use the thesis angle first, then move to DM if the workflow is real |
-| Tuesday | `@HamelHusain` | deep evals and failure-analysis discussions often surface reusable workflow pain | repeated failure patterns or eval blind spots | `reply_w1_thread_readme` | `dm_w1_example_doc` | queued | good route when the thread already asks how to turn failures into product learning |
-| Tuesday | `@latentspacepod` | AI-engineering media node surfaces adjacent builder debates Dan's audience already watches | coding-agent architecture, memory, or MCP tooling | `reply_w1_adoption_example` | `dm_w1_example_doc` | queued | use when a new episode, clip, or quote-post triggers implementation questions |
-| Thursday | `@cursor_ai` | large pool of active coding-agent users who often ask workflow-fit questions | workflow fit, setup friction, or adoption intent | `reply_w1_adoption_example` | `dm_w1_example_doc` | queued | replace with warmer Monday or Wednesday engagers first if they appear |
-| Thursday | `@leerob` | technical product audience discussing developer workflow changes and tool fit can turn proof into adoption intent | dev-workflow fit, proof skepticism, or adoption blockers | `reply_w1_proof_demo` | `dm_w1_example_doc` | queued | best after Wednesday proof when the objection is whether ACE fits a real stack |
-| Thursday | `@never_settles_` | hands-on MCP and browser-workflow debugging threads sit close to ACE setup pain | MCP integration friction or repeated workflow failures | `reply_w1_adoption_example` | `dm_w1_mcp_guide` | queued | prioritize if the thread already includes toolchain details or debug logs |
-| Thursday | `@willmcgugan` | terminal and agent-workflow audience has real implementation instincts and cares about inspectability | terminal agent UX, inspectability, or setup friction | `reply_w1_proof_demo` | `dm_w1_api_ref` | queued | useful for proof-first follow-up when README thesis is no longer enough |
-| Thursday | `@amanrsanger` | coding-agent builder audience is likely to care about concrete setup and repeat failures | coding-agent workflow fit or repeated failure pattern | `reply_w1_adoption_example` | `dm_w1_example_doc` | queued | keep only if warmer Monday or Wednesday engagers do not fully populate Thursday |
+| Day | Handle or post URL | Validated at | Why this target fits ACE | Pain signal to match | Likely first code | Backup code | Status | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Tuesday | `@simonw` | `2026-03-13` seed | practical coding-agent and agent-loop notes attract builders who care about inspectability and real tool behavior | agentic-loop safety, context drift, or tool reliability | `reply_w1_thread_readme` | `dm_w1_readme` | queued | replace the handle with a live post URL or add a dated search note before Sunday close; prioritize when the thread already names failures, prompts, or long-lived agent state |
+| Tuesday | `@swyx` | `2026-03-13` seed | high-signal AI-engineering audience discussing MCP, tooling, and agent stacks can compound category reach fast | MCP workflow design or prompt-architecture drift | `reply_w1_adoption_example` | `dm_w1_example_doc` | queued | replace the handle with a live post URL or add a dated search note before Sunday close; best when the conversation is operational rather than category-only |
+| Tuesday | `@jxnlco` | `2026-03-13` seed | practical evals and LLM-ops audience where failure-pattern language lands well | eval regressions, weak reliability, or repeated failures | `reply_w1_thread_readme` | `dm_w1_readme` | queued | replace the handle with a live post URL or add a dated search note before Sunday close; use the thesis angle first, then move to DM if the workflow is real |
+| Tuesday | `@HamelHusain` | `2026-03-13` seed | deep evals and failure-analysis discussions often surface reusable workflow pain | repeated failure patterns or eval blind spots | `reply_w1_thread_readme` | `dm_w1_example_doc` | queued | replace the handle with a live post URL or add a dated search note before Sunday close; good route when the thread already asks how to turn failures into product learning |
+| Tuesday | `@latentspacepod` | `2026-03-13` seed | AI-engineering media node surfaces adjacent builder debates Dan's audience already watches | coding-agent architecture, memory, or MCP tooling | `reply_w1_adoption_example` | `dm_w1_example_doc` | queued | replace the handle with a live post URL or add a dated search note before Sunday close; use when a new episode, clip, or quote-post triggers implementation questions |
+| Thursday | `@cursor_ai` | `2026-03-13` seed | large pool of active coding-agent users who often ask workflow-fit questions | workflow fit, setup friction, or adoption intent | `reply_w1_adoption_example` | `dm_w1_example_doc` | queued | replace the handle with a live post URL or add a dated search note before Sunday close; replace with warmer Monday or Wednesday engagers first if they appear |
+| Thursday | `@leerob` | `2026-03-13` seed | technical product audience discussing developer workflow changes and tool fit can turn proof into adoption intent | dev-workflow fit, proof skepticism, or adoption blockers | `reply_w1_proof_demo` | `dm_w1_example_doc` | queued | replace the handle with a live post URL or add a dated search note before Sunday close; best after Wednesday proof when the objection is whether ACE fits a real stack |
+| Thursday | `@never_settles_` | `2026-03-13` seed | hands-on MCP and browser-workflow debugging threads sit close to ACE setup pain | MCP integration friction or repeated workflow failures | `reply_w1_adoption_example` | `dm_w1_mcp_guide` | queued | replace the handle with a live post URL or add a dated search note before Sunday close; prioritize if the thread already includes toolchain details or debug logs |
+| Thursday | `@willmcgugan` | `2026-03-13` seed | terminal and agent-workflow audience has real implementation instincts and cares about inspectability | terminal agent UX, inspectability, or setup friction | `reply_w1_proof_demo` | `dm_w1_api_ref` | queued | replace the handle with a live post URL or add a dated search note before Sunday close; useful for proof-first follow-up when README thesis is no longer enough |
+| Thursday | `@amanrsanger` | `2026-03-13` seed | coding-agent builder audience is likely to care about concrete setup and repeat failures | coding-agent workflow fit or repeated failure pattern | `reply_w1_adoption_example` | `dm_w1_example_doc` | queued | replace the handle with a live post URL or add a dated search note before Sunday close; keep only if warmer Monday or Wednesday engagers do not fully populate Thursday |
 
 ## Monday, March 16, 2026 Raw Capture
 
