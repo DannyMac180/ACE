@@ -31,13 +31,15 @@ Use these docs in this order:
    calendar before launch week starts
 5. `plans/2026-03-13-cmo-week-one-response-bank.md` for paste-ready public
    replies, DM openers, qualification prompts, and escalation copy
-6. `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` for raw live metrics,
+6. `plans/2026-03-14-cmo-week-one-live-command-card.md` for the fastest
+   Monday-through-Friday live execution order once Sunday preflight is done
+7. `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` for raw live metrics,
    replies, DMs, and friction capture before same-day transfer into the launch
    log
-7. `plans/2026-03-11-cmo-launch-copy-pack.md` for the approved launch copy
-8. `plans/2026-03-11-cmo-design-partner-engine.md` for qualification and
+8. `plans/2026-03-11-cmo-launch-copy-pack.md` for the approved launch copy
+9. `plans/2026-03-11-cmo-design-partner-engine.md` for qualification and
    follow-up rules
-9. `plans/2026-03-11-cmo-editorial-calendar.md` for week-one success thresholds
+10. `plans/2026-03-11-cmo-editorial-calendar.md` for week-one success thresholds
 
 ## Non-Negotiables
 
@@ -139,6 +141,11 @@ gate on Sunday, March 15, 2026.
 For the fastest path through the actual Sunday work, run
 `plans/2026-03-14-cmo-sunday-preflight-command-card.md` first, then transfer
 the final evidence into the launch log.
+
+After the Sunday gate is `go`, run
+`plans/2026-03-14-cmo-week-one-live-command-card.md` during the actual Monday
+through Friday windows so publishing, reply handling, and same-day logging do
+not depend on paging through the full operator brief mid-motion.
 
 - by `20:00` ET, every row in the `Sunday Preflight Completion Receipt` must be
   either `completed` with evidence or explicitly `blocked` with a named blocker

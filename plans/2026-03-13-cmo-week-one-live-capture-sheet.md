@@ -22,6 +22,9 @@ into the launch log before the day ends.
   `plans/2026-03-16-cmo-launch-operations-log.md`.
 - Use `plans/2026-03-13-cmo-week-one-response-bank.md` for exact public reply,
   DM, and qualification copy instead of improvising in the moment.
+- If Dan needs one compact live-window sequence after Sunday preflight,
+  `plans/2026-03-14-cmo-week-one-live-command-card.md` is the fastest operator
+  path while this file remains the raw capture surface.
 - Only record raw observations here; move final rows into the canonical launch
   log the same day.
 - Capture profile-surface changes here first when the bio, website link, or

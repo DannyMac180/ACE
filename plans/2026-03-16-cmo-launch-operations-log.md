@@ -32,6 +32,8 @@ Weekly metric owner:
   `plans/2026-03-13-cmo-week-one-response-bank.md`
 - the canonical raw capture surface is
   `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`
+- the fastest Monday-through-Friday live execution path is
+  `plans/2026-03-14-cmo-week-one-live-command-card.md`
 
 ## Operating Split
 
@@ -123,6 +125,11 @@ Complete this gate by Sunday, March 15, 2026 before anything is published.
 For the fastest operator path through the remaining Dan-owned tasks, use
 `plans/2026-03-14-cmo-sunday-preflight-command-card.md` as the one-screen
 execution order, then record the canonical proof in the tables below.
+
+After Sunday preflight is complete, use
+`plans/2026-03-14-cmo-week-one-live-command-card.md` as the fastest live
+operator path during Monday through Friday launch motions while this file stays
+the canonical evidence surface.
 
 | Check | Owner | Status | Notes |
 | --- | --- | --- | --- |
