@@ -1,0 +1,186 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//ACE//Week One Launch Calendar//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:ACE Week-One Launch
+X-WR-TIMEZONE:America/New_York
+BEGIN:VTIMEZONE
+TZID:America/New_York
+X-LIC-LOCATION:America/New_York
+BEGIN:DAYLIGHT
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+TZNAME:EDT
+DTSTART:19700308T020000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+TZNAME:EST
+DTSTART:19701101T020000
+RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:ace-w1-mon-publish-20260316@ace
+DTSTAMP:20260313T195140Z
+DTSTART;TZID=America/New_York:20260316T110000
+DTEND;TZID=America/New_York:20260316T113000
+SUMMARY:ACE W1 Monday anchor thread publish window
+DESCRIPTION:Publish the Monday anchor thread using w1_thread_readme. Confirm the scheduled draft is the connected 9-post thread from plans/2026-03-13-cmo-week-one-publishing-surface.md.
+END:VEVENT
+BEGIN:VEVENT
+UID:ace-w1-mon-reply-20260316@ace
+DTSTAMP:20260313T195140Z
+DTSTART;TZID=America/New_York:20260316T113000
+DTEND;TZID=America/New_York:20260316T120000
+SUMMARY:ACE W1 Monday +30m reply check
+DESCRIPTION:Run the first reply check, use the response bank, and capture the first metric snapshot plus any high-signal replies.
+END:VEVENT
+BEGIN:VEVENT
+UID:ace-w1-mon-deep-20260316@ace
+DTSTAMP:20260313T195140Z
+DTSTART;TZID=America/New_York:20260316T140000
+DTEND;TZID=America/New_York:20260316T143000
+SUMMARY:ACE W1 Monday +3h deep follow-up
+DESCRIPTION:Run the deeper follow-up pass, move qualified builders to DM, and log serious signals in the launch operations log.
+END:VEVENT
+BEGIN:VEVENT
+UID:ace-w1-mon-eod-20260316@ace
+DTSTAMP:20260313T195140Z
+DTSTART;TZID=America/New_York:20260316T173000
+DTEND;TZID=America/New_York:20260316T180000
+SUMMARY:ACE W1 Monday end-of-day logging
+DESCRIPTION:Complete same-day launch logging in plans/2026-03-16-cmo-launch-operations-log.md and update the live capture sheet.
+END:VEVENT
+BEGIN:VEVENT
+UID:ace-w1-tue-pass-20260317@ace
+DTSTAMP:20260313T195140Z
+DTSTART;TZID=America/New_York:20260317T120000
+DTEND;TZID=America/New_York:20260317T130000
+SUMMARY:ACE W1 Tuesday adjacent-conversation pass
+DESCRIPTION:Run the Tuesday distribution pass from the prefilled watchlist. Use approved reply and DM codes only.
+END:VEVENT
+BEGIN:VEVENT
+UID:ace-w1-tue-mid-20260317@ace
+DTSTAMP:20260313T195140Z
+DTSTART;TZID=America/New_York:20260317T123000
+DTEND;TZID=America/New_York:20260317T124500
+SUMMARY:ACE W1 Tuesday mid-pass check
+DESCRIPTION:Check whether the pass is producing qualified interactions and adjust routing based on the strongest live conversation.
+END:VEVENT
+BEGIN:VEVENT
+UID:ace-w1-tue-dm-20260317@ace
+DTSTAMP:20260313T195140Z
+DTSTART;TZID=America/New_York:20260317T160000
+DTEND;TZID=America/New_York:20260317T163000
+SUMMARY:ACE W1 Tuesday DM routing cleanup
+DESCRIPTION:Move qualified Tuesday prospects into DM, set next steps, and capture active follow-up work before end of day.
+END:VEVENT
+BEGIN:VEVENT
+UID:ace-w1-tue-eod-20260317@ace
+DTSTAMP:20260313T195140Z
+DTSTART;TZID=America/New_York:20260317T173000
+DTEND;TZID=America/New_York:20260317T180000
+SUMMARY:ACE W1 Tuesday end-of-day logging
+DESCRIPTION:Log the distribution pass, qualified interactions, and friction notes in the canonical launch log.
+END:VEVENT
+BEGIN:VEVENT
+UID:ace-w1-wed-publish-20260318@ace
+DTSTAMP:20260313T195140Z
+DTSTART;TZID=America/New_York:20260318T110000
+DTEND;TZID=America/New_York:20260318T113000
+SUMMARY:ACE W1 Wednesday proof post publish window
+DESCRIPTION:Publish the proof post using w1_proof_demo and attach docs/assets/ace-proof-demo/still.svg unless a logged replacement exists.
+END:VEVENT
+BEGIN:VEVENT
+UID:ace-w1-wed-reply-20260318@ace
+DTSTAMP:20260313T195140Z
+DTSTART;TZID=America/New_York:20260318T113000
+DTEND;TZID=America/New_York:20260318T120000
+SUMMARY:ACE W1 Wednesday +30m reply check
+DESCRIPTION:Run the first proof-post reply check, answer technical skepticism in public when useful, and capture the first metric snapshot.
+END:VEVENT
+BEGIN:VEVENT
+UID:ace-w1-wed-deep-20260318@ace
+DTSTAMP:20260313T195140Z
+DTSTART;TZID=America/New_York:20260318T140000
+DTEND;TZID=America/New_York:20260318T143000
+SUMMARY:ACE W1 Wednesday +3h deep follow-up
+DESCRIPTION:Run the deeper proof follow-up pass, move technically qualified builders into DM, and log any workflow-intake candidates.
+END:VEVENT
+BEGIN:VEVENT
+UID:ace-w1-wed-eod-20260318@ace
+DTSTAMP:20260313T195140Z
+DTSTART;TZID=America/New_York:20260318T173000
+DTEND;TZID=America/New_York:20260318T180000
+SUMMARY:ACE W1 Wednesday end-of-day logging
+DESCRIPTION:Complete same-day proof-post logging and capture the strongest repeated failure pattern or objection.
+END:VEVENT
+BEGIN:VEVENT
+UID:ace-w1-thu-pass-20260319@ace
+DTSTAMP:20260313T195140Z
+DTSTART;TZID=America/New_York:20260319T120000
+DTEND;TZID=America/New_York:20260319T130000
+SUMMARY:ACE W1 Thursday proof-to-adoption follow-up pass
+DESCRIPTION:Run the Thursday follow-up pass across Wednesday proof responders and unresolved Monday prospects.
+END:VEVENT
+BEGIN:VEVENT
+UID:ace-w1-thu-mid-20260319@ace
+DTSTAMP:20260313T195140Z
+DTSTART;TZID=America/New_York:20260319T123000
+DTEND;TZID=America/New_York:20260319T124500
+SUMMARY:ACE W1 Thursday mid-pass check
+DESCRIPTION:Check progress on direct follow-ups and re-prioritize the queue if a stronger conversation is active.
+END:VEVENT
+BEGIN:VEVENT
+UID:ace-w1-thu-dm-20260319@ace
+DTSTAMP:20260313T195140Z
+DTSTART;TZID=America/New_York:20260319T160000
+DTEND;TZID=America/New_York:20260319T163000
+SUMMARY:ACE W1 Thursday dated-next-step lock
+DESCRIPTION:Lock dated next steps for qualified Thursday prospects before Friday publishing.
+END:VEVENT
+BEGIN:VEVENT
+UID:ace-w1-thu-eod-20260319@ace
+DTSTAMP:20260313T195140Z
+DTSTART;TZID=America/New_York:20260319T173000
+DTEND;TZID=America/New_York:20260319T180000
+SUMMARY:ACE W1 Thursday end-of-day logging
+DESCRIPTION:Log the Thursday pass, strongest objection, and ready-to-convert prospects in the launch operations log.
+END:VEVENT
+BEGIN:VEVENT
+UID:ace-w1-fri-publish-20260320@ace
+DTSTAMP:20260313T195140Z
+DTSTART;TZID=America/New_York:20260320T103000
+DTEND;TZID=America/New_York:20260320T110000
+SUMMARY:ACE W1 Friday adoption post publish window
+DESCRIPTION:Publish the Friday adoption post using w1_adoption_example and route qualified builders into the worked example flow.
+END:VEVENT
+BEGIN:VEVENT
+UID:ace-w1-fri-reply-20260320@ace
+DTSTAMP:20260313T195140Z
+DTSTART;TZID=America/New_York:20260320T110000
+DTEND;TZID=America/New_York:20260320T113000
+SUMMARY:ACE W1 Friday +30m reply check
+DESCRIPTION:Run the first adoption-post reply check and capture the first workflow-intent signals.
+END:VEVENT
+BEGIN:VEVENT
+UID:ace-w1-fri-deep-20260320@ace
+DTSTAMP:20260313T195140Z
+DTSTART;TZID=America/New_York:20260320T133000
+DTEND;TZID=America/New_York:20260320T140000
+SUMMARY:ACE W1 Friday +3h deep follow-up
+DESCRIPTION:Run the deeper Friday follow-up pass and move the strongest prospects toward a dated next step or working session.
+END:VEVENT
+BEGIN:VEVENT
+UID:ace-w1-fri-eod-20260320@ace
+DTSTAMP:20260313T195140Z
+DTSTART;TZID=America/New_York:20260320T173000
+DTEND;TZID=America/New_York:20260320T180000
+SUMMARY:ACE W1 Friday end-of-day logging
+DESCRIPTION:Complete the Friday closeout logging so the CEO can consolidate the week-one scoreboard on ACE-9.
+END:VEVENT
+END:VCALENDAR
