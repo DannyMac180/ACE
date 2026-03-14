@@ -34,6 +34,9 @@ into the launch log before the day ends.
 - Run the immediate publish QA pass here within `5` minutes of each Monday,
   Wednesday, and Friday post before broad replies, pinning, or early metric
   interpretation.
+- If a click number is not exposed on the live surface, record `unavailable`
+  and log the downstream reply, DM response, issue, or setup evidence instead
+  of estimating from the GitHub destination.
 
 ## Capture Windows
 

@@ -29,6 +29,8 @@ Every week, the team should be able to answer:
 
 - One post should drive one primary CTA.
 - Every campaign link needs a unique tracked URL.
+- Every tracked URL is a routing label first; only count clicks from surfaces
+  that expose a real number.
 - Manual logging is acceptable if it is consistent.
 - Adoption signals matter more than vanity reach.
 - The weekly review should change the next week's publishing decisions.
@@ -112,7 +114,7 @@ Use these definitions consistently.
 | --- | --- | --- |
 | Qualified impressions | Impressions on ACE campaign posts and targeted reply threads only | X analytics |
 | Engagement rate | `(likes + replies + reposts + bookmarks) / impressions` per campaign post | X analytics |
-| Outbound clicks | Clicks on tracked ACE links from posts, replies, or DMs | link analytics or manual counts |
+| Outbound clicks | Clicks on governed ACE links only when the sending surface exposes a real count; if the surface does not expose a count, log the exact code used and rely on downstream setup or conversation evidence instead | X analytics or explicit manual confirmation |
 | Setup starts | People who indicate they opened the guide, cloned the repo, or began setup | DM log, GitHub issue, discussion, or direct reply |
 | Setup completions | People who confirm ACE ran locally, via CLI, or via MCP | DM log, GitHub thread, or direct reply |
 | Adoption signals | Stars, issues, discussions, replies saying they tested or configured ACE | GitHub plus X |

@@ -104,6 +104,24 @@ Use these exact links unless the destination changes.
 | `dm_w1_api_ref` | DM | API reference | `https://github.com/DannyMac180/ACE/blob/main/docs/api-reference.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=dm_w1_api_ref` | ready |
 | `issue_w1_failure_pattern` | GitHub issue | workflow issue template | `https://github.com/DannyMac180/ACE/issues/new?template=workflow-failure-pattern.yml&title=Workflow+failure+pattern%3A+&utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=issue_w1_failure_pattern` | ready |
 
+## Attribution Limits
+
+Treat these tracked URLs as governed route labels, not as automatic analytics.
+
+- the `utm_*` codes preserve exact routing across posts, replies, DMs, and the
+  profile surface, but GitHub does not provide reliable per-code reporting from
+  those parameters alone
+- for Monday, Wednesday, and Friday public posts plus governed public replies,
+  use X-native link-click numbers when they are available
+- for DMs, profile-link traffic, and any other surface without a reliable click
+  readout, log the exact code used, then count downstream evidence such as a
+  reply, DM response, issue, setup start, or setup completion instead of
+  guessing clicks
+- if a reliable click number is unavailable, record `unavailable` in the metric
+  snapshot or notes and keep the follow-up evidence trail intact
+- never infer README clicks, proof clicks, or adoption clicks from mixed GitHub
+  traffic, page loads, or memory
+
 ## Asset Register
 
 | Week | Post code | Format | Destination | Goal | Owner | Status | Notes |
@@ -485,7 +503,8 @@ Each meaningful launch motion should contribute at least one reusable artifact:
 
 Use these rules so Friday numbers reflect the same funnel logic all week.
 
-- Count click metrics as total tracked clicks, not unique people.
+- Count click metrics only from measurable surfaces tied to the governed launch
+  codes, not from the presence of a UTM parameter alone.
 - Count `Profile visits` and `New follows` as the weekly total from governed
   week-one post analytics, profile-surface checks, and logged Tuesday or
   Thursday distribution effects.
@@ -506,11 +525,11 @@ Use these definitions when filling the Friday scoreboard row.
 | --- | --- | --- |
 | Qualified impressions | impressions on the governed week-one posts plus logged Tuesday or Thursday distribution replies in clearly relevant coding-agent conversations | unrelated account-level impressions or generic AI chatter that was not part of a governed launch motion |
 | Engagement rate | the platform-reported engagement rate for the governed launch posts | a hand-added blend of different post types or raw reply counts without the platform denominator |
-| Outbound clicks | total tracked clicks across all approved week-one launch URLs | untracked clicks, profile taps without a tracked destination, or estimates from memory |
+| Outbound clicks | total measurable clicks from governed public posts and replies whose sending surface exposes a real number | untracked clicks, profile taps without a captured count, DM clicks without a measured source, or estimates from memory |
 | Profile visits | total profile visits attributed to governed week-one post snapshots, Monday pinning checks, and logged Tuesday or Thursday distribution effects | baseline account traffic outside governed launch windows or guessed profile interest without a captured snapshot |
 | New follows | total new follows observed during governed week-one post snapshots and profile-surface checks after the Sunday, March 15, 2026 baseline snapshot is captured | historical follower growth outside launch week, unfalsifiable estimates, or repeat touches from existing followers |
-| README clicks | tracked clicks on `w1_thread_readme`, `reply_w1_thread_readme`, `dm_w1_readme`, and `profile_w1_readme` | clicks to proof, example, MCP, or API destinations |
-| Proof clicks | tracked clicks on `w1_proof_demo` and `reply_w1_proof_demo` | README or example clicks, even if they came from the Wednesday audience |
+| README clicks | measurable governed public-click counts tied to `w1_thread_readme` or `reply_w1_thread_readme`; if DM or profile clicks are not exposed, rely on downstream conversation or setup evidence instead | clicks to proof, example, MCP, or API destinations, or inferred GitHub traffic on README-coded URLs |
+| Proof clicks | measurable governed public-click counts tied to `w1_proof_demo` or `reply_w1_proof_demo` | README or example clicks, even if they came from the Wednesday audience, or inferred GitHub traffic on proof-coded URLs |
 | Setup starts | a unique builder who asks for or begins a concrete setup path through the worked example, MCP guide, API route, or a live issue during launch week | vague curiosity, passive likes, or category-only replies with no setup intent |
 | Setup completions | a unique builder who explicitly confirms they ran the example, started the MCP path successfully, or completed an equivalent ACE setup step | builders who only said they planned to try it or asked for docs |
 | Adoption signals | the highest-signal week-one action from a known builder or repo event: a star, issue, discussion, explicit setup-intent reply or DM, or an `I tried it` confirmation | passive impressions, generic praise, or multiple low-signal actions from the same known builder |
@@ -530,7 +549,9 @@ Use this file as the only shared scoreboard source of truth.
    reply burst, outbound DM, or inbound DM thread that creates follow-up work.
    When available, include profile visits and new follows in the metric
    snapshot or notes so week-one audience growth is attributable alongside
-   clicks and replies.
+   clicks and replies. If a click number is not measurable on the sending
+   surface, record `unavailable` and log the downstream action instead of
+   estimating.
 3. CMO completes the `Immediate Publish QA Log` within `5` minutes of each
    Monday, Wednesday, and Friday public post so live URL integrity, thread
    shape, and asset correctness are verified before pinning or scaled reply

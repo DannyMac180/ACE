@@ -47,6 +47,22 @@ Rules:
 - if a destination changes, update both this file and the launch operations log
   before the link is used
 
+## Attribution Guardrail
+
+Treat the GitHub launch URLs as governed routing labels, not as a complete
+analytics system by themselves.
+
+- the `utm_*` parameters keep post, reply, DM, and profile routes distinct, but
+  GitHub does not turn those parameters into reliable per-code click reporting
+- for public X posts and replies, use X-native link-click data when it is
+  available
+- for DMs, profile-link traffic, or any surface where a reliable click count is
+  not exposed, log the exact code used and count downstream evidence such as a
+  reply, DM response, issue, setup start, or setup completion instead of
+  inventing a click number
+- never backfill per-code click totals from mixed GitHub page traffic or
+  memory-based estimates
+
 ## Final Week-One Tracked-Link Registry
 
 Use these exact URLs for the week of Monday, March 16, 2026.
@@ -140,9 +156,9 @@ Every Friday scoreboard update must include these fields:
 | --- | --- | --- |
 | Qualified impressions | X analytics for campaign posts and targeted replies | Dan |
 | Engagement rate | X analytics | Dan |
-| Outbound clicks | tracked-link analytics or manual click counts | Dan |
-| README clicks | tracked link counts for README URLs | CEO |
-| Proof clicks | tracked link counts for diagram or demo URLs | CEO |
+| Outbound clicks | X-native link clicks for governed public posts and replies, plus documented manual counts only when the surface exposes a real number | Dan |
+| README clicks | measurable governed public-click counts tied to README-coded launch links; if DM or profile clicks are not exposed, count downstream setup or conversation signals instead | CEO |
+| Proof clicks | measurable governed public-click counts tied to proof-demo-coded launch links; do not infer proof clicks from mixed GitHub traffic | CEO |
 | Setup starts | DMs, GitHub issues, or discussions showing setup intent | CEO |
 | Setup completions | direct confirmations in DMs or GitHub | CEO |
 | Adoption signals | GitHub stars, issues, discussions, and tested-it replies | CEO |

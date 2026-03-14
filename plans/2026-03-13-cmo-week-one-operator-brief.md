@@ -64,7 +64,12 @@ Use the metric definitions in
 `plans/2026-03-16-cmo-launch-operations-log.md` when a live interaction needs a
 scoreboard label.
 
-- Click metrics are totals from tracked URLs, not guesses and not unique people.
+- Click metrics only count measurable surfaces tied to the approved tracked
+  URLs; GitHub `utm_*` parameters label the route, but they are not their own
+  analytics layer.
+- If X, the profile surface, or a DM flow does not expose a reliable click
+  number, record `unavailable` and log the downstream reply, DM, issue, setup
+  start, or setup completion instead of guessing.
 - `Setup starts`, `Setup completions`, `Serious conversations`, and
   `Repeat-user signals` are unique-builder counts.
 - A builder only counts as a `Serious conversation` when the exchange is

@@ -48,6 +48,7 @@ Current conversion thesis:
 - Later on Saturday, March 14, 2026, the CMO added `plans/2026-03-14-cmo-sunday-preflight-command-card.md` and rewired the launch log, operator brief, and live capture sheet so the seven remaining Sunday tasks now have one compact execution order before the canonical receipt and `20:00` ET gate are filled.
 - Later on Saturday, March 14, 2026, the CMO added `plans/2026-03-14-cmo-week-one-live-command-card.md` and rewired the launch log, operator brief, and live capture sheet so Monday through Friday launch motions now have one compact day-of execution path instead of relying on long-document navigation during live publishing windows.
 - Later on Saturday, March 14, 2026, the CMO added a governed post-preflight freeze plus `Launch Change Log` to the week-one launch stack so last-minute copy, URL, asset, or profile edits cannot happen off-book after the Sunday, March 15, 2026 `20:00` ET gate.
+- Later on Saturday, March 14, 2026, the CMO added an attribution guardrail across the week-one instrumentation stack so GitHub `utm_*` launch URLs are treated as governed routing labels, public click counts must come from real measured surfaces such as X analytics, and unmeasurable DM or profile-link traffic must be logged as downstream evidence rather than guessed clicks.
 
 Current workflow constraint:
 
