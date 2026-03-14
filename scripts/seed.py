@@ -58,7 +58,11 @@ def seed_initial_playbook() -> None:
             Bullet(
                 id="code-00001",
                 section="code_snippets_and_templates",
-                content="Expose MCP tools 'ace.retrieve|reflect|curate|commit|refine|stats'; resource 'ace://playbook.json'.",
+                content=(
+                    "Expose MCP tools "
+                    "'ace.retrieve|reflect|curate|commit|refine|stats'; "
+                    "resource 'ace://playbook.json'."
+                ),
                 tags=["topic:mcp"],
             ),
             Bullet(

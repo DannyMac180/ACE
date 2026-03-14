@@ -13,7 +13,6 @@ import textwrap
 from html import escape
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PYTHON_BIN = REPO_ROOT / ".venv" / "bin" / "python"
 OUTPUT_DIR = REPO_ROOT / "docs" / "assets" / "ace-proof-demo"
@@ -84,7 +83,11 @@ def sanitize_output(raw_output: str) -> str:
 def write_svg(output_path: Path) -> None:
     panels = [
         ("retrieve", '$ ace retrieve "hybrid retrieval" --top-k 3', "Found 3 bullets"),
-        ("reflect", "$ python scripts/demo_reflect.py demo-task.json", "Generated strict Reflection JSON"),
+        (
+            "reflect",
+            "$ python scripts/demo_reflect.py demo-task.json",
+            "Generated strict Reflection JSON",
+        ),
         ("curate", "$ ace curate --reflection reflection.json --json", "3 deterministic delta ops"),
         ("commit", "$ ace commit --delta delta.json --json", 'Version bumped to {"version": 1}'),
     ]
@@ -103,20 +106,56 @@ def write_svg(output_path: Path) -> None:
         panel_elements.append(
             f"""
   <g>
-    <rect x="{x}" y="{y}" width="{panel_width}" height="{panel_height}" rx="18" fill="#111827" stroke="#1f2937" stroke-width="2" />
+    <rect
+      x="{x}"
+      y="{y}"
+      width="{panel_width}"
+      height="{panel_height}"
+      rx="18"
+      fill="#111827"
+      stroke="#1f2937"
+      stroke-width="2"
+    />
     <circle cx="{x + 26}" cy="{y + 24}" r="6" fill="#ef4444" />
     <circle cx="{x + 46}" cy="{y + 24}" r="6" fill="#f59e0b" />
     <circle cx="{x + 66}" cy="{y + 24}" r="6" fill="#10b981" />
-    <text x="{x + 90}" y="{y + 29}" font-family="monospace" font-size="18" fill="#f9fafb">{escape(title)}</text>
-    <text x="{x + 24}" y="{y + 70}" font-family="monospace" font-size="18" fill="#93c5fd">{escape(command)}</text>
-    <text x="{x + 24}" y="{y + 110}" font-family="monospace" font-size="18" fill="#e5e7eb">{escape(body)}</text>
+    <text
+      x="{x + 90}"
+      y="{y + 29}"
+      font-family="monospace"
+      font-size="18"
+      fill="#f9fafb"
+    >{escape(title)}</text>
+    <text
+      x="{x + 24}"
+      y="{y + 70}"
+      font-family="monospace"
+      font-size="18"
+      fill="#93c5fd"
+    >{escape(command)}</text>
+    <text
+      x="{x + 24}"
+      y="{y + 110}"
+      font-family="monospace"
+      font-size="18"
+      fill="#e5e7eb"
+    >{escape(body)}</text>
   </g>
 """
         )
 
-    svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">
+    svg = f"""<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="{width}"
+  height="{height}"
+  viewBox="0 0 {width} {height}"
+  role="img"
+  aria-labelledby="title desc"
+>
   <title id="title">ACE proof demo still</title>
-  <desc id="desc">Four terminal panels showing retrieve, reflect, curate, and commit in the ACE CLI flow.</desc>
+  <desc id="desc">
+    Four terminal panels showing retrieve, reflect, curate, and commit in the ACE CLI flow.
+  </desc>
   <defs>
     <linearGradient id="bg" x1="0%" x2="100%" y1="0%" y2="100%">
       <stop offset="0%" stop-color="#fff7ed" />
@@ -124,8 +163,12 @@ def write_svg(output_path: Path) -> None:
     </linearGradient>
   </defs>
   <rect width="{width}" height="{height}" fill="url(#bg)" />
-  <text x="60" y="48" font-family="Georgia, serif" font-size="32" fill="#111827">ACE proof post demo</text>
-  <text x="60" y="708" font-family="monospace" font-size="18" fill="#374151">60-second terminal loop: retrieve -> reflect -> curate -> commit</text>
+  <text x="60" y="48" font-family="Georgia, serif" font-size="32" fill="#111827">
+    ACE proof post demo
+  </text>
+  <text x="60" y="708" font-family="monospace" font-size="18" fill="#374151">
+    60-second terminal loop: retrieve -> reflect -> curate -> commit
+  </text>
   {''.join(panel_elements)}
 </svg>
 """
@@ -141,19 +184,23 @@ def write_caption_script(output_path: Path) -> None:
         Seed a throwaway playbook so the demo starts from a clean baseline.
 
         00:08-00:20
-        Retrieve the most relevant bullets for a hybrid retrieval query and show the exact tactics ACE surfaces.
+        Retrieve the most relevant bullets for a hybrid retrieval query and show
+        the exact tactics ACE surfaces.
 
         00:20-00:33
-        Reflect on the run with a strict JSON payload so the feedback stays reusable and machine-readable.
+        Reflect on the run with a strict JSON payload so the feedback stays
+        reusable and machine-readable.
 
         00:33-00:44
-        Curate the reflection into deterministic delta operations: two helpful votes and one new bullet.
+        Curate the reflection into deterministic delta operations: two helpful
+        votes and one new bullet.
 
         00:44-00:54
         Commit the delta to the playbook and bump the version without rewriting the whole prompt.
 
         00:54-01:00
-        Show the updated stats so viewers can see the playbook grow by one bullet and record feedback immediately.
+        Show the updated stats so viewers can see the playbook grow by one
+        bullet and record feedback immediately.
         """
     )
     output_path.write_text(caption, encoding="utf-8")
@@ -171,7 +218,10 @@ def write_explainer(output_path: Path) -> None:
         3. `curate` converts that reflection into deterministic delta operations.
         4. `commit` applies those deltas and bumps the playbook version.
 
-        The clip is intentionally offline and reproducible. It uses the repo's real CLI, a seeded local database, and a deterministic reflection helper so the proof asset can be rebuilt before launch without external API dependencies.
+        The clip is intentionally offline and reproducible. It uses the repo's
+        real CLI, a seeded local database, and a deterministic reflection
+        helper so the proof asset can be rebuilt before launch without external
+        API dependencies.
         """
     )
     output_path.write_text(explainer, encoding="utf-8")
@@ -182,9 +232,11 @@ def write_doc(output_path: Path, asset_dir: Path) -> None:
         f"""\
         # ACE proof demo asset
 
-        This package is the reusable proof asset for launch posts scheduled the week of Monday, March 16, 2026.
+        This package is the reusable proof asset for launch posts scheduled the
+        week of Monday, March 16, 2026.
 
-        It captures a real ACE loop on a clean local playbook and keeps the output stable enough to reuse across X posts, README callouts, and docs.
+        It captures a real ACE loop on a clean local playbook and keeps the
+        output stable enough to reuse across X posts, README callouts, and docs.
 
         ## Files
 
@@ -241,17 +293,31 @@ def main() -> int:
                 None,
             ),
             (
-                '$ ACE_DB_URL=ace.db .venv/bin/python -m ace.cli retrieve "hybrid retrieval" --top-k 3',
-                [str(PYTHON_BIN), "-m", "ace.cli", "retrieve", "hybrid retrieval", "--top-k", "3"],
+                '$ ACE_DB_URL=ace.db .venv/bin/python -m ace.cli retrieve "hybrid retrieval" '
+                "--top-k 3",
+                [
+                    str(PYTHON_BIN),
+                    "-m",
+                    "ace.cli",
+                    "retrieve",
+                    "hybrid retrieval",
+                    "--top-k",
+                    "3",
+                ],
                 None,
             ),
             (
                 f"$ {PYTHON_BIN} {REPO_ROOT / 'scripts' / 'demo_reflect.py'} demo-task.json",
-                [str(PYTHON_BIN), str(REPO_ROOT / "scripts" / "demo_reflect.py"), str(demo_task_path)],
+                [
+                    str(PYTHON_BIN),
+                    str(REPO_ROOT / "scripts" / "demo_reflect.py"),
+                    str(demo_task_path),
+                ],
                 output_dir / "reflection.json",
             ),
             (
-                "$ ACE_DB_URL=ace.db .venv/bin/python -m ace.cli curate --reflection reflection.json --json",
+                "$ ACE_DB_URL=ace.db .venv/bin/python -m ace.cli curate "
+                "--reflection reflection.json --json",
                 [
                     str(PYTHON_BIN),
                     "-m",

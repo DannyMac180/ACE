@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from ace.core.config import load_config
+from ace.core.config import SUPPORTED_ENV_VARS, load_config
 
 
 def test_load_default_config():
@@ -290,3 +290,15 @@ max_tokens = 1000
             load_config(temp_path)
     finally:
         temp_path.unlink()
+
+
+def test_env_example_covers_supported_env_vars():
+    """Keep the checked-in env example aligned with the config loader."""
+    env_example = Path(__file__).resolve().parent.parent / ".env.example"
+    entries = {
+        line.split("=", 1)[0].strip()
+        for line in env_example.read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    }
+
+    assert entries == SUPPORTED_ENV_VARS

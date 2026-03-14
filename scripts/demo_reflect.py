@@ -35,7 +35,8 @@ def build_reflection_payload(doc: TrajectoryDoc) -> dict[str, object]:
             "before reflecting on the run."
         ),
         "key_insight": (
-            "Specific task wording helps ACE surface tactical bullets instead of broad hygiene advice."
+            "Specific task wording helps ACE surface tactical bullets instead of "
+            "broad hygiene advice."
         ),
         "bullet_tags": [{"id": bullet_id, "tag": "helpful"} for bullet_id in helpful_ids],
         "candidate_bullets": [

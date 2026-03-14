@@ -1,5 +1,5 @@
 # tests/test_curator.py
-from datetime import datetime
+from datetime import UTC, datetime
 
 from ace.core.schema import Bullet
 from ace.curator import curate
@@ -179,7 +179,7 @@ def _make_bullet(id: str, content: str, section: str = "strategies_and_hard_rule
         tags=[],
         helpful=0,
         harmful=0,
-        added_at=datetime.utcnow(),
+        added_at=datetime.now(UTC),
     )
 
 

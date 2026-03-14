@@ -1,8 +1,13 @@
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Literal
 
 from pydantic import BaseModel, Field
+
+
+def _utcnow() -> datetime:
+    """Return current UTC datetime."""
+    return datetime.now(UTC)
 
 
 class TrajectoryDoc(BaseModel):
@@ -34,7 +39,7 @@ class TrajectoryDoc(BaseModel):
         description="List of tools or actions invoked during execution",
     )
     timestamp: datetime = Field(
-        default_factory=datetime.utcnow,
+        default_factory=_utcnow,
         description="When this trajectory was recorded",
     )
 
@@ -45,9 +50,7 @@ class Step(BaseModel):
     action: str = Field(..., description="Action taken in this step")
     observation: str = Field(..., description="Result or observation from the action")
     thought: str = Field(..., description="Reasoning or thought process for this step")
-    timestamp: datetime = Field(
-        default_factory=datetime.utcnow, description="When this step occurred"
-    )
+    timestamp: datetime = Field(default_factory=_utcnow, description="When this step occurred")
 
 
 class Trajectory(BaseModel):
@@ -59,9 +62,7 @@ class Trajectory(BaseModel):
         ..., description="Final outcome status"
     )
     total_steps: int = Field(default=0, description="Total number of steps executed")
-    started_at: datetime = Field(
-        default_factory=datetime.utcnow, description="When execution started"
-    )
+    started_at: datetime = Field(default_factory=_utcnow, description="When execution started")
     completed_at: datetime | None = Field(default=None, description="When execution completed")
     used_bullet_ids: list[str] = Field(
         default_factory=list, description="Bullet IDs retrieved and used during generation"

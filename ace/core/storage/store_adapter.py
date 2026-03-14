@@ -5,6 +5,9 @@ This provides a backward-compatible interface for code that used the old Store c
 while delegating to the proper storage/ module implementations.
 """
 
+from pathlib import Path
+from urllib.parse import urlparse
+
 from ace.core.schema import Bullet, Playbook
 
 from .bullet_store import BulletStore
@@ -15,20 +18,33 @@ from .embedding_store import EmbeddingStore
 class Store:
     """Unified storage interface for ACE playbook."""
 
-    def __init__(self, db_path: str = "ace.db"):
+    def __init__(self, db_path: str | None = None):
         """
-        Initialize the store with SQLite and FAISS backing.
+        Initialize the store with a database URL or legacy SQLite path.
 
         Args:
-            db_path: Path to SQLite database file (default: ace.db)
+            db_path: Database URL or filesystem path to a SQLite database.
         """
-        db_url = f"sqlite://{db_path}"
+        db_url = self._normalize_db_url(db_path)
         self.db = DatabaseConnection(db_url)
         self.db.connect()
         init_schema(self.db)
 
         self.bullet_store = BulletStore(self.db)
         self.embedding_store = EmbeddingStore(self.db)
+
+    @staticmethod
+    def _normalize_db_url(db_path: str | None) -> str | None:
+        """Accept full database URLs while preserving legacy path inputs."""
+        if db_path is None:
+            return None
+
+        parsed = urlparse(db_path)
+        if parsed.scheme in {"sqlite", "postgres", "postgresql"}:
+            return db_path
+
+        path = Path(db_path).expanduser()
+        return f"sqlite:///{path.as_posix()}"
 
     def save_bullet(self, bullet: Bullet) -> None:
         """Save or update a bullet in the store."""

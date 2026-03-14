@@ -102,6 +102,8 @@ sequenceDiagram
 
 ## Quickstart
 
+For the shortest end-to-end setup path, see [QUICKSTART.md](QUICKSTART.md).
+
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate

@@ -85,6 +85,35 @@ class ACEConfig:
     llm: LLMConfig
 
 
+SUPPORTED_ENV_VARS = frozenset(
+    {
+        "ACE_DB_URL",
+        "ACE_EMBEDDINGS",
+        "ACE_RETRIEVAL_TOPK",
+        "ACE_RETRIEVAL_LEXICAL_WEIGHT",
+        "ACE_RETRIEVAL_MAX_BULLETS",
+        "ACE_REFINE_THRESHOLD",
+        "ACE_REFINE_MINHASH_THRESHOLD",
+        "ACE_TRAINING_GATE_ON_REGRESSION",
+        "ACE_TRAINING_MAX_REGRESSION_DELTA",
+        "ACE_TRAINING_HELD_OUT_PATH",
+        "ACE_TRAINING_REGRESSION_METRICS",
+        "ACE_LOG_LEVEL",
+        "ACE_LOG_FORMAT",
+        "MCP_TRANSPORT",
+        "MCP_PORT",
+        "ACE_REFLECTOR_PASSES",
+        "ACE_REFLECTOR_SIMILARITY_THRESHOLD",
+        "ACE_REFLECTOR_REFINEMENT_ROUNDS",
+        "ACE_REFLECTOR_QUALITY_THRESHOLD",
+        "ACE_LLM_PROVIDER",
+        "ACE_LLM_MODEL",
+        "ACE_LLM_TEMPERATURE",
+        "ACE_LLM_MAX_TOKENS",
+    }
+)
+
+
 def _validate_config(config: ACEConfig) -> None:
     """Validate configuration values.
 
