@@ -2,6 +2,7 @@
 
 from datetime import UTC, datetime
 from enum import StrEnum
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -92,3 +93,27 @@ class RetrieveResponse(BaseModel):
 
     bullets: list[dict]
     retrieval_ms: float = 0.0
+
+
+class ReflectRequest(BaseModel):
+    """Request for generating a reflection from trajectory data."""
+
+    doc: dict[str, Any]
+
+
+class CurateRequest(BaseModel):
+    """Request for converting a reflection into delta operations."""
+
+    reflection: dict[str, Any]
+
+
+class CommitRequest(BaseModel):
+    """Request for applying delta operations to the playbook."""
+
+    delta: dict[str, Any]
+
+
+class RefineRequest(BaseModel):
+    """Request for running playbook refinement."""
+
+    threshold: float = 0.90

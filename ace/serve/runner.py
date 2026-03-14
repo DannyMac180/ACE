@@ -23,15 +23,20 @@ from ace.core.retrieve import Retriever
 from ace.core.schema import Playbook
 from ace.core.storage.store_adapter import Store
 from ace.curator.curator import curate
+from ace.generator.schemas import TrajectoryDoc
 from ace.refine.runner import refine as run_refine
 from ace.reflector.reflector import Reflector
-from ace.reflector.schema import Reflection
+from ace.reflector.schema import BulletTag, CandidateBullet, Reflection
 
 from .schema import (
     AdaptationMode,
+    CommitRequest,
+    CurateRequest,
     FeedbackRequest,
     FeedbackResponse,
     OnlineStats,
+    RefineRequest,
+    ReflectRequest,
     RetrieveRequest,
     RetrieveResponse,
     WarmupSource,
@@ -116,9 +121,7 @@ class OnlineServer:
             warmup_playbook_version=warmup_playbook_version,
         )
 
-    def _load_warmup_playbook(
-        self, warmup_path: str | Path
-    ) -> tuple[WarmupSource, int, int]:
+    def _load_warmup_playbook(self, warmup_path: str | Path) -> tuple[WarmupSource, int, int]:
         """Load a playbook from file for warm-start.
 
         Args:
@@ -182,8 +185,6 @@ class OnlineServer:
         start = time.time()
 
         try:
-            from ace.generator.schemas import TrajectoryDoc
-
             doc = TrajectoryDoc(
                 query=request.query,
                 retrieved_bullet_ids=request.retrieved_bullet_ids,
@@ -255,15 +256,110 @@ class OnlineServer:
                 message=str(e),
             )
 
+    @staticmethod
+    def _serialize_reflection(reflection: Reflection) -> dict[str, Any]:
+        """Convert a reflection dataclass into the public JSON shape."""
+        return {
+            "error_identification": reflection.error_identification,
+            "root_cause_analysis": reflection.root_cause_analysis,
+            "correct_approach": reflection.correct_approach,
+            "key_insight": reflection.key_insight,
+            "bullet_tags": [
+                {"id": bullet_tag.id, "tag": bullet_tag.tag}
+                for bullet_tag in reflection.bullet_tags
+            ],
+            "candidate_bullets": [
+                {
+                    "section": candidate.section,
+                    "content": candidate.content,
+                    "tags": candidate.tags,
+                }
+                for candidate in reflection.candidate_bullets
+            ],
+            "iteration": reflection.iteration,
+            "parent_id": reflection.parent_id,
+        }
+
+    @staticmethod
+    def _build_reflection(reflection_data: dict[str, Any]) -> Reflection:
+        """Convert REST JSON payloads into the reflection dataclass."""
+        return Reflection(
+            error_identification=reflection_data.get("error_identification"),
+            root_cause_analysis=reflection_data.get("root_cause_analysis"),
+            correct_approach=reflection_data.get("correct_approach"),
+            key_insight=reflection_data.get("key_insight"),
+            bullet_tags=[
+                BulletTag(id=tag["id"], tag=tag["tag"])
+                for tag in reflection_data.get("bullet_tags", [])
+            ],
+            candidate_bullets=[
+                CandidateBullet(
+                    section=bullet["section"],
+                    content=bullet["content"],
+                    tags=bullet.get("tags", []),
+                )
+                for bullet in reflection_data.get("candidate_bullets", [])
+            ],
+            iteration=reflection_data.get("iteration", 0),
+            parent_id=reflection_data.get("parent_id"),
+        )
+
+    def _persist_refined_playbook(
+        self,
+        playbook: Playbook,
+        original_ids: set[str],
+    ) -> int:
+        """Persist bullet removals and survivors after refine mutates the playbook."""
+        refined_ids = {bullet.id for bullet in playbook.bullets}
+        removed_ids = original_ids - refined_ids
+
+        for bullet_id in removed_ids:
+            self.store.delete_bullet(bullet_id)
+
+        for bullet in playbook.bullets:
+            self.store.save_bullet(bullet)
+
+        return len(removed_ids)
+
+    def reflect(self, doc_data: dict[str, Any]) -> dict[str, Any]:
+        """Generate a reflection from a trajectory document."""
+        doc = TrajectoryDoc(**doc_data)
+        reflection = self.reflector.reflect(doc)
+        return self._serialize_reflection(reflection)
+
+    def curate(self, reflection_data: dict[str, Any]) -> dict[str, Any]:
+        """Convert a reflection payload into delta operations."""
+        reflection = self._build_reflection(reflection_data)
+        playbook = self.store.load_playbook()
+        delta = curate(reflection, existing_bullets=playbook.bullets)
+        return delta.model_dump()
+
+    def commit(self, delta_data: dict[str, Any]) -> dict[str, int]:
+        """Apply a delta to the current playbook."""
+        playbook = self.store.load_playbook()
+        delta = MergeDelta.from_dict(delta_data)
+        new_playbook = apply_delta(playbook, delta, self.store)
+        return {"version": new_playbook.version}
+
+    def refine(self, threshold: float = 0.90) -> dict[str, int]:
+        """Run manual playbook refinement and persist the updated playbook."""
+        playbook = self.store.load_playbook()
+        original_ids = {bullet.id for bullet in playbook.bullets}
+        result = run_refine(Reflection(), playbook, threshold=threshold)
+        self._persist_refined_playbook(playbook, original_ids)
+        return {"merged": result.merged, "archived": result.archived}
+
+    def get_playbook(self) -> dict[str, Any]:
+        """Return the current playbook as JSON-serializable data."""
+        return self.store.load_playbook().model_dump()
+
     def _update_avg_adaptation_ms(self, new_ms: float) -> None:
         """Update running average of adaptation time."""
         n = self.stats.requests_processed
         if n == 1:
             self.stats.avg_adaptation_ms = new_ms
         else:
-            self.stats.avg_adaptation_ms = (
-                self.stats.avg_adaptation_ms * (n - 1) + new_ms
-            ) / n
+            self.stats.avg_adaptation_ms = (self.stats.avg_adaptation_ms * (n - 1) + new_ms) / n
 
     def _maybe_auto_refine(self) -> None:
         """Check if auto-refine should trigger and run if so.
@@ -286,9 +382,7 @@ class OnlineServer:
 
         if self.max_bullets > 0 and bullet_count > self.max_bullets:
             should_refine = True
-            logger.info(
-                f"Auto-refine triggered: {bullet_count} bullets > max {self.max_bullets}"
-            )
+            logger.info(f"Auto-refine triggered: {bullet_count} bullets > max {self.max_bullets}")
 
         if not should_refine:
             return
@@ -302,14 +396,7 @@ class OnlineServer:
             threshold=self._config.refine.threshold,
         )
 
-        refined_ids = {b.id for b in playbook.bullets}
-        removed_ids = original_ids - refined_ids
-
-        for bullet_id in removed_ids:
-            self.store.delete_bullet(bullet_id)
-
-        for bullet in playbook.bullets:
-            self.store.save_bullet(bullet)
+        removed_count = self._persist_refined_playbook(playbook, original_ids)
 
         self._delta_count_since_refine = 0
 
@@ -319,7 +406,7 @@ class OnlineServer:
 
         logger.info(
             f"Auto-refine complete: merged={result.merged}, archived={result.archived}, "
-            f"removed={len(removed_ids)}, bullets={len(playbook.bullets)}"
+            f"removed={removed_count}, bullets={len(playbook.bullets)}"
         )
 
     def get_stats(self) -> OnlineStats:
@@ -402,10 +489,35 @@ def create_app(
         """Process execution feedback and adapt playbook."""
         return get_server().process_feedback(request)
 
+    @app.post("/reflect")
+    async def reflect(request: ReflectRequest) -> dict[str, Any]:
+        """Generate a reflection from a trajectory document."""
+        return get_server().reflect(request.doc)
+
+    @app.post("/curate")
+    async def curate_playbook(request: CurateRequest) -> dict[str, Any]:
+        """Convert a reflection into delta operations."""
+        return get_server().curate(request.reflection)
+
+    @app.post("/commit")
+    async def commit(request: CommitRequest) -> dict[str, int]:
+        """Apply a delta to the playbook."""
+        return get_server().commit(request.delta)
+
+    @app.post("/refine")
+    async def refine(request: RefineRequest) -> dict[str, int]:
+        """Run playbook refinement."""
+        return get_server().refine(request.threshold)
+
     @app.get("/stats")
     async def stats() -> dict[str, Any]:
         """Get session statistics."""
         return get_server().get_stats().model_dump()
+
+    @app.get("/playbook")
+    async def playbook() -> dict[str, Any]:
+        """Get the full playbook."""
+        return get_server().get_playbook()
 
     @app.get("/playbook/version")
     async def playbook_version() -> dict[str, int]:

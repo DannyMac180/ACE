@@ -16,7 +16,10 @@ class BulletStore:
         if raw_tags is None:
             return []
         if isinstance(raw_tags, str):
-            return json.loads(raw_tags)
+            parsed = json.loads(raw_tags)
+            if isinstance(parsed, list):
+                return [str(tag) for tag in parsed]
+            return []
         if isinstance(raw_tags, (list, tuple)):
             return [str(tag) for tag in raw_tags]
         return []

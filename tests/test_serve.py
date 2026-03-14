@@ -8,6 +8,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from fastapi.testclient import TestClient
 
+from ace.reflector.schema import BulletTag, CandidateBullet, Reflection
 from ace.serve.runner import OnlineServer, create_app
 from ace.serve.schema import (
     AdaptationMode,
@@ -138,6 +139,7 @@ class TestOnlineServer:
         playbook = MagicMock()
         playbook.version = 1
         playbook.bullets = []
+        playbook.model_dump.return_value = {"version": 1, "bullets": []}
         store.load_playbook.return_value = playbook
         return store
 
@@ -233,9 +235,7 @@ class TestOnlineServer:
             ],
         }
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".json", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump(playbook_data, f)
             temp_path = f.name
 
@@ -266,9 +266,7 @@ class TestOnlineServer:
 
     def test_init_file_warmup_invalid_json(self, mock_store, mock_reflector, mock_retriever):
         """Test that invalid JSON in warmup file raises error."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".json", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             f.write("not valid json")
             temp_path = f.name
 
@@ -369,6 +367,121 @@ class TestOnlineServer:
         version = server.get_playbook_version()
         assert version == 1
 
+    def test_reflect_serializes_reflection(self, mock_store, mock_retriever):
+        reflection = Reflection(
+            key_insight="Prefer deterministic merges",
+            bullet_tags=[BulletTag(id="strat-001", tag="helpful")],
+            candidate_bullets=[
+                CandidateBullet(
+                    section="strategies_and_hard_rules",
+                    content="Keep REST handlers thin and deterministic.",
+                    tags=["topic:serve"],
+                )
+            ],
+        )
+        reflector = MagicMock()
+        reflector.reflect.return_value = reflection
+
+        server = OnlineServer(
+            store=mock_store,
+            reflector=reflector,
+            retriever=mock_retriever,
+        )
+
+        result = server.reflect({"query": "test query"})
+
+        assert result["key_insight"] == "Prefer deterministic merges"
+        assert result["bullet_tags"] == [{"id": "strat-001", "tag": "helpful"}]
+        assert result["candidate_bullets"] == [
+            {
+                "section": "strategies_and_hard_rules",
+                "content": "Keep REST handlers thin and deterministic.",
+                "tags": ["topic:serve"],
+            }
+        ]
+
+    def test_curate_uses_existing_playbook_bullets(
+        self, mock_store, mock_reflector, mock_retriever
+    ):
+        server = OnlineServer(
+            store=mock_store,
+            reflector=mock_reflector,
+            retriever=mock_retriever,
+        )
+
+        with patch("ace.serve.runner.curate") as mock_curate:
+            mock_delta = MagicMock()
+            mock_delta.model_dump.return_value = {"ops": [{"op": "ADD"}]}
+            mock_curate.return_value = mock_delta
+
+            result = server.curate(
+                {
+                    "candidate_bullets": [
+                        {
+                            "section": "strategies_and_hard_rules",
+                            "content": "Use hybrid retrieval.",
+                            "tags": ["topic:retrieval"],
+                        }
+                    ]
+                }
+            )
+
+            assert result == {"ops": [{"op": "ADD"}]}
+            mock_curate.assert_called_once()
+            assert (
+                mock_curate.call_args.kwargs["existing_bullets"]
+                == mock_store.load_playbook.return_value.bullets
+            )
+
+    def test_commit_applies_delta(self, mock_store, mock_reflector, mock_retriever):
+        server = OnlineServer(
+            store=mock_store,
+            reflector=mock_reflector,
+            retriever=mock_retriever,
+        )
+
+        with patch("ace.serve.runner.apply_delta") as mock_apply:
+            new_playbook = MagicMock()
+            new_playbook.version = 2
+            mock_apply.return_value = new_playbook
+
+            result = server.commit({"ops": [{"op": "ADD", "new_bullet": {"id": "b1"}}]})
+
+            assert result == {"version": 2}
+            mock_apply.assert_called_once()
+
+    def test_refine_persists_mutated_playbook(self, mock_store, mock_reflector, mock_retriever):
+        bullet = MagicMock()
+        bullet.id = "bullet-1"
+        playbook = mock_store.load_playbook.return_value
+        playbook.bullets = [bullet]
+
+        server = OnlineServer(
+            store=mock_store,
+            reflector=mock_reflector,
+            retriever=mock_retriever,
+        )
+
+        with patch("ace.serve.runner.run_refine") as mock_refine:
+            refined_result = MagicMock()
+            refined_result.merged = 1
+            refined_result.archived = 0
+            mock_refine.return_value = refined_result
+
+            result = server.refine(0.95)
+
+            assert result == {"merged": 1, "archived": 0}
+            mock_store.save_bullet.assert_called_once_with(bullet)
+
+    def test_get_playbook(self, mock_store, mock_reflector, mock_retriever):
+        server = OnlineServer(
+            store=mock_store,
+            reflector=mock_reflector,
+            retriever=mock_retriever,
+        )
+
+        assert server.get_playbook() == {"version": 1, "bullets": []}
+
 
 class TestCreateApp:
     """Test FastAPI app creation."""
@@ -379,6 +492,7 @@ class TestCreateApp:
         playbook = MagicMock()
         playbook.version = 1
         playbook.bullets = []
+        playbook.model_dump.return_value = {"version": 1, "bullets": []}
         store.load_playbook.return_value = playbook
         return store
 
@@ -422,9 +536,7 @@ class TestCreateApp:
             ],
         }
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".json", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump(playbook_data, f)
             temp_path = f.name
 
@@ -485,6 +597,99 @@ class TestCreateApp:
                         assert response.status_code == 200
                         data = response.json()
                         assert data["success"] is True
+
+    def test_reflect_endpoint(self, mock_store):
+        with patch("ace.serve.runner.Reflector") as mock_ref_cls:
+            with patch("ace.serve.runner.Retriever"):
+                mock_reflector = MagicMock()
+                mock_reflector.reflect.return_value = Reflection(
+                    key_insight="Route REST calls through typed adapters",
+                    bullet_tags=[BulletTag(id="strat-001", tag="helpful")],
+                    candidate_bullets=[
+                        CandidateBullet(
+                            section="strategies_and_hard_rules",
+                            content="Keep REST and MCP contracts aligned.",
+                            tags=["topic:serve"],
+                        )
+                    ],
+                )
+                mock_ref_cls.return_value = mock_reflector
+
+                app = create_app(store=mock_store)
+                with TestClient(app) as client:
+                    response = client.post("/reflect", json={"doc": {"query": "test query"}})
+                    assert response.status_code == 200
+                    data = response.json()
+                    assert data["key_insight"] == "Route REST calls through typed adapters"
+                    assert data["bullet_tags"] == [{"id": "strat-001", "tag": "helpful"}]
+
+    def test_curate_endpoint(self, mock_store):
+        with patch("ace.serve.runner.Reflector"):
+            with patch("ace.serve.runner.Retriever"):
+                with patch("ace.serve.runner.curate") as mock_curate:
+                    mock_delta = MagicMock()
+                    mock_delta.model_dump.return_value = {"ops": [{"op": "PATCH"}]}
+                    mock_curate.return_value = mock_delta
+
+                    app = create_app(store=mock_store)
+                    with TestClient(app) as client:
+                        response = client.post(
+                            "/curate",
+                            json={
+                                "reflection": {
+                                    "candidate_bullets": [
+                                        {
+                                            "section": "strategies_and_hard_rules",
+                                            "content": "Prefer small verified changes.",
+                                            "tags": ["policy"],
+                                        }
+                                    ]
+                                }
+                            },
+                        )
+                        assert response.status_code == 200
+                        assert response.json() == {"ops": [{"op": "PATCH"}]}
+
+    def test_commit_endpoint(self, mock_store):
+        with patch("ace.serve.runner.Reflector"):
+            with patch("ace.serve.runner.Retriever"):
+                with patch("ace.serve.runner.apply_delta") as mock_apply:
+                    new_playbook = MagicMock()
+                    new_playbook.version = 2
+                    mock_apply.return_value = new_playbook
+
+                    app = create_app(store=mock_store)
+                    with TestClient(app) as client:
+                        response = client.post(
+                            "/commit",
+                            json={"delta": {"ops": [{"op": "ADD", "new_bullet": {"id": "b1"}}]}},
+                        )
+                        assert response.status_code == 200
+                        assert response.json() == {"version": 2}
+
+    def test_refine_endpoint(self, mock_store):
+        with patch("ace.serve.runner.Reflector"):
+            with patch("ace.serve.runner.Retriever"):
+                with patch("ace.serve.runner.run_refine") as mock_refine:
+                    mock_result = MagicMock()
+                    mock_result.merged = 3
+                    mock_result.archived = 1
+                    mock_refine.return_value = mock_result
+
+                    app = create_app(store=mock_store)
+                    with TestClient(app) as client:
+                        response = client.post("/refine", json={"threshold": 0.95})
+                        assert response.status_code == 200
+                        assert response.json() == {"merged": 3, "archived": 1}
+
+    def test_playbook_endpoint(self, mock_store):
+        with patch("ace.serve.runner.Reflector"):
+            with patch("ace.serve.runner.Retriever"):
+                app = create_app(store=mock_store)
+                with TestClient(app) as client:
+                    response = client.get("/playbook")
+                    assert response.status_code == 200
+                    assert response.json() == {"version": 1, "bullets": []}
 
 
 class TestAutoRefine:
