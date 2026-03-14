@@ -261,9 +261,20 @@
   related_entities:
     - projects/ace-week-one-launch
   last_accessed: "2026-03-14"
-  access_count: 1
+  access_count: 2
 - id: ace-week-one-launch-025
   fact: "As of Saturday, March 14, 2026, the governed week-one launch stack requires dated follow-up accountability after traffic lands: `plans/2026-03-16-cmo-launch-operations-log.md` defines a `Pipeline Follow-Up SLA` and requires `Next step due by` fields across the distribution, engagement, workflow-intake, and design-partner pipeline surfaces, with the same due-date discipline mirrored in `plans/2026-03-11-cmo-design-partner-engine.md` and `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`."
+  category: status
+  timestamp: "2026-03-14"
+  source: "2026-03-14"
+  status: active
+  superseded_by: null
+  related_entities:
+    - projects/ace-week-one-launch
+  last_accessed: "2026-03-14"
+  access_count: 2
+- id: ace-week-one-launch-026
+  fact: "As of Saturday, March 14, 2026, the governed week-one launch stack includes an explicit contingency path for live failures: `plans/2026-03-16-cmo-launch-operations-log.md` now defines `Live Launch Contingency Rules` plus a `Launch Contingency Log`, `plans/2026-03-13-cmo-week-one-operator-brief.md` gives Dan concrete failure rules for scheduler, tracked-link, proof-asset, and timing breaks, and `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` includes a `Launch Incident Scratchpad` so live incidents are logged with containment moves instead of improvised."
   category: status
   timestamp: "2026-03-14"
   source: "2026-03-14"
