@@ -1,6 +1,9 @@
 import json
 import subprocess
 import sys
+from pathlib import Path
+
+from ace.eval.harness import EvalRunner
 
 
 def test_eval_run_can_write_baseline_file(tmp_path):
@@ -64,3 +67,13 @@ def test_eval_run_can_write_markdown_report(tmp_path):
     assert "**Suite:** `retrieval`" in report
     assert "### Retrieval" in report
     assert "#### Results" in report
+
+
+def test_committed_eval_baseline_matches_current_retrieval_suite():
+    runner = EvalRunner()
+    results = runner.run_suite("retrieval")
+
+    baseline_path = Path("eval/baseline.json")
+    committed = json.loads(baseline_path.read_text())
+
+    assert committed == runner.extract_baseline(results)

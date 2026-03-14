@@ -227,6 +227,7 @@ make lint
 make type
 make test
 make bench
+make baseline
 ```
 
 ACE is still early-stage. The focus is correctness, deterministic playbook updates, and small verifiable improvements backed by tests.

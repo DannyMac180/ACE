@@ -18,6 +18,15 @@ pytest
 pytest eval/retrieval_bench.py
 ```
 
+Refresh the checked-in regression baseline:
+
+```bash
+make baseline
+```
+
+The current baseline snapshot is stored at `eval/baseline.json` and is generated
+from `ace eval run --suite retrieval --write-baseline ...`.
+
 ### Performance Benchmarks
 
 To run performance benchmarks (opt-in):

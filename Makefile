@@ -1,4 +1,4 @@
-.PHONY: setup lint type test run-mcp seed refine bench
+.PHONY: setup lint type test run-mcp seed refine bench baseline
 
 VENV ?= .venv
 PYTHON := $(VENV)/bin/python
@@ -32,3 +32,6 @@ refine:
 
 bench:
 	$(PYTEST) -o "addopts=-v" -m benchmark eval/test_reflection_bench.py eval/test_retrieval_bench.py
+
+baseline:
+	$(PYTHON) -m ace.cli eval run --suite retrieval --write-baseline eval/baseline.json
