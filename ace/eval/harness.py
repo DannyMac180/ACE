@@ -195,26 +195,183 @@ class EvalRunner:
 
         return {"status": "no_regression", "baseline_loaded": True}
 
+    def extract_baseline(self, results: dict[str, Any]) -> dict[str, float]:
+        """Extract a flat numeric baseline snapshot from evaluation results."""
+        baseline: dict[str, float] = {}
+        self._collect_numeric_metrics(results.get("summary", {}), baseline)
+        self._collect_numeric_metrics(results.get("details", {}), baseline)
+        return baseline
+
+    def write_baseline(self, results: dict[str, Any], output_path: str) -> dict[str, float]:
+        """Write a baseline JSON file containing flattened numeric metrics."""
+        baseline = self.extract_baseline(results)
+        path = Path(output_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("w", encoding="utf-8") as f:
+            json.dump(baseline, f, indent=2, sort_keys=True)
+        return baseline
+
+    @staticmethod
+    def _collect_numeric_metrics(
+        value: Any,
+        output: dict[str, float],
+        prefix: str = "",
+    ) -> None:
+        """Flatten nested numeric metrics into dot-delimited keys."""
+        if isinstance(value, dict):
+            for key, item in value.items():
+                metric_key = f"{prefix}.{key}" if prefix else str(key)
+                EvalRunner._collect_numeric_metrics(item, output, metric_key)
+            return
+
+        if isinstance(value, bool):
+            return
+
+        if isinstance(value, (int, float)) and prefix:
+            output[prefix] = float(value)
+
     def format_markdown(self, results: dict[str, Any]) -> str:
         """Format results as markdown report"""
         lines = [
             "# ACE Evaluation Results",
             "",
-            f"**Suite:** {results['suite']}",
+            f"**Suite:** `{results['suite']}`",
             "",
             "## Summary",
             "",
         ]
 
-        for key, value in results.get("summary", {}).items():
-            lines.append(f"- {key}: {value}")
+        self._append_mapping_table(lines, results.get("summary", {}), key_label="Metric")
 
-        lines.append("")
-        lines.append("## Details")
-        lines.append("")
-        lines.append("_(Full details in JSON output)_")
+        regression_check = results.get("regression_check")
+        if regression_check:
+            lines.extend(["", "## Regression Check", ""])
+            self._append_mapping(lines, regression_check, level=3)
+
+        lines.extend(["", "## Details", ""])
+        details = results.get("details", {})
+        if not details:
+            lines.append("_No detailed results available._")
+        else:
+            for suite_name, suite_results in details.items():
+                self._append_mapping(
+                    lines,
+                    suite_results if isinstance(suite_results, dict) else {"value": suite_results},
+                    title=suite_name.replace("_", " ").title(),
+                    level=3,
+                )
 
         return "\n".join(lines)
+
+    @staticmethod
+    def _append_mapping_table(
+        lines: list[str],
+        mapping: dict[str, Any],
+        *,
+        key_label: str,
+    ) -> None:
+        """Render scalar mapping items as a markdown table."""
+        if not mapping:
+            lines.append("_No data available._")
+            return
+
+        lines.append(f"| {key_label} | Value |")
+        lines.append("| --- | --- |")
+        for key, value in mapping.items():
+            lines.append(f"| `{key}` | {EvalRunner._format_markdown_value(value)} |")
+
+    @classmethod
+    def _append_mapping(
+        cls,
+        lines: list[str],
+        mapping: dict[str, Any],
+        *,
+        title: str | None = None,
+        level: int,
+    ) -> None:
+        """Render a nested mapping into readable markdown."""
+        if title:
+            lines.extend([f"{'#' * level} {title}", ""])
+
+        scalar_items = {
+            key: value
+            for key, value in mapping.items()
+            if not isinstance(value, (dict, list))
+        }
+        if scalar_items:
+            cls._append_mapping_table(lines, scalar_items, key_label="Field")
+            lines.append("")
+
+        nested_items = [
+            (key, value)
+            for key, value in mapping.items()
+            if isinstance(value, (dict, list))
+        ]
+        for index, (key, value) in enumerate(nested_items):
+            section_title = key.replace("_", " ").title()
+            if isinstance(value, dict):
+                cls._append_mapping(lines, value, title=section_title, level=level + 1)
+            else:
+                cls._append_list(lines, value, title=section_title, level=level + 1)
+            if index != len(nested_items) - 1:
+                lines.append("")
+
+        if not scalar_items and not nested_items:
+            lines.append("_No data available._")
+
+    @classmethod
+    def _append_list(
+        cls,
+        lines: list[str],
+        values: list[Any],
+        *,
+        title: str,
+        level: int,
+    ) -> None:
+        """Render list values as either a table or bullet list."""
+        lines.extend([f"{'#' * level} {title}", ""])
+        if not values:
+            lines.append("_No items._")
+            return
+
+        if all(isinstance(item, dict) for item in values):
+            scalar_keys: list[str] = []
+            for item in values:
+                for key, value in item.items():
+                    if isinstance(value, (dict, list)):
+                        continue
+                    if key not in scalar_keys:
+                        scalar_keys.append(key)
+
+            if scalar_keys:
+                header = " | ".join(f"`{key}`" for key in scalar_keys)
+                lines.append(f"| {header} |")
+                lines.append(f"| {' | '.join('---' for _ in scalar_keys)} |")
+                for item in values:
+                    row = " | ".join(
+                        cls._format_markdown_value(item.get(key, "")) for key in scalar_keys
+                    )
+                    lines.append(f"| {row} |")
+                return
+
+        for item in values:
+            lines.append(f"- {cls._format_markdown_value(item)}")
+
+    @staticmethod
+    def _format_markdown_value(value: Any) -> str:
+        """Convert a value into a markdown-safe scalar string."""
+        if isinstance(value, bool):
+            return "`true`" if value else "`false`"
+        if value is None:
+            return "`null`"
+        if isinstance(value, float):
+            return f"`{value:g}`"
+        if isinstance(value, int):
+            return f"`{value}`"
+        if isinstance(value, str):
+            escaped = value.replace("\n", "<br>")
+            return escaped if escaped else "`\"\"`"
+        return f"`{json.dumps(value, sort_keys=True)}`"
 
     def print_results(self, results: dict[str, Any]) -> None:
         """Print results in human-readable text format"""

@@ -1,3 +1,5 @@
+from datetime import UTC
+
 import pytest
 
 from ace.core.schema import (
@@ -20,6 +22,7 @@ def test_bullet_creation():
     assert bullet.section == "strategies_and_hard_rules"
     assert bullet.content == "Test bullet"
     assert bullet.tags == ["test"]
+    assert bullet.added_at.tzinfo == UTC
 
 
 def test_playbook_creation():

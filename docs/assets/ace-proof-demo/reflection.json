@@ -1,0 +1,29 @@
+{
+  "error_identification": "The first retrieval attempt was too generic.",
+  "root_cause_analysis": "The query omitted the concrete ACE action and tool surface.",
+  "correct_approach": "Include the exact task outcome and CLI surface in the retrieval query before reflecting on the run.",
+  "key_insight": "Specific task wording helps ACE surface tactical bullets instead of broad hygiene advice.",
+  "bullet_tags": [
+    {
+      "id": "strat-00001",
+      "tag": "helpful"
+    },
+    {
+      "id": "seed-retrieval-hygiene",
+      "tag": "helpful"
+    }
+  ],
+  "candidate_bullets": [
+    {
+      "section": "strategies_and_hard_rules",
+      "content": "When retrieval returns a generic result, tighten the query with the concrete task and tool names before reflecting.",
+      "tags": [
+        "repo:ace",
+        "topic:retrieval",
+        "tool:cli"
+      ]
+    }
+  ],
+  "iteration": 0,
+  "parent_id": null
+}

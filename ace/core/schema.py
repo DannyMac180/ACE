@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, BeforeValidator, Field
@@ -39,6 +39,11 @@ def normalize_section(value: str) -> Section:
 NormalizedSection = Annotated[Section, BeforeValidator(normalize_section)]
 
 
+def _utcnow() -> datetime:
+    """Return current UTC datetime."""
+    return datetime.now(UTC)
+
+
 class Bullet(BaseModel):
     id: str
     section: NormalizedSection
@@ -47,13 +52,13 @@ class Bullet(BaseModel):
     helpful: int = 0
     harmful: int = 0
     last_used: datetime | None = None
-    added_at: datetime = Field(default_factory=datetime.utcnow)
+    added_at: datetime = Field(default_factory=_utcnow)
 
 
 class Reflection(BaseModel):
     summary: str
     critique: str
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=_utcnow)
 
 
 class DeltaBullet(BaseModel):

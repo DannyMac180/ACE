@@ -1,194 +1,179 @@
-# ACE: Agentic Context Engineering
+# ACE
 
-ACE is a configuration-driven toolkit for building agentic systems with high-quality context:
-- Hybrid retrieval (vector + lexical) with tunable weights
-- Content deduplication and refinement (cosine and MinHash thresholds)
-- Pluggable embeddings and LLMs
-- Structured logging
-- MCP transport options (stdio, http, sse)
+ACE is a Python library and MCP server for agentic context engineering: retrieve the right playbook bullets, learn from execution feedback, and evolve context through small deterministic deltas instead of rewriting prompts from scratch.
 
-## Quick start
+The project implements the loop described in the paper [Agentic Context Engineering](docs/Agentic%20Context%20Engineering.pdf): Generator -> Reflector -> Curator -> Merge -> Refine.
 
-1) Clone and install
-- Create a Python virtual environment and install project dependencies.
-  - Typical options:
-    - `pip install -r requirements.txt`
-    - or `pip install -e .`
-- Ensure your runtime can import ace.core.config.
+If you want to try ACE without running it locally, a hosted version is available at [aceagent.io](https://aceagent.io).
 
-2) Configure
-- Edit [configs/default.toml](configs/default.toml) (recommended), or
-- Override specific settings with environment variables (ACE_*; MCP_* for MCP transport/port).
+## Why ACE
 
-3) Use the CLI or in code
+- Treat context as a versioned playbook, not a monolithic system prompt.
+- Retrieve reusable tactics with hybrid lexical + vector search.
+- Convert task outcomes into strict JSON reflections and deltas.
+- Apply updates deterministically in code.
+- Expose the whole workflow over MCP for IDEs, coding agents, and other clients.
 
-### CLI Usage
+## Architecture
 
-The `ace` command provides full access to the ACE workflow:
+The visuals below are adapted from the diagrams in [`docs/arch-diagrams/`](docs/arch-diagrams).
+
+```mermaid
+flowchart LR
+  subgraph Host["Developer or Agent Runtime"]
+    User["User / IDE / Agent"]
+  end
+
+  subgraph MCP["ACE MCP Server"]
+    Server["ace_mcp_server"]
+  end
+
+  subgraph Lib["ACE Library"]
+    Ret["Retrieve"]
+    Gen["Generator"]
+    Ref["Reflector"]
+    Cur["Curator"]
+    Merge["Merge"]
+    Refine["Refine"]
+  end
+
+  subgraph Data["Storage and Models"]
+    Playbook[("Playbook Store")]
+    Index[("Vector Index")]
+    LLM["LLM Provider"]
+  end
+
+  User --> Server
+  Server --> Ret
+  Server --> Ref
+  Server --> Cur
+  Server --> Merge
+  Server --> Refine
+  Gen --> Ret
+  Gen --> LLM
+  Ref --> LLM
+  Cur --> Merge
+  Ret --> Playbook
+  Ret --> Index
+  Merge --> Playbook
+  Refine --> Playbook
+```
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant Agent
+  participant ACE as ACE MCP Server
+  participant PB as Playbook
+  participant LLM
+
+  Agent->>ACE: retrieve(query, top_k=24)
+  ACE->>PB: hybrid search + rerank
+  PB-->>ACE: relevant bullets
+  ACE-->>Agent: bullets[]
+
+  Agent->>ACE: reflect(doc)
+  ACE->>LLM: structured critique
+  LLM-->>ACE: Reflection JSON
+  ACE-->>Agent: reflection
+
+  Agent->>ACE: curate(reflection)
+  ACE-->>Agent: Delta ops
+
+  Agent->>ACE: commit(delta)
+  ACE->>PB: apply ADD/PATCH/INCR/DEPRECATE
+  ACE-->>Agent: new version
+
+  Agent->>ACE: refine(threshold=0.90)
+  ACE->>PB: dedup / merge / archive
+```
+
+## Current Capabilities
+
+- `ace retrieve`: hybrid retrieval over playbook bullets.
+- `ace reflect`: generate structured reflections from task feedback.
+- `ace curate`: convert reflections into delta operations.
+- `ace commit`: deterministically apply deltas and bump playbook version.
+- `ace evolve`: run reflect -> curate -> commit from an explicit task document.
+- `ace pipeline`: either run the built-in generator loop or process external execution feedback with `--feedback`.
+- `ace refine`: merge near-duplicates and archive low-utility bullets.
+- `ace serve`: start the FastAPI serving layer with `/health`, `/retrieve`, `/feedback`, `/stats`, and `/playbook/version`.
+- `python -m ace_mcp_server`: expose the `ace_*` tool surface over FastMCP.
+
+## Quickstart
+
+For the shortest end-to-end setup path, see [QUICKSTART.md](QUICKSTART.md).
 
 ```bash
-# Retrieve bullets matching a query
-ace retrieve "authentication patterns" --top-k 10
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -U pip
+pip install -e .[dev]
+make test
+```
 
-# View playbook statistics
+Seed a local playbook and inspect it:
+
+```bash
+make seed
 ace stats --json
+ace retrieve "hybrid retrieval for code agents" --top-k 5
+```
 
-# Run the full evolution pipeline (reflect → curate → commit)
+Run the full reflect -> curate -> commit loop against a task document:
+
+```bash
 ace evolve --doc task.json --print-delta --apply
-
-# Tag a bullet as helpful or harmful
-ace tag strat-00091 --helpful
-
-# Deduplicate and consolidate bullets
-ace refine --threshold 0.90 --dry-run
-
-# Dump full playbook
-ace playbook dump --out playbook.json
-
-# Import playbook from JSON file
-ace playbook import --file playbook.json
 ```
 
-Available commands:
-- `retrieve` - Retrieve bullets matching a query
-- `reflect` - Generate reflection from task execution data
-- `curate` - Convert reflection to delta operations
-- `commit` - Apply delta operations to playbook
-- `evolve` - Run full reflect→curate→commit pipeline
-- `playbook dump` - Export full playbook JSON
-- `playbook import` - Import playbook from JSON file
-- `tag` - Tag a bullet as helpful or harmful
-- `refine` - Deduplicate and consolidate bullets
-- `stats` - Show playbook statistics
-- `serve` - Start online server for test-time sequential adaptation
-- `train` - Run multi-epoch offline adaptation training
-
-### Online Serving (Test-Time Adaptation)
-
-Start the HTTP server for real-time adaptation with execution feedback:
+Start the MCP server:
 
 ```bash
-# Basic cold start
+python -m ace_mcp_server
+```
+
+Notes:
+
+- Python 3.11+ is required.
+- The CLI loads `configs/default.toml` and supports `ACE_*` / `MCP_*` environment overrides.
+- Reflection and curation use the configured LLM provider. The default config points at the OpenAI client stack.
+- The seed script writes seed bullets into the local default store path (`ace.db`).
+
+## CLI Surface
+
+```bash
+ace version
+ace retrieve "pgvector migration" --top-k 8
+ace reflect --doc task.json --json
+ace curate --reflection reflection.json --json
+ace commit --delta delta.json --json
+ace pipeline "triage flaky retrieval test" --dry-run --json
+ace refine --threshold 0.90 --dry-run --json
+ace stats --json
 ace serve --host 127.0.0.1 --port 8000
-
-# Warm start with pre-loaded playbook (recommended for production)
-ace serve --warmup playbook.json
-
-# Disable automatic adaptation (retrieve-only mode)
-ace serve --no-adapt
-```
-
-The `--warmup` option supports offline warmup as described in the ACE paper (Table 3),
-where pre-training the playbook offline before online adaptation improves performance.
-
-Use `ace <command> --help` for detailed usage of each command.
-
-### Python API
-
-```python
-from ace.core.config import get_config
-
-cfg = get_config()  # loads configs/default.toml + env overrides and validates
-# ... use cfg.database.url, cfg.retrieval.top_k, cfg.llm.model, etc.
-```
-
-## Trajectory Schema
-
-External agents (MCP clients, CI systems, IDEs) can record task execution data using the `TrajectoryDoc` schema. This is the standard format for feeding execution context to the ACE reflector.
-
-### TrajectoryDoc Fields
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `query` | string | **Yes** | The task or query that was executed |
-| `retrieved_bullet_ids` | string[] | No | IDs of playbook bullets retrieved and used |
-| `code_diff` | string | No | Code changes made during execution |
-| `test_output` | string | No | Test results or output |
-| `logs` | string | No | Execution logs, errors, stack traces |
-| `env_meta` | object | No | Environment metadata (final_status, tool versions, etc.) |
-| `tools_used` | string[] | No | List of tools or actions invoked |
-
-### Example Payload
-
-```json
-{
-  "query": "Fix the authentication bug in login.py",
-  "retrieved_bullet_ids": ["strat-00091", "trbl-00022"],
-  "code_diff": "--- a/login.py\n+++ b/login.py\n@@ -15,3 +15,5 @@\n+    if not token:\n+        raise AuthError('Missing token')",
-  "test_output": "PASSED test_login_with_valid_token\nFAILED test_login_without_token - AssertionError",
-  "logs": "2024-01-15 10:23:45 ERROR: AuthError raised during login attempt",
-  "env_meta": {
-    "final_status": "partial",
-    "python_version": "3.11.5",
-    "test_framework": "pytest"
-  },
-  "tools_used": ["read_file", "edit_file", "run_tests"]
-}
-```
-
-### MCP Integration
-
-Use the MCP tools to record trajectories and generate reflections:
-
-```bash
-# 1. Record a trajectory (returns trajectory_id)
-ace.record_trajectory(
-  query="Fix authentication bug",
-  code_diff="...",
-  test_output="...",
-  logs="..."
-)
-# Returns: {"trajectory_id": "traj-abc123def456"}
-
-# 2. Generate reflection from trajectory
-ace.reflect(trajectory_id="traj-abc123def456")
-# Returns: {
-#   "error_identification": "...",
-#   "root_cause_analysis": "...",
-#   "candidate_bullets": [...]
-# }
-
-# 3. Commit the delta to update playbook
-ace.commit(delta={"ops": [...]})
-```
-
-### Python API
-
-```python
-from ace.generator import TrajectoryDoc
-from ace.reflector import Reflector
-
-# Create a TrajectoryDoc
-doc = TrajectoryDoc(
-    query="Implement caching for API responses",
-    retrieved_bullet_ids=["strat-00042"],
-    code_diff="...",
-    test_output="All 15 tests passed",
-    env_meta={"final_status": "success"},
-)
-
-# Reflect directly on the doc
-reflector = Reflector()
-reflection = reflector.reflect(doc)
+ace train --data ace/eval/fixtures/labeled_samples.jsonl --epochs 1 --json
+ace eval run --suite all --format text
+ace smoke-test-model --json
 ```
 
 ## MCP Quickstart
 
-ACE provides an MCP (Model Context Protocol) server for integrating with Claude and other MCP-compatible clients.
+ACE exposes these MCP tools:
 
-### Running the MCP Server
+- `ace_retrieve`
+- `ace_record_trajectory`
+- `ace_reflect`
+- `ace_curate`
+- `ace_commit`
+- `ace_refine`
+- `ace_stats`
+- `ace_pipeline`
 
-```bash
-# Start the MCP server (stdio transport by default)
-python -m ace_mcp_server
+Resource:
 
-# Or use the Makefile
-make run-mcp
-```
+- `ace://playbook.json`
 
-### Claude Desktop Configuration
-
-Add ACE to your Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+Claude Desktop example:
 
 ```json
 {
@@ -205,62 +190,43 @@ Add ACE to your Claude Desktop config (`~/Library/Application Support/Claude/cla
 }
 ```
 
-### Using with uv (recommended)
+## Implementation Notes
 
-If you're using `uv` for Python package management:
+- The built-in generator is a small ReAct-style loop with a default simulated tool executor. For real execution feedback from CI, editors, or external agents, use `ace reflect`, `ace evolve`, or `ace pipeline --feedback`.
+- Merge remains deterministic and code-driven. LLM-backed components propose reflections and candidate deltas; they do not rewrite the playbook directly.
+- The MCP server and the FastAPI serving layer are separate entrypoints: `python -m ace_mcp_server` for MCP, `ace serve` for HTTP.
 
-```json
-{
-  "mcpServers": {
-    "ace": {
-      "command": "uv",
-      "args": ["run", "--directory", "/path/to/ACE", "python", "-m", "ace_mcp_server"]
-    }
-  }
-}
+## Repository Map
+
+```text
+ace/               core library: schema, retrieval, merge, reflection, curation, refine
+ace_mcp_server/    FastMCP wrapper and entrypoint
+tests/             unit and integration coverage
+eval/              smoke benchmarks and evaluation harness
+configs/           default configuration and env-driven overrides
+docs/              architecture, API reference, MCP usage, paper
 ```
 
-### Available MCP Tools
+## Documentation
 
-| Tool | Description |
-|------|-------------|
-| `ace_retrieve` | Retrieve relevant playbook bullets for a query |
-| `ace_reflect` | Generate a reflection from task execution data |
-| `ace_curate` | Convert a reflection into delta operations |
-| `ace_commit` | Apply delta operations to the playbook |
-| `ace_refine` | Deduplicate and consolidate bullets |
-| `ace_stats` | Get playbook statistics |
-| `ace_record_trajectory` | Record a task execution trajectory |
-| `ace_pipeline` | Run the full ACE pipeline |
+- [Getting started example](docs/getting-started-example.md)
+- [Custom LLM provider example](docs/custom-llm-provider-example.md)
+- [Proof demo asset](docs/ace-proof-demo.md)
+- [Configuration guide](docs/configuration.md)
+- [API reference](docs/api-reference.md)
+- [MCP usage guide](docs/MCP_USAGE_GUIDE.md)
+- [Smoke test usage](docs/smoke-test-usage.md)
+- [Architecture diagrams](docs/arch-diagrams)
+- [Evaluation notes](eval/README.md)
 
-### MCP Resource
+## Development
 
-The server exposes the full playbook via the `ace://playbook.json` resource, which returns the same structure as `ace playbook dump`.
-
-### Example Usage in Claude
-
-Once configured, you can interact with ACE directly in Claude:
-
-```
-User: What strategies do you have for retrieval?
-
-Claude: [Uses ace_retrieve tool with query "retrieval strategies"]
-Found 3 relevant bullets:
-- strat-001: Prefer hybrid retrieval: BM25 + embedding for better recall
-- ...
+```bash
+make setup
+make lint
+make type
+make test
+make bench
 ```
 
-## Configuration
-
-See the full configuration guide with defaults, env var mappings, validation rules, and examples:
-- [docs/configuration.md](docs/configuration.md)
-
----
-
-If you need a different config file per environment, you can also load a specific path programmatically:
-```python
-from pathlib import Path
-from ace.core.config import load_config
-
-cfg = load_config(Path("configs/prod.toml"))
-```
+ACE is still early-stage. The focus is correctness, deterministic playbook updates, and small verifiable improvements backed by tests.

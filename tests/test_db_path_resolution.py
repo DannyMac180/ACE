@@ -20,3 +20,27 @@ def test_sqlite_absolute_url_preserves_path(tmp_path):
         assert db_path.exists()
     finally:
         db.close()
+
+
+def test_sqlite_connections_allow_cross_thread_usage(monkeypatch):
+    captured: dict[str, object] = {}
+
+    class FakeConnection:
+        def execute(self, _query: str) -> None:
+            return None
+
+        def close(self) -> None:
+            return None
+
+    def fake_connect(path: str, **kwargs: object) -> FakeConnection:
+        captured["path"] = path
+        captured["kwargs"] = kwargs
+        return FakeConnection()
+
+    monkeypatch.setattr("ace.core.storage.db.sqlite3.connect", fake_connect)
+
+    db = DatabaseConnection("sqlite:///ace.db")
+    db.connect()
+
+    assert captured["path"] == "ace.db"
+    assert captured["kwargs"] == {"check_same_thread": False}

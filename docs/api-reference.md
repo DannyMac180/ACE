@@ -369,8 +369,8 @@ class ACEConfig:
 | `ACE_LOG_FORMAT` | `json` | Log format (`json` or `text`) |
 | `MCP_TRANSPORT` | `stdio` | MCP transport (stdio/http/sse) |
 | `MCP_PORT` | `8000` | HTTP port (only if transport=http) |
-| `ACE_LLM_PROVIDER` | `openai` | LLM provider (openai, anthropic, etc.) |
-| `ACE_LLM_MODEL` | `gpt-4o-mini` | LLM model name |
+| `ACE_LLM_PROVIDER` | `openrouter` | LLM provider (`mock` or `openrouter`) |
+| `ACE_LLM_MODEL` | `openai/gpt-4o-mini` | LLM model name |
 | `ACE_LLM_TEMPERATURE` | `0.0` | LLM temperature for reflection/curation |
 | `ACE_LLM_MAX_TOKENS` | `2000` | Max tokens for LLM responses |
 
@@ -431,19 +431,24 @@ class Reflection:
 class Reflector:
     def __init__(
         self,
-        model: str = "gpt-4o-mini",
+        llm_client: LLMClient | None = None,
         max_retries: int = 3,
-        temperature: float = 0.3
+        temperature: float = 0.3,
+        refinement_rounds: int | None = None,
+        quality_threshold: float | None = None,
     ) -> None
 ```
 
 **Parameters:**
-- `model`: OpenAI model to use
+- `llm_client`: Optional injected client; if omitted, created from config
 - `max_retries`: Maximum retry attempts on parse errors
 - `temperature`: LLM temperature (lower = more deterministic)
+- `refinement_rounds`: Optional override for iterative refinement rounds
+- `quality_threshold`: Optional override for early-stop quality threshold
 
 **Environment Variables:**
-- `OPENAI_API_KEY`: **Required.** The Reflector uses the OpenAI SDK directly and will fail on instantiation if this variable is not set.
+- `ACE_LLM_PROVIDER`, `ACE_LLM_MODEL`, `ACE_LLM_TEMPERATURE`, `ACE_LLM_MAX_TOKENS`: used when no client is injected
+- `OPENROUTER_API_KEY`: required when `ACE_LLM_PROVIDER=openrouter`
 
 #### `reflect(...) -> Reflection`
 

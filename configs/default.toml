@@ -62,12 +62,18 @@ passes = 1
 # Similarity threshold for deduplicating candidate bullets (0.0-1.0)
 similarity_threshold = 0.85
 
-[llm]
-# Default LLM provider (openai, anthropic, etc.)
-provider = "openai"
+# Maximum refinement iterations for a single reflection (1 = no refinement)
+refinement_rounds = 1
 
-# Model name
-model = "gpt-4o-mini"
+# Minimum quality score before stopping refinement early
+quality_threshold = 0.7
+
+[llm]
+# Default LLM provider (supported: mock, openrouter)
+provider = "openrouter"
+
+# Model name for the configured provider
+model = "openai/gpt-4o-mini"
 
 # Temperature for reflection/curation
 temperature = 0.0

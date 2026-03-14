@@ -37,7 +37,8 @@ class DatabaseConnection:
         if self.is_sqlite:
             db_path = self._resolve_sqlite_path()
             self._sqlite_path = db_path
-            self.conn = sqlite3.connect(db_path)
+            # MCP tools can execute on worker threads while reusing a shared Store.
+            self.conn = sqlite3.connect(db_path, check_same_thread=False)
             self.conn.execute("PRAGMA foreign_keys = ON")
         else:
             # Assuming postgres URL

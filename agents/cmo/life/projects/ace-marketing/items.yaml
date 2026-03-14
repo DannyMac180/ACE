@@ -1,0 +1,218 @@
+- id: ace-marketing-2026-03-11-category
+  status: active
+  fact: "ACE should be positioned as Agentic Context Engineering: an adaptive context layer that updates reusable bullets through deterministic deltas instead of rewriting whole prompts."
+  source: "plans/2026-03-11-cmo-growth-operating-plan.md"
+  recorded_at: "2026-03-11"
+- id: ace-marketing-2026-03-11-audience
+  status: active
+  fact: "The initial go-to-market audience is Dan's existing X following of technical builders working on coding agents, MCP tooling, evals, and agent memory."
+  source: "plans/2026-03-11-cmo-growth-operating-plan.md"
+  recorded_at: "2026-03-11"
+- id: ace-marketing-2026-03-11-engine
+  status: active
+  fact: "The repeatable content engine is one weekly thesis, one weekly proof artifact, and one weekly adoption post, all derived from the same core idea and pointed at a concrete repo asset."
+  source: "plans/2026-03-11-cmo-growth-operating-plan.md"
+  recorded_at: "2026-03-11"
+- id: ace-marketing-2026-03-11-blockers
+  status: superseded
+  superseded_by: ace-marketing-2026-03-11-blockers-v2
+  fact: "This shell currently lacks Paperclip runtime variables plus the bd and qmd CLIs, so status sync, issue tracking, and semantic recall require local-file fallback."
+  source: "agents/cmo/memory/2026-03-11.md"
+  recorded_at: "2026-03-11"
+- id: ace-marketing-2026-03-11-blockers-v2
+  status: active
+  fact: "Heartbeat shells now expose live Paperclip runtime access again, but the bd and qmd CLIs are still unavailable, so governed task work still depends on receiving an assigned issue and memory recall still uses local-file fallback."
+  source: "agents/cmo/memory/2026-03-11.md"
+  recorded_at: "2026-03-11"
+- id: ace-marketing-2026-03-11-campaign-system
+  status: active
+  fact: "ACE now has a concrete four-week campaign system with a fixed message stack, weekly category-proof-adoption cadence, founder-led reply strategy, CTA ladder, and a weekly scoreboard for qualified impressions, clicks, adoption signals, serious conversations, and repeat-user signals."
+  source: "plans/2026-03-11-cmo-campaign-system.md"
+  recorded_at: "2026-03-11"
+- id: ace-marketing-2026-03-11-execution-briefs
+  status: active
+  fact: "The next execution queue is defined as five ready briefs: README positioning rewrite, 60-second demo asset, example-driven adoption doc, benchmark or before-after proof, and growth instrumentation setup."
+  source: "plans/2026-03-11-cmo-execution-briefs.md"
+  recorded_at: "2026-03-11"
+- id: ace-marketing-2026-03-11-launch-copy-pack
+  status: active
+  fact: "ACE now has an execution-ready launch copy pack with a week-one anchor thread, short-form X posts, founder reply scripts, DM follow-up copy, CTA destinations, tracked-link naming, and a weekly growth scoreboard."
+  source: "plans/2026-03-11-cmo-launch-copy-pack.md"
+  recorded_at: "2026-03-11"
+- id: ace-marketing-2026-03-11-channel-strategy
+  status: active
+  fact: "ACE now has a channel strategy that prioritizes Dan's X account and GitHub as tier-one surfaces, then uses Hacker News, Reddit, and the OpenAI Developer Community as low-cost external distribution once README, demo, and example assets are ready."
+  source: "plans/2026-03-11-cmo-channel-strategy.md"
+  recorded_at: "2026-03-11"
+- id: ace-marketing-2026-03-11-growth-instrumentation-system
+  status: active
+  fact: "ACE now has a concrete growth instrumentation system with tracked-link naming, a weekly asset register, a weekly scoreboard, design-partner pipeline stages, decision thresholds, and clear owners for launch measurement."
+  source: "plans/2026-03-11-cmo-growth-instrumentation-system.md"
+  recorded_at: "2026-03-11"
+- id: ace-marketing-2026-03-11-paperclip-delegation-pack
+  status: active
+  fact: "ACE now has a Paperclip-ready delegation pack with exact issue drafts, assignment order, success metrics, and source-document links for README, instrumentation, demo, adoption-doc, outreach, and benchmark work."
+  source: "plans/2026-03-11-cmo-paperclip-delegation-pack.md"
+  recorded_at: "2026-03-11"
+- id: ace-marketing-2026-03-11-editorial-calendar
+  status: active
+  fact: "ACE now has a dated editorial calendar for March 16 to April 10, 2026 that maps each weekly category, proof, and adoption post to a required repo asset, primary CTA, success threshold, and follow-up motion."
+  source: "plans/2026-03-11-cmo-editorial-calendar.md"
+  recorded_at: "2026-03-11"
+- id: ace-marketing-2026-03-12-launch-routing
+  status: active
+  fact: "On March 12, 2026, the immediate launch-critical routing order changed because README positioning is already materially complete; the remaining must-have sequence before Monday, March 16, 2026 is growth instrumentation ownership, then the 60-second demo asset, then the example-driven adoption doc."
+  source: "plans/2026-03-12-cmo-launch-routing-brief.md"
+  recorded_at: "2026-03-12"
+- id: ace-marketing-2026-03-12-paperclip-routing
+  status: active
+  fact: "On March 12, 2026, the CMO created Paperclip issue ACE-5 to route launch dependencies, but the issue had to remain unassigned because the CMO agent lacks the tasks:assign permission."
+  source: "agents/cmo/memory/2026-03-12.md"
+  recorded_at: "2026-03-12"
+- id: ace-marketing-2026-03-12-paperclip-escalation
+  status: superseded
+  superseded_by: ace-marketing-2026-03-12-paperclip-execution-live
+  fact: "Later on March 12, 2026, the CMO confirmed ACE-5 was still unassigned in backlog and posted one escalation comment tagging the CEO; launch routing remains blocked on CEO pickup."
+  source: "agents/cmo/memory/2026-03-12.md"
+  recorded_at: "2026-03-12"
+- id: ace-marketing-2026-03-12-live-launch-assets
+  status: active
+  fact: "On March 12, 2026, the repo gained two live week-one conversion assets: `docs/ace-proof-demo.md` for proof traffic and `docs/getting-started-example.md` for adoption traffic, replacing the earlier diagram and issue-intake placeholders in the launch docs."
+  source: "agents/cmo/memory/2026-03-12.md"
+  recorded_at: "2026-03-12"
+- id: ace-marketing-2026-03-12-paperclip-execution-handoff
+  status: active
+  fact: "On March 12, 2026, after ACE-5 and child issues ACE-6 through ACE-8 were completed, the CMO opened Paperclip issue ACE-9 to route week-one launch execution, scoreboarding, and design-partner follow-up against the live assets."
+  source: "agents/cmo/memory/2026-03-12.md"
+  recorded_at: "2026-03-12"
+- id: ace-marketing-2026-03-12-paperclip-execution-live
+  status: active
+  fact: "Later on March 12, 2026, ACE-9 moved into progress with the CEO as assignee, the March 16 to March 20 launch preflight gates were marked ready, and the live operating source of truth became `plans/2026-03-16-cmo-launch-operations-log.md`."
+  source: "agents/cmo/memory/2026-03-12.md"
+  recorded_at: "2026-03-12"
+- id: ace-marketing-2026-03-13-paperclip-execution-still-upstream
+  status: superseded
+  superseded_by: ace-marketing-2026-03-13-paperclip-execution-live
+  fact: "On Friday, March 13, 2026, the CMO confirmed there were still no assigned Paperclip issues in the CMO inbox, while ACE-9 remained in progress with the CEO and continued to receive launch-log refinements rather than a delegated handoff."
+  source: "agents/cmo/memory/2026-03-13.md"
+  recorded_at: "2026-03-13"
+- id: ace-marketing-2026-03-13-operator-brief
+  status: active
+  fact: "On Friday, March 13, 2026, the CMO added `plans/2026-03-13-cmo-week-one-operator-brief.md` as a single operator-facing brief for Monday, March 16, 2026 through Friday, March 20, 2026 so Dan can publish, route replies and DMs, and complete day-end logging without bouncing across the longer planning stack."
+  source: "plans/2026-03-13-cmo-week-one-operator-brief.md"
+  recorded_at: "2026-03-13"
+- id: ace-marketing-2026-03-13-paperclip-execution-live
+  status: active
+  fact: "Later on Friday, March 13, 2026, the CEO delegated child issue `ACE-10` to the CMO, making the CMO the governed owner of week-one publishing motions, same-day launch-log updates, and the 24-hour follow-up rule while `ACE-9` remained the parent oversight issue."
+  source: "agents/cmo/memory/2026-03-13.md"
+  recorded_at: "2026-03-13"
+- id: ace-marketing-2026-03-13-launch-ops-ownership-clarified
+  status: active
+  fact: "Later on Friday, March 13, 2026, the CMO updated `plans/2026-03-16-cmo-launch-operations-log.md` and `plans/2026-03-13-cmo-week-one-operator-brief.md` to clarify the CMO versus CEO ownership split and add a Sunday, March 15, 2026 preflight checklist before launch week starts."
+  source: "agents/cmo/memory/2026-03-13.md"
+  recorded_at: "2026-03-13"
+- id: ace-marketing-2026-03-13-publishing-surface
+  status: active
+  fact: "Later on Friday, March 13, 2026, the CMO created `plans/2026-03-13-cmo-week-one-publishing-surface.md` as the exact paste-ready source for the Monday, Wednesday, and Friday launch posts, and updated the launch log and operator brief so the only remaining preflight step is pasting those locked drafts into the actual X composer or scheduler before Sunday, March 15, 2026 close."
+  source: "agents/cmo/memory/2026-03-13.md"
+  recorded_at: "2026-03-13"
+- id: ace-marketing-2026-03-13-live-capture-sheet
+  status: active
+  fact: "Later on Friday, March 13, 2026, the CMO created `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` as the canonical raw intake surface for launch-week post URLs, metric snapshots, high-signal replies, DMs, and friction so same-day transfer into the launch scoreboard does not depend on ad hoc notes."
+  source: "agents/cmo/memory/2026-03-13.md"
+  recorded_at: "2026-03-13"
+- id: ace-marketing-2026-03-13-qualification-quickscore
+  status: active
+  fact: "Later on Friday, March 13, 2026, the CMO embedded the `0-6` design-partner qualification quickscore directly into `plans/2026-03-13-cmo-week-one-operator-brief.md` and `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` so Dan can score and route launch-week prospects without switching back to the longer design-partner strategy doc."
+  source: "agents/cmo/memory/2026-03-13.md"
+  recorded_at: "2026-03-13"
+- id: ace-marketing-2026-03-13-week-one-distribution-system
+  status: active
+  fact: "Later on Friday, March 13, 2026, the CMO extended the governed week-one launch stack so Tuesday, March 17, 2026 owns adjacent-conversation reply distribution and Thursday, March 19, 2026 owns proof-to-adoption direct follow-up, with explicit success thresholds and logging in the operator brief, launch log, live capture sheet, and response bank."
+  source: "agents/cmo/memory/2026-03-13.md"
+  recorded_at: "2026-03-13"
+- id: ace-marketing-2026-03-13-public-workflow-intake
+  status: active
+  fact: "Later on Friday, March 13, 2026, the CMO added `.github/ISSUE_TEMPLATE/workflow-failure-pattern.yml` and wired the new `issue_w1_failure_pattern` tracked link plus `Workflow Intake Log` into the launch stack so qualified week-one traffic can convert into structured public workflow artifacts instead of only DM summaries."
+  source: "agents/cmo/memory/2026-03-13.md"
+  recorded_at: "2026-03-13"
+- id: ace-marketing-2026-03-13-watchlist-preflight
+  status: active
+  fact: "Later on Friday, March 13, 2026, the CMO turned Tuesday and Thursday distribution prep into an explicit governed preflight requirement by adding a `Tuesday And Thursday Watchlist` section with target-selection rules and ten queued slots to `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`, then wiring that requirement into the operator brief and launch operations log."
+  source: "agents/cmo/memory/2026-03-13.md"
+  recorded_at: "2026-03-13"
+- id: ace-marketing-2026-03-13-schedule-windows
+  status: active
+  fact: "Later on Friday, March 13, 2026, the CMO locked default week-one launch timing into the governed operator stack: Monday and Wednesday publish between `11:00-11:30` ET, Friday publish between `10:30-11:00` ET, Tuesday and Thursday operating passes run `12:00-13:00` ET, and each motion carries explicit `+30m`, `+3h`, and `17:30` ET check windows."
+  source: "agents/cmo/memory/2026-03-13.md"
+  recorded_at: "2026-03-13"
+- id: ace-marketing-2026-03-13-derivative-post-alignment
+  status: active
+  fact: "Later on Friday, March 13, 2026, the CMO aligned the broader planning stack with the governed week-one launch rules by updating `plans/2026-03-11-cmo-editorial-calendar.md` and `plans/2026-03-11-cmo-growth-operating-plan.md`: Tuesday, March 17, 2026 is distribution-only by default, derivative units can ship as reply or DM follow-up during governed launch weeks, and any extra net-new public post still requires a tracked-link registry and launch-log update first."
+  source: "agents/cmo/memory/2026-03-13.md"
+  recorded_at: "2026-03-13"
+- id: ace-marketing-2026-03-13-launch-stack-audit
+  status: active
+  fact: "Later on Friday, March 13, 2026, the CMO audited the governed week-one launch stack and confirmed every tracked destination, referenced doc, proof asset, response-bank surface, and workflow issue template resolves in the repo and uses consistent post codes across the operator stack, so no new repo-side preflight drift remains before the external Sunday, March 15, 2026 actions."
+  source: "agents/cmo/memory/2026-03-13.md"
+  recorded_at: "2026-03-13"
+- id: ace-marketing-2026-03-13-monday-thread-segmentation
+  status: active
+  fact: "Later on Friday, March 13, 2026, the CMO closed one more week-one execution risk by converting the Monday anchor in `plans/2026-03-13-cmo-week-one-publishing-surface.md` from one long paste block into explicit `Post 1` through `Post 9` thread segments, then wiring that same connected-thread validation into the operator brief, launch operations log, and live capture sheet."
+  source: "agents/cmo/memory/2026-03-13.md"
+  recorded_at: "2026-03-13"
+- id: ace-marketing-2026-03-13-watchlist-search-seeds
+  status: active
+  fact: "Later on Friday, March 13, 2026, the CMO made the Tuesday and Thursday distribution watchlist executable by adding a fill-order, reusable X search seeds, and explicit row statuses to `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`, then wiring that sourcing workflow into the operator brief and launch operations log so Sunday, March 15, 2026 prep no longer starts from a blank search tab."
+  source: "agents/cmo/memory/2026-03-13.md"
+  recorded_at: "2026-03-13"
+- id: ace-marketing-2026-03-13-watchlist-seed-pool
+  status: active
+  fact: "Later on Friday, March 13, 2026, the CMO preloaded the week-one distribution watchlist with a fallback public seed pool of adjacent technical-builder handles, so Sunday preflight now only needs to validate live Tuesday and Thursday targets and replace colder seeds with warmer Monday or Wednesday engagers."
+  source: "agents/cmo/memory/2026-03-13.md"
+  recorded_at: "2026-03-13"
+- id: ace-marketing-2026-03-13-launch-calendar-import
+  status: active
+  fact: "Later on Friday, March 13, 2026, the CMO added `plans/2026-03-15-cmo-week-one-launch-calendar.ics` and updated the governed week-one operator stack so Sunday, March 15, 2026 preflight now starts by importing the exact Monday through Friday operating windows plus same-day check blocks instead of rebuilding the launch cadence manually."
+  source: "agents/cmo/memory/2026-03-13.md"
+  recorded_at: "2026-03-13"
+- id: ace-marketing-2026-03-13-profile-surface
+  status: active
+  fact: "Later on Friday, March 13, 2026, the CMO added `plans/2026-03-13-cmo-week-one-profile-surface.md` and wired a dedicated `profile_w1_readme` tracked link plus Monday thread pinning rules into the governed launch stack so Dan's X profile surface now converts week-one traffic with the same category message as the launch posts."
+  source: "agents/cmo/memory/2026-03-13.md"
+  recorded_at: "2026-03-13"
+- id: ace-marketing-2026-03-13-content-reuse-queue
+  status: active
+  fact: "Later on Friday, March 13, 2026, the CMO added a `Content Reuse Queue` plus matching capture rules to the governed week-one launch stack so each live motion must produce at least one reusable proof artifact, objection, or quote for week-two content."
+  source: "agents/cmo/memory/2026-03-13.md"
+  recorded_at: "2026-03-13"
+- id: ace-marketing-2026-03-13-checkpoint-decision-system
+  status: active
+  fact: "Later on Friday, March 13, 2026, the CMO added explicit checkpoint response rules plus raw and canonical decision logs to the governed week-one launch stack so Monday through Friday hook, CTA, and routing adjustments are recorded as measurable operating decisions rather than informal intuition."
+  source: "agents/cmo/memory/2026-03-13.md"
+  recorded_at: "2026-03-13"
+- id: ace-marketing-2026-03-14-sunday-go-no-go-gate
+  status: active
+  fact: "On Saturday, March 14, 2026, the CMO added a governed Sunday, March 15, 2026 `20:00` ET go-or-no-go gate to the launch log, operator brief, and live capture sheet so the week-one launch is explicitly `go` only when the profile surface, calendar import, scheduler drafts, and validated watchlist all have evidence, otherwise the state is `blocked` and escalated to the CEO."
+  source: "agents/cmo/memory/2026-03-14.md"
+  recorded_at: "2026-03-14"
+- id: ace-marketing-2026-03-14-audience-growth-scoreboard
+  status: active
+  fact: "On Saturday, March 14, 2026, the CMO promoted `Profile visits` and `New follows` to first-class governed week-one metrics by adding them to the launch scoreboard definitions, raw capture tables, and editorial targets, so ACE week-one can measure owned-audience growth alongside clicks, setup intent, and conversations."
+  source: "agents/cmo/memory/2026-03-14.md"
+  recorded_at: "2026-03-14"
+- id: ace-marketing-2026-03-14-audience-baseline-snapshot
+  status: active
+  fact: "Later on Saturday, March 14, 2026, the CMO added a governed Sunday audience-baseline snapshot to the week-one launch stack so Dan must record the starting follower count, starting profile-visits reading, timestamp, and source surface before Monday launch-week audience-growth comparisons begin."
+  source: "agents/cmo/memory/2026-03-14.md"
+  recorded_at: "2026-03-14"
+- id: ace-marketing-2026-03-14-launch-contingency-layer
+  status: active
+  fact: "Later on Saturday, March 14, 2026, the CMO added a governed contingency layer to the week-one launch stack: the launch log now has `Live Launch Contingency Rules` plus a canonical `Launch Contingency Log`, the operator brief now defines `Live Failure Rules`, and the live capture sheet now has a `Launch Incident Scratchpad` so scheduler failures, broken tracked URLs, proof-asset attachment failures, and publish-window slips are contained and logged instead of improvised."
+  source: "agents/cmo/memory/2026-03-14.md"
+  recorded_at: "2026-03-14"
+- id: ace-marketing-2026-03-14-watchlist-url-evidence
+  status: active
+  fact: "Later on Saturday, March 14, 2026, the CMO upgraded the Tuesday and Thursday week-one watchlist from handle-only seeds to URL-backed adjacent-conversation targets by logging `2026-03-14 search note` evidence from public X posts into `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`, which narrows Sunday preflight to freshness checks and warmer-engager replacement instead of blank-sheet sourcing."
+  source: "agents/cmo/memory/2026-03-14.md"
+  recorded_at: "2026-03-14"

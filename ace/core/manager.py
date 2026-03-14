@@ -1,7 +1,12 @@
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 
 from ace.core.schema import Bullet, DeltaOp, Playbook
+
+
+def _utcnow() -> datetime:
+    """Return current UTC datetime."""
+    return datetime.now(UTC)
 
 
 class PlaybookManager:
@@ -43,7 +48,7 @@ class PlaybookManager:
                 section=delta.new_bullet["section"],
                 content=delta.new_bullet["content"],
                 tags=delta.new_bullet.get("tags", []),
-                added_at=datetime.utcnow(),
+                added_at=_utcnow(),
             )
             self.playbook.bullets.append(bullet)
             self.playbook.version += 1
@@ -62,7 +67,7 @@ class PlaybookManager:
 
             bullet = self._find_bullet(delta.target_id)
             bullet.helpful += 1
-            bullet.last_used = datetime.utcnow()
+            bullet.last_used = _utcnow()
             self.playbook.version += 1
 
         elif delta.op == "INCR_HARMFUL":

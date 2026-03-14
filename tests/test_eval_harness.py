@@ -120,3 +120,108 @@ class TestEvalRunner:
         assert "retrieval" in result["details"]
         assert result["details"]["retrieval"]["status"] == "complete"
         assert result["details"]["retrieval"]["cases_run"] == 5
+
+    def test_extract_baseline_flattens_numeric_metrics(self) -> None:
+        """Baseline extraction should flatten nested numeric metrics only."""
+        runner = EvalRunner()
+        results = {
+            "summary": {
+                "retrieval.mrr": 0.91,
+                "reflection_status": "not_implemented",
+            },
+            "details": {
+                "retrieval": {
+                    "cases_run": 5,
+                    "status": "complete",
+                    "metrics": {
+                        "recall_at_5": 0.8,
+                    },
+                },
+                "e2e": {
+                    "passed": True,
+                },
+            },
+        }
+
+        baseline = runner.extract_baseline(results)
+
+        assert baseline == {
+            "retrieval.mrr": 0.91,
+            "retrieval.cases_run": 5.0,
+            "retrieval.metrics.recall_at_5": 0.8,
+        }
+
+    def test_write_baseline_writes_flattened_json(self, tmp_path: Path) -> None:
+        """Baseline writer should persist flattened metrics to disk."""
+        runner = EvalRunner()
+        results = {
+            "summary": {"latency_ms": 101.5},
+            "details": {"retrieval": {"cases_run": 5}},
+        }
+        output_path = tmp_path / "baseline.json"
+
+        baseline = runner.write_baseline(results, str(output_path))
+
+        assert baseline == {
+            "latency_ms": 101.5,
+            "retrieval.cases_run": 5.0,
+        }
+        assert json.loads(output_path.read_text()) == baseline
+
+    def test_format_markdown_renders_summary_regression_and_details(self) -> None:
+        """Markdown formatter should produce a usable human-readable report."""
+        runner = EvalRunner()
+        results = {
+            "suite": "all",
+            "summary": {
+                "retrieval_cases": 5,
+                "reflection_status": "not_implemented",
+            },
+            "details": {
+                "retrieval": {
+                    "status": "complete",
+                    "cases_run": 2,
+                    "results": [
+                        {"case_id": "R-1", "status": "passed"},
+                        {"case_id": "R-2", "status": "pending"},
+                    ],
+                },
+            },
+            "regression_check": {
+                "status": "regression_detected",
+                "baseline_loaded": True,
+                "regressions": [
+                    "REGRESSION: retrieval.mrr dropped by 12%",
+                ],
+            },
+        }
+
+        markdown = runner.format_markdown(results)
+
+        assert "# ACE Evaluation Results" in markdown
+        assert "**Suite:** `all`" in markdown
+        assert "## Summary" in markdown
+        assert "| `retrieval_cases` | `5` |" in markdown
+        assert "## Regression Check" in markdown
+        assert "#### Regressions" in markdown
+        assert "REGRESSION: retrieval.mrr dropped by 12%" in markdown
+        assert "### Retrieval" in markdown
+        assert "#### Results" in markdown
+        assert "| `case_id` | `status` |" in markdown
+        assert "| R-1 | passed |" in markdown
+
+    def test_format_markdown_handles_empty_sections(self) -> None:
+        """Markdown formatter should handle empty summary/details gracefully."""
+        runner = EvalRunner()
+        results = {
+            "suite": "retrieval",
+            "summary": {},
+            "details": {},
+        }
+
+        markdown = runner.format_markdown(results)
+
+        assert "## Summary" in markdown
+        assert "_No data available._" in markdown
+        assert "## Details" in markdown
+        assert "_No detailed results available._" in markdown

@@ -60,6 +60,8 @@ class MCPConfig:
 class ReflectorConfig:
     passes: int
     similarity_threshold: float
+    refinement_rounds: int
+    quality_threshold: float
 
 
 @dataclass
@@ -81,6 +83,35 @@ class ACEConfig:
     mcp: MCPConfig
     reflector: ReflectorConfig
     llm: LLMConfig
+
+
+SUPPORTED_ENV_VARS = frozenset(
+    {
+        "ACE_DB_URL",
+        "ACE_EMBEDDINGS",
+        "ACE_RETRIEVAL_TOPK",
+        "ACE_RETRIEVAL_LEXICAL_WEIGHT",
+        "ACE_RETRIEVAL_MAX_BULLETS",
+        "ACE_REFINE_THRESHOLD",
+        "ACE_REFINE_MINHASH_THRESHOLD",
+        "ACE_TRAINING_GATE_ON_REGRESSION",
+        "ACE_TRAINING_MAX_REGRESSION_DELTA",
+        "ACE_TRAINING_HELD_OUT_PATH",
+        "ACE_TRAINING_REGRESSION_METRICS",
+        "ACE_LOG_LEVEL",
+        "ACE_LOG_FORMAT",
+        "MCP_TRANSPORT",
+        "MCP_PORT",
+        "ACE_REFLECTOR_PASSES",
+        "ACE_REFLECTOR_SIMILARITY_THRESHOLD",
+        "ACE_REFLECTOR_REFINEMENT_ROUNDS",
+        "ACE_REFLECTOR_QUALITY_THRESHOLD",
+        "ACE_LLM_PROVIDER",
+        "ACE_LLM_MODEL",
+        "ACE_LLM_TEMPERATURE",
+        "ACE_LLM_MAX_TOKENS",
+    }
+)
 
 
 def _validate_config(config: ACEConfig) -> None:
@@ -131,6 +162,12 @@ def _validate_config(config: ACEConfig) -> None:
     if not 0.0 <= config.reflector.similarity_threshold <= 1.0:
         val = config.reflector.similarity_threshold
         raise ValueError(f"reflector.similarity_threshold must be in [0.0, 1.0], got {val}")
+    if config.reflector.refinement_rounds < 1:
+        val = config.reflector.refinement_rounds
+        raise ValueError(f"reflector.refinement_rounds must be >= 1, got {val}")
+    if not 0.0 <= config.reflector.quality_threshold <= 1.0:
+        val = config.reflector.quality_threshold
+        raise ValueError(f"reflector.quality_threshold must be in [0.0, 1.0], got {val}")
 
 
 def load_config(config_path: Path | None = None) -> ACEConfig:
@@ -198,6 +235,14 @@ def load_config(config_path: Path | None = None) -> ACEConfig:
     reflector_sim_threshold = float(
         os.getenv("ACE_REFLECTOR_SIMILARITY_THRESHOLD", sim_threshold_default)
     )
+    refinement_rounds_default = reflector_dict.get("refinement_rounds", 1)
+    reflector_refinement_rounds = int(
+        os.getenv("ACE_REFLECTOR_REFINEMENT_ROUNDS", refinement_rounds_default)
+    )
+    quality_threshold_default = reflector_dict.get("quality_threshold", 0.7)
+    reflector_quality_threshold = float(
+        os.getenv("ACE_REFLECTOR_QUALITY_THRESHOLD", quality_threshold_default)
+    )
 
     llm_provider = os.getenv("ACE_LLM_PROVIDER", config_dict["llm"]["provider"])
     llm_model = os.getenv("ACE_LLM_MODEL", config_dict["llm"]["model"])
@@ -224,6 +269,8 @@ def load_config(config_path: Path | None = None) -> ACEConfig:
         reflector=ReflectorConfig(
             passes=reflector_passes,
             similarity_threshold=reflector_sim_threshold,
+            refinement_rounds=reflector_refinement_rounds,
+            quality_threshold=reflector_quality_threshold,
         ),
         llm=LLMConfig(
             provider=llm_provider,

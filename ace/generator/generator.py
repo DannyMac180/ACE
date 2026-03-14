@@ -1,6 +1,6 @@
 import logging
 from collections.abc import Callable
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Literal
 
 from ace.generator.schemas import Step, Trajectory, TrajectoryDoc
@@ -9,6 +9,11 @@ if TYPE_CHECKING:
     from ace.core.retrieve import Retriever
 
 logger = logging.getLogger(__name__)
+
+
+def _utcnow() -> datetime:
+    """Return current UTC datetime."""
+    return datetime.now(UTC)
 
 
 class Generator:
@@ -204,7 +209,7 @@ class Generator:
         """
         logger.info(f"Starting Generator run for goal: {goal}")
 
-        started_at = datetime.utcnow()
+        started_at = _utcnow()
         steps: list[Step] = []
         used_bullet_ids: set[str] = set()
         bullet_feedback: dict[str, str] = {}
@@ -243,7 +248,7 @@ class Generator:
                     action=action,
                     observation=observation,
                     thought=thought,
-                    timestamp=datetime.utcnow(),
+                    timestamp=_utcnow(),
                 )
                 steps.append(step)
                 logger.info(f"Completed step {step_num + 1}/{self.max_steps}")
@@ -256,7 +261,7 @@ class Generator:
             logger.error(f"Error during execution: {e}", exc_info=True)
             final_status = "failure"
 
-        completed_at = datetime.utcnow()
+        completed_at = _utcnow()
 
         trajectory = Trajectory(
             steps=steps,

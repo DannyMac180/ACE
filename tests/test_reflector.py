@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from ace.generator.schemas import Step, Trajectory, TrajectoryDoc
-from ace.llm import CompletionResponse, LLMClient, MockLLMClient
+from ace.llm import CompletionResponse, LLMClient, MockLLMClient, TokenUsage
 from ace.reflector import (
     BulletTag,
     CandidateBullet,
@@ -517,11 +517,77 @@ class TestLLMClientInjection:
         assert reflector.client is mock_client
 
 
+class TestReflectorUsageMetrics:
+    """Tests for aggregated LLM usage tracking on Reflector."""
+
+    def test_reflect_records_usage_metrics(self):
+        mock_client = MagicMock(spec=LLMClient)
+        mock_client.complete.return_value = CompletionResponse(
+            text='{"bullet_tags": [], "candidate_bullets": []}',
+            usage=TokenUsage(prompt_tokens=11, completion_tokens=5, total_tokens=16),
+        )
+
+        reflector = Reflector(llm_client=mock_client)
+        reflector.reflect(TrajectoryDoc(query="test", retrieved_bullet_ids=[]))
+
+        assert reflector.last_usage_metrics.llm_calls == 1
+        assert reflector.last_usage_metrics.prompt_tokens == 11
+        assert reflector.last_usage_metrics.completion_tokens == 5
+        assert reflector.last_usage_metrics.total_tokens == 16
+
+    def test_reflect_multi_accumulates_usage_metrics_across_passes(self):
+        mock_client = MagicMock(spec=LLMClient)
+        mock_client.complete.side_effect = [
+            CompletionResponse(
+                text='{"bullet_tags": [], "candidate_bullets": []}',
+                usage=TokenUsage(prompt_tokens=10, completion_tokens=4, total_tokens=14),
+            ),
+            CompletionResponse(
+                text='{"bullet_tags": [], "candidate_bullets": []}',
+                usage=TokenUsage(prompt_tokens=9, completion_tokens=3, total_tokens=12),
+            ),
+        ]
+
+        reflector = Reflector(llm_client=mock_client)
+        reflector.reflect_multi(TrajectoryDoc(query="test", retrieved_bullet_ids=[]), num_passes=2)
+
+        assert reflector.last_usage_metrics.llm_calls == 2
+        assert reflector.last_usage_metrics.prompt_tokens == 19
+        assert reflector.last_usage_metrics.completion_tokens == 7
+        assert reflector.last_usage_metrics.total_tokens == 26
+
+
 # --- Tests for iterative refinement ---
 
 
 class TestIterativeRefinement:
     """Tests for iterative refinement in Reflector."""
+
+    def test_reflector_skips_config_load_when_explicit_thresholds_provided(self):
+        """Explicit refinement settings should not require config access."""
+        mock_client = MockLLMClient()
+
+        with patch("ace.reflector.reflector.load_config") as mock_load_config:
+            reflector = Reflector(
+                llm_client=mock_client,
+                refinement_rounds=2,
+                quality_threshold=0.85,
+            )
+
+        mock_load_config.assert_not_called()
+        assert reflector.refinement_rounds == 2
+        assert reflector.quality_threshold == 0.85
+
+    def test_reflector_loads_refinement_config_defaults(self, monkeypatch):
+        """Test Reflector uses config-backed refinement defaults when unset."""
+        monkeypatch.setenv("ACE_REFLECTOR_REFINEMENT_ROUNDS", "4")
+        monkeypatch.setenv("ACE_REFLECTOR_QUALITY_THRESHOLD", "0.9")
+
+        mock_client = MockLLMClient()
+        reflector = Reflector(llm_client=mock_client)
+
+        assert reflector.refinement_rounds == 4
+        assert reflector.quality_threshold == 0.9
 
     def test_refinement_rounds_default(self):
         """Test default refinement_rounds is 1 (no refinement)."""

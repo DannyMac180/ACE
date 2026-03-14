@@ -16,6 +16,7 @@ from typing import Any
 from fastapi import FastAPI
 
 from ace.core.config import ACEConfig, load_config
+from ace.core.logging_utils import configure_logging
 from ace.core.merge import Delta as MergeDelta
 from ace.core.merge import apply_delta
 from ace.core.retrieve import Retriever
@@ -435,6 +436,9 @@ def run_server(
         max_bullets: Max bullets before triggering refine (overrides config)
     """
     import uvicorn
+
+    config = load_config()
+    configure_logging(config.logging.level, config.logging.format)
 
     warmup_msg = f" (warmup: {warmup_path})" if warmup_path else ""
     refine_msg = ""

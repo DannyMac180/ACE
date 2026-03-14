@@ -1,9 +1,11 @@
 # ace/reflector/reflector.py
 import uuid
 from collections import Counter
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from ace.llm import LLMClient, Message, create_llm_client
+from ace.core.config import load_config
+from ace.llm import CompletionResponse, LLMClient, Message, create_llm_client
 
 from .parser import QualityParseError, ReflectionParseError, parse_quality, parse_reflection
 from .prompts import format_quality_eval_prompt, format_refinement_prompt, format_reflector_prompt
@@ -11,6 +13,16 @@ from .schema import BulletTag, CandidateBullet, RefinementQuality, Reflection
 
 if TYPE_CHECKING:
     from ace.generator.schemas import Trajectory, TrajectoryDoc
+
+
+@dataclass
+class ReflectorUsageMetrics:
+    """Aggregated LLM usage for the most recent top-level reflection."""
+
+    llm_calls: int = 0
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+    total_tokens: int = 0
 
 
 class Reflector:
@@ -21,8 +33,8 @@ class Reflector:
         llm_client: LLMClient | None = None,
         max_retries: int = 3,
         temperature: float = 0.3,
-        refinement_rounds: int = 1,
-        quality_threshold: float = 0.7,
+        refinement_rounds: int | None = None,
+        quality_threshold: float | None = None,
     ):
         """Initialize Reflector.
 
@@ -34,11 +46,27 @@ class Reflector:
             refinement_rounds: Maximum refinement iterations (1 = no refinement)
             quality_threshold: Quality score threshold (0-1) to stop early
         """
+        reflector_config = load_config().reflector if (
+            refinement_rounds is None or quality_threshold is None
+        ) else None
+        if refinement_rounds is None:
+            assert reflector_config is not None
+            resolved_refinement_rounds = reflector_config.refinement_rounds
+        else:
+            resolved_refinement_rounds = refinement_rounds
+
+        if quality_threshold is None:
+            assert reflector_config is not None
+            resolved_quality_threshold = reflector_config.quality_threshold
+        else:
+            resolved_quality_threshold = quality_threshold
+
         self.max_retries = max_retries
         self.temperature = temperature
-        self.refinement_rounds = max(1, refinement_rounds)
-        self.quality_threshold = quality_threshold
+        self.refinement_rounds = max(1, resolved_refinement_rounds)
+        self.quality_threshold = resolved_quality_threshold
         self.client = llm_client if llm_client is not None else create_llm_client()
+        self.last_usage_metrics = ReflectorUsageMetrics()
 
     def reflect(
         self,
@@ -72,49 +100,16 @@ class Reflector:
         Raises:
             ReflectionParseError: If parsing fails after max_retries
         """
-        from ace.generator.schemas import TrajectoryDoc
-
-        if isinstance(doc_or_query, TrajectoryDoc):
-            query = doc_or_query.query
-            bullet_ids = doc_or_query.retrieved_bullet_ids
-            code_diff_val = doc_or_query.code_diff
-            test_output_val = doc_or_query.test_output
-            logs_val = doc_or_query.logs
-            env_meta_val = doc_or_query.env_meta or {}
-        else:
-            query = doc_or_query
-            bullet_ids = retrieved_bullet_ids or []
-            code_diff_val = code_diff
-            test_output_val = test_output
-            logs_val = logs
-            env_meta_val = env_meta or {}
-
-        reflection = self._generate_initial_reflection(
-            query=query,
-            retrieved_bullet_ids=bullet_ids,
-            code_diff=code_diff_val,
-            test_output=test_output_val,
-            logs=logs_val,
-            env_meta=env_meta_val,
+        return self._reflect_impl(
+            doc_or_query=doc_or_query,
+            retrieved_bullet_ids=retrieved_bullet_ids,
+            code_diff=code_diff,
+            test_output=test_output,
+            logs=logs,
+            env_meta=env_meta,
+            retrieved_bullets=retrieved_bullets,
+            reset_metrics=True,
         )
-
-        if self.refinement_rounds <= 1:
-            return reflection
-
-        bullets_for_eval = retrieved_bullets or []
-
-        for _round_num in range(1, self.refinement_rounds):
-            quality = self._evaluate_quality(query, bullets_for_eval, reflection)
-
-            if quality.overall_score >= self.quality_threshold:
-                break
-
-            if not quality.feedback:
-                break
-
-            reflection = self._refine_reflection(query, reflection, quality.feedback)
-
-        return reflection
 
     def reflect_multi(
         self,
@@ -154,9 +149,10 @@ class Reflector:
 
         parent_id = str(uuid.uuid4())
         reflections: list[Reflection] = []
+        self._reset_usage_metrics()
 
         for iteration in range(num_passes):
-            reflection = self.reflect(
+            reflection = self._reflect_impl(
                 doc_or_query=doc_or_query,
                 retrieved_bullet_ids=retrieved_bullet_ids,
                 code_diff=code_diff,
@@ -164,6 +160,7 @@ class Reflector:
                 logs=logs,
                 env_meta=env_meta,
                 retrieved_bullets=retrieved_bullets,
+                reset_metrics=False,
             )
             reflection.iteration = iteration
             reflection.parent_id = parent_id
@@ -281,6 +278,65 @@ class Reflector:
         union = words1 | words2
         return len(intersection) / len(union)
 
+    def _reflect_impl(
+        self,
+        doc_or_query: "TrajectoryDoc | str",
+        retrieved_bullet_ids: list[str] | None = None,
+        code_diff: str = "",
+        test_output: str = "",
+        logs: str = "",
+        env_meta: dict | None = None,
+        retrieved_bullets: list[dict[str, str]] | None = None,
+        reset_metrics: bool = False,
+    ) -> Reflection:
+        """Internal reflection helper with optional usage metric reset."""
+        from ace.generator.schemas import TrajectoryDoc
+
+        if reset_metrics:
+            self._reset_usage_metrics()
+
+        if isinstance(doc_or_query, TrajectoryDoc):
+            query = doc_or_query.query
+            bullet_ids = doc_or_query.retrieved_bullet_ids
+            code_diff_val = doc_or_query.code_diff
+            test_output_val = doc_or_query.test_output
+            logs_val = doc_or_query.logs
+            env_meta_val = doc_or_query.env_meta or {}
+        else:
+            query = doc_or_query
+            bullet_ids = retrieved_bullet_ids or []
+            code_diff_val = code_diff
+            test_output_val = test_output
+            logs_val = logs
+            env_meta_val = env_meta or {}
+
+        reflection = self._generate_initial_reflection(
+            query=query,
+            retrieved_bullet_ids=bullet_ids,
+            code_diff=code_diff_val,
+            test_output=test_output_val,
+            logs=logs_val,
+            env_meta=env_meta_val,
+        )
+
+        if self.refinement_rounds <= 1:
+            return reflection
+
+        bullets_for_eval = retrieved_bullets or []
+
+        for _round_num in range(1, self.refinement_rounds):
+            quality = self._evaluate_quality(query, bullets_for_eval, reflection)
+
+            if quality.overall_score >= self.quality_threshold:
+                break
+
+            if not quality.feedback:
+                break
+
+            reflection = self._refine_reflection(query, reflection, quality.feedback)
+
+        return reflection
+
     def _generate_initial_reflection(
         self,
         query: str,
@@ -310,6 +366,7 @@ class Reflector:
                     ],
                     temperature=self.temperature,
                 )
+                self._record_completion_usage(response)
 
                 json_str = response.text
                 if not json_str:
@@ -362,6 +419,7 @@ class Reflector:
                     ],
                     temperature=self.temperature,
                 )
+                self._record_completion_usage(response)
 
                 json_str = response.text
                 if not json_str:
@@ -412,6 +470,7 @@ class Reflector:
                     ],
                     temperature=self.temperature,
                 )
+                self._record_completion_usage(response)
 
                 json_str = response.text
                 if not json_str:
@@ -449,6 +508,28 @@ class Reflector:
             ],
         }
         return json.dumps(data, indent=2)
+
+    def _reset_usage_metrics(self) -> None:
+        """Reset usage counters before a new top-level reflection."""
+        self.last_usage_metrics = ReflectorUsageMetrics()
+
+    def _record_completion_usage(self, response: CompletionResponse) -> None:
+        """Accumulate provider usage data from an LLM completion."""
+        self.last_usage_metrics.llm_calls += 1
+        usage = response.usage
+        if usage is None:
+            return
+
+        if usage.prompt_tokens is not None:
+            self.last_usage_metrics.prompt_tokens += usage.prompt_tokens
+        if usage.completion_tokens is not None:
+            self.last_usage_metrics.completion_tokens += usage.completion_tokens
+        if usage.total_tokens is not None:
+            self.last_usage_metrics.total_tokens += usage.total_tokens
+        elif usage.prompt_tokens is not None and usage.completion_tokens is not None:
+            self.last_usage_metrics.total_tokens += (
+                usage.prompt_tokens + usage.completion_tokens
+            )
 
     def reflect_on_trajectory(self, trajectory: "Trajectory") -> Reflection:
         """Generate a Reflection from a complete Trajectory.

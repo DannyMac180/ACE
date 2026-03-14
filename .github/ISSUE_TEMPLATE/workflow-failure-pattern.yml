@@ -1,0 +1,88 @@
+name: Workflow Failure Pattern
+description: Share a real coding-agent workflow and the repeated failure pattern you want ACE to improve.
+title: "Workflow failure pattern: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for turning a real workflow into something ACE can improve against.
+
+        Please keep it concrete. Do not include secrets, private credentials, or private user data.
+  - type: input
+    id: workflow_summary
+    attributes:
+      label: Workflow summary
+      description: One sentence on what the workflow does today.
+      placeholder: Example: A Codex CLI loop that patches a repo and runs pytest after each change
+    validations:
+      required: true
+  - type: input
+    id: stack
+    attributes:
+      label: Current stack
+      description: Tools, runtime, and transport in the current workflow.
+      placeholder: Example: Codex CLI, Python 3.12, MCP over stdio, local repo
+    validations:
+      required: true
+  - type: textarea
+    id: failure_pattern
+    attributes:
+      label: Repeated failure pattern
+      description: What keeps going wrong in a way that repeats across runs?
+      placeholder: Example: The agent keeps re-introducing a deprecated API because the useful migration note is not retrieved reliably
+    validations:
+      required: true
+  - type: textarea
+    id: where_it_happens
+    attributes:
+      label: Where it happens
+      description: When in the workflow does the failure show up?
+      placeholder: Example: After the first test failure, the agent rewrites the whole prompt instead of patching the reusable instruction
+    validations:
+      required: true
+  - type: textarea
+    id: expected_outcome
+    attributes:
+      label: What you expected instead
+      description: Describe the behavior you want ACE or the workflow to produce.
+      placeholder: Example: Retrieve the migration note, patch the playbook once, and stop repeating the same fix-up mistake
+    validations:
+      required: true
+  - type: dropdown
+    id: setup_path
+    attributes:
+      label: ACE path tried so far
+      description: Pick the closest path you already used.
+      options:
+        - README only
+        - Getting-started example
+        - MCP usage guide
+        - API reference
+        - Not started yet
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence or artifacts
+      description: Logs, screenshots, diffs, or a short transcript excerpt. Redact secrets before posting.
+      placeholder: Example: Paste a short failing excerpt, link a gist, or summarize the failure signature
+    validations:
+      required: false
+  - type: textarea
+    id: success_criterion
+    attributes:
+      label: Success criterion
+      description: What would count as a meaningful improvement?
+      placeholder: Example: One run that applies the right delta and avoids the same failure on the next similar task
+    validations:
+      required: true
+  - type: checkboxes
+    id: follow_up
+    attributes:
+      label: Follow-up
+      description: Mark any options you are open to.
+      options:
+        - label: I can test again within 7 days
+        - label: I can share more logs or setup friction if needed
+        - label: I am open to a short working session if this looks like a strong fit

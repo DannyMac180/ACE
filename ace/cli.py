@@ -8,6 +8,7 @@ from typing import Any, NoReturn
 
 from ace import __version__
 from ace.core.config import load_config
+from ace.core.logging_utils import configure_logging
 
 
 def read_json_input(path_or_stdin: str | None) -> dict[str, Any]:
@@ -93,10 +94,29 @@ def cmd_reflect(args: argparse.Namespace) -> None:
 def cmd_curate(args: argparse.Namespace) -> None:
     """Convert reflection to delta operations."""
     from ace.curator.curator import curate
-    from ace.reflector.schema import Reflection
+    from ace.reflector.schema import BulletTag, CandidateBullet, Reflection
 
     reflection_data = read_json_input(args.reflection)
-    reflection = Reflection(**reflection_data)
+    reflection = Reflection(
+        error_identification=reflection_data.get("error_identification"),
+        root_cause_analysis=reflection_data.get("root_cause_analysis"),
+        correct_approach=reflection_data.get("correct_approach"),
+        key_insight=reflection_data.get("key_insight"),
+        bullet_tags=[
+            BulletTag(id=tag["id"], tag=tag["tag"])
+            for tag in reflection_data.get("bullet_tags", [])
+        ],
+        candidate_bullets=[
+            CandidateBullet(
+                section=bullet["section"],
+                content=bullet["content"],
+                tags=bullet.get("tags", []),
+            )
+            for bullet in reflection_data.get("candidate_bullets", [])
+        ],
+        iteration=reflection_data.get("iteration", 0),
+        parent_id=reflection_data.get("parent_id"),
+    )
 
     delta = curate(reflection)
     print_output(delta.model_dump(), as_json=args.json)
@@ -410,6 +430,7 @@ def cmd_pipeline(args: argparse.Namespace) -> None:
         "bullet_tags": len(result.reflection.bullet_tags),
         "delta_ops_applied": result.delta_ops_applied,
         "retrieved_bullets": len(result.retrieved_bullets),
+        "metrics": asdict(result.metrics),
     }
 
     if args.dry_run:
@@ -425,6 +446,23 @@ def cmd_pipeline(args: argparse.Namespace) -> None:
         print(f"  Candidate bullets: {output['candidate_bullets']}")
         print(f"  Bullet tags: {output['bullet_tags']}")
         print(f"  Delta ops applied: {output['delta_ops_applied']}")
+        metrics = result.metrics
+        print(
+            "  Timings (ms): "
+            f"retrieve={metrics.retrieve_ms:.2f}, "
+            f"generate={metrics.generate_ms:.2f}, "
+            f"reflect={metrics.reflect_ms:.2f}, "
+            f"curate={metrics.curate_ms:.2f}, "
+            f"merge={metrics.merge_ms:.2f}, "
+            f"total={metrics.total_ms:.2f}"
+        )
+        print(
+            "  LLM usage: "
+            f"calls={metrics.llm_calls}, "
+            f"prompt_tokens={metrics.prompt_tokens}, "
+            f"completion_tokens={metrics.completion_tokens}, "
+            f"total_tokens={metrics.total_tokens}"
+        )
         if args.dry_run:
             print("  (DRY RUN - no changes committed)")
 
@@ -451,6 +489,9 @@ def cmd_eval_run(args: argparse.Namespace) -> None:
         baseline_path=args.baseline,
         fail_on_regression=args.fail_on_regression,
     )
+
+    if args.write_baseline:
+        runner.write_baseline(results, args.write_baseline)
 
     # Format output
     if args.format == "json" or args.json:
@@ -513,12 +554,26 @@ def cmd_smoke_test_model(args: argparse.Namespace) -> None:
             "model": config.llm.model,
             "response_length": len(response.text),
         }
+        if response.usage is not None:
+            if response.usage.prompt_tokens is not None:
+                result["prompt_tokens"] = response.usage.prompt_tokens
+            if response.usage.completion_tokens is not None:
+                result["completion_tokens"] = response.usage.completion_tokens
+            if response.usage.total_tokens is not None:
+                result["total_tokens"] = response.usage.total_tokens
 
         if args.json:
             print_output(result, as_json=True)
         else:
             print("✓ Smoke test PASSED")
             print(f"  Provider '{config.llm.provider}' is working correctly")
+            if "total_tokens" in result:
+                print(
+                    "  Token usage: "
+                    f"prompt={result.get('prompt_tokens', 0)}, "
+                    f"completion={result.get('completion_tokens', 0)}, "
+                    f"total={result['total_tokens']}"
+                )
 
     except ValueError as e:
         error_msg = str(e)
@@ -760,6 +815,10 @@ def main() -> NoReturn:
     eval_run.add_argument("--out", help="Output file path (default: stdout)")
     eval_run.add_argument("--baseline", help="Baseline JSON for regression detection")
     eval_run.add_argument(
+        "--write-baseline",
+        help="Write a flattened baseline JSON file from the current evaluation run",
+    )
+    eval_run.add_argument(
         "--fail-on-regression",
         action="store_true",
         help="Exit with error code if regression detected",
@@ -774,6 +833,9 @@ def main() -> NoReturn:
     smoke_test_parser.set_defaults(func=cmd_smoke_test_model)
 
     args = parser.parse_args()
+    if args.func is not cmd_version:
+        config = load_config()
+        configure_logging(config.logging.level, config.logging.format)
     args.func(args)
     sys.exit(0)
 

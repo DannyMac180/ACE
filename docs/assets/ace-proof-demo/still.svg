@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">ACE proof demo still</title>
+  <desc id="desc">Four terminal panels showing retrieve, reflect, curate, and commit in the ACE CLI flow.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff7ed" />
+      <stop offset="100%" stop-color="#e0f2fe" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="760" fill="url(#bg)" />
+  <text x="60" y="48" font-family="Georgia, serif" font-size="32" fill="#111827">ACE proof post demo</text>
+  <text x="60" y="708" font-family="monospace" font-size="18" fill="#374151">60-second terminal loop: retrieve -> reflect -> curate -> commit</text>
+  
+  <g>
+    <rect x="60" y="70" width="540" height="150" rx="18" fill="#111827" stroke="#1f2937" stroke-width="2" />
+    <circle cx="86" cy="94" r="6" fill="#ef4444" />
+    <circle cx="106" cy="94" r="6" fill="#f59e0b" />
+    <circle cx="126" cy="94" r="6" fill="#10b981" />
+    <text x="150" y="99" font-family="monospace" font-size="18" fill="#f9fafb">retrieve</text>
+    <text x="84" y="140" font-family="monospace" font-size="18" fill="#93c5fd">$ ace retrieve &quot;hybrid retrieval&quot; --top-k 3</text>
+    <text x="84" y="180" font-family="monospace" font-size="18" fill="#e5e7eb">Found 3 bullets</text>
+  </g>
+
+  <g>
+    <rect x="600" y="70" width="540" height="150" rx="18" fill="#111827" stroke="#1f2937" stroke-width="2" />
+    <circle cx="626" cy="94" r="6" fill="#ef4444" />
+    <circle cx="646" cy="94" r="6" fill="#f59e0b" />
+    <circle cx="666" cy="94" r="6" fill="#10b981" />
+    <text x="690" y="99" font-family="monospace" font-size="18" fill="#f9fafb">reflect</text>
+    <text x="624" y="140" font-family="monospace" font-size="18" fill="#93c5fd">$ python scripts/demo_reflect.py demo-task.json</text>
+    <text x="624" y="180" font-family="monospace" font-size="18" fill="#e5e7eb">Generated strict Reflection JSON</text>
+  </g>
+
+  <g>
+    <rect x="60" y="270" width="540" height="150" rx="18" fill="#111827" stroke="#1f2937" stroke-width="2" />
+    <circle cx="86" cy="294" r="6" fill="#ef4444" />
+    <circle cx="106" cy="294" r="6" fill="#f59e0b" />
+    <circle cx="126" cy="294" r="6" fill="#10b981" />
+    <text x="150" y="299" font-family="monospace" font-size="18" fill="#f9fafb">curate</text>
+    <text x="84" y="340" font-family="monospace" font-size="18" fill="#93c5fd">$ ace curate --reflection reflection.json --json</text>
+    <text x="84" y="380" font-family="monospace" font-size="18" fill="#e5e7eb">3 deterministic delta ops</text>
+  </g>
+
+  <g>
+    <rect x="600" y="270" width="540" height="150" rx="18" fill="#111827" stroke="#1f2937" stroke-width="2" />
+    <circle cx="626" cy="294" r="6" fill="#ef4444" />
+    <circle cx="646" cy="294" r="6" fill="#f59e0b" />
+    <circle cx="666" cy="294" r="6" fill="#10b981" />
+    <text x="690" y="299" font-family="monospace" font-size="18" fill="#f9fafb">commit</text>
+    <text x="624" y="340" font-family="monospace" font-size="18" fill="#93c5fd">$ ace commit --delta delta.json --json</text>
+    <text x="624" y="380" font-family="monospace" font-size="18" fill="#e5e7eb">Version bumped to {&quot;version&quot;: 1}</text>
+  </g>
+
+</svg>

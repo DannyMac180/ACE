@@ -61,11 +61,11 @@ transport = "stdio"
 port = 8000
 
 [llm]
-# Default LLM provider (openai, anthropic, etc.)
-provider = "openai"
+# Default LLM provider (supported: mock, openrouter)
+provider = "openrouter"
 
-# Model name
-model = "gpt-4o-mini"
+# Model name for the configured provider
+model = "openai/gpt-4o-mini"
 
 # Temperature for reflection/curation
 temperature = 0.0
@@ -110,10 +110,11 @@ max_tokens = 2000
     - Default: 8000
 
 - llm
-  - provider (string) — Default LLM provider identifier (e.g., openai, anthropic).
-    - Default: openai
+  - provider (string) — Default LLM provider identifier.
+    - Supported values: mock, openrouter
+    - Default: openrouter
   - model (string) — LLM model name.
-    - Default: gpt-4o-mini
+    - Default: openai/gpt-4o-mini
   - temperature (float in [0.0, 2.0]) — Decoding temperature.
     - Default: 0.0
   - max_tokens (int >= 1) — Maximum tokens for responses.
@@ -162,10 +163,11 @@ export MCP_TRANSPORT=http
 export MCP_PORT=9000
 
 # LLM provider/model
-export ACE_LLM_PROVIDER=anthropic
-export ACE_LLM_MODEL=claude-3-5-sonnet-20241022
+export ACE_LLM_PROVIDER=openrouter
+export ACE_LLM_MODEL=openai/gpt-4o-mini
 export ACE_LLM_TEMPERATURE=0.1
 export ACE_LLM_MAX_TOKENS=4000
+export OPENROUTER_API_KEY=your-openrouter-api-key
 ```
 
 Windows (PowerShell) equivalents:
@@ -200,7 +202,7 @@ Type expectations:
 ## Examples
 
 1) Minimal local setup (defaults)
-- No changes required; uses SQLite (sqlite:///ace.db), bge-small embeddings, INFO/json logging, stdio MCP, OpenAI gpt-4o-mini with temperature 0.0.
+- Uses SQLite (sqlite:///ace.db), bge-small embeddings, INFO/json logging, stdio MCP, and OpenRouter `openai/gpt-4o-mini` with temperature 0.0. Set `OPENROUTER_API_KEY` before making live LLM calls, or switch `ACE_LLM_PROVIDER=mock` for local test-only runs.
 
 2) Production-like TOML
 ```toml
@@ -227,8 +229,8 @@ transport = "http"
 port = 9000
 
 [llm]
-provider = "anthropic"
-model = "claude-3-5-sonnet-20241022"
+provider = "openrouter"
+model = "anthropic/claude-3-5-sonnet-20241022"
 temperature = 0.1
 max_tokens = 4000
 ```
@@ -245,10 +247,11 @@ export ACE_LOG_LEVEL=WARNING
 export ACE_LOG_FORMAT=json
 export MCP_TRANSPORT=http
 export MCP_PORT=9000
-export ACE_LLM_PROVIDER=anthropic
-export ACE_LLM_MODEL=claude-3-5-sonnet-20241022
+export ACE_LLM_PROVIDER=openrouter
+export ACE_LLM_MODEL=anthropic/claude-3-5-sonnet-20241022
 export ACE_LLM_TEMPERATURE=0.1
 export ACE_LLM_MAX_TOKENS=4000
+export OPENROUTER_API_KEY=your-openrouter-api-key
 ```
 
 ## Notes and tips
@@ -258,6 +261,7 @@ export ACE_LLM_MAX_TOKENS=4000
 - Be sure numeric environment variable values are valid; they are parsed with int()/float() and must fit the validation ranges above.
 - logging.level supports CRITICAL even if the comment in default TOML only lists up to ERROR.
 - mcp.port is only used when transport=http.
+- Built-in client construction currently supports `mock` and `openrouter`. For other providers, inject a custom `LLMClient`; see [Custom LLM provider example](custom-llm-provider-example.md).
 
 ## Training Data Format
 
