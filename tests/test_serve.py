@@ -8,6 +8,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from fastapi.testclient import TestClient
 
+from ace.core.metrics import ValidationMetrics
 from ace.reflector.schema import BulletTag, CandidateBullet, Reflection
 from ace.serve.runner import OnlineServer, create_app
 from ace.serve.schema import (
@@ -520,6 +521,54 @@ class TestCreateApp:
                     assert "warmup_source" in data
                     assert "warmup_bullets_loaded" in data
                     assert "warmup_playbook_version" in data
+
+    def test_metrics_endpoint(self, mock_store):
+        playbook = mock_store.load_playbook.return_value
+        bullet = MagicMock()
+        bullet.helpful = 2
+        bullet.harmful = 1
+        playbook.version = 7
+        playbook.bullets = [bullet]
+
+        class StubTracker:
+            def get_metrics(self, schema_type=None):
+                metrics = {
+                    None: ValidationMetrics(
+                        total_attempts=6,
+                        successful_parses=5,
+                        failed_parses=1,
+                        json_decode_errors=1,
+                    ),
+                    "reflection": ValidationMetrics(
+                        total_attempts=4,
+                        successful_parses=3,
+                        failed_parses=1,
+                        json_decode_errors=1,
+                    ),
+                    "delta": ValidationMetrics(
+                        total_attempts=2,
+                        successful_parses=2,
+                        failed_parses=0,
+                    ),
+                }
+                return metrics[schema_type]
+
+        with patch("ace.serve.runner.Reflector"):
+            with patch("ace.serve.runner.Retriever"):
+                app = create_app(store=mock_store, metrics_tracker=StubTracker())
+                with TestClient(app) as client:
+                    response = client.get("/metrics")
+
+        assert response.status_code == 200
+        assert response.headers["content-type"].startswith("text/plain;")
+        assert 'ace_online_requests_processed_total 0.0' in response.text
+        assert 'ace_playbook_version 7.0' in response.text
+        assert 'ace_playbook_bullets 1.0' in response.text
+        assert 'ace_playbook_helpful_total 2.0' in response.text
+        assert 'ace_playbook_harmful_total 1.0' in response.text
+        assert 'ace_validation_attempts_total{schema_type="all"} 6.0' in response.text
+        assert 'ace_validation_attempts_total{schema_type="reflection"} 4.0' in response.text
+        assert 'ace_validation_success_rate{schema_type="delta"} 1.0' in response.text
 
     def test_stats_endpoint_with_warmup(self, mock_store):
         playbook_data = {

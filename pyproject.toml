@@ -21,6 +21,7 @@ dependencies = [
     "openai>=1.0.0",
     "datasketch>=1.5.0",
     "fastapi>=0.100.0",
+    "prometheus-client>=0.20.0",
     "uvicorn>=0.20.0",
 ]
 

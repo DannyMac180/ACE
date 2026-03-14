@@ -741,7 +741,7 @@ Paper Table 3 shows 'ReAct + ACE + offline warmup' beats cold-start online adapt
 
 ### Functions
 
-#### `create_app(auto_adapt, store, warmup_path) -> FastAPI`
+#### `create_app(auto_adapt, store, warmup_path, auto_refine_every, max_bullets, metrics_tracker) -> FastAPI`
 
 Create FastAPI application for online serving.
 
@@ -750,6 +750,9 @@ def create_app(
     auto_adapt: bool = True,
     store: Store | None = None,
     warmup_path: str | Path | None = None,
+    auto_refine_every: int = 0,
+    max_bullets: int | None = None,
+    metrics_tracker: MetricsTracker | None = None,
 ) -> FastAPI
 ```
 
@@ -773,6 +776,7 @@ def run_server(
 |----------|--------|-------------|
 | `/health` | GET | Health check, returns `{"status": "ok", "mode": "online"}` |
 | `/stats` | GET | Session statistics including warmup info |
+| `/metrics` | GET | Prometheus scrape endpoint for session, playbook, and validation metrics |
 | `/playbook/version` | GET | Current playbook version |
 | `/retrieve` | POST | Retrieve bullets for a query |
 | `/feedback` | POST | Process execution feedback and adapt playbook |

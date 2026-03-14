@@ -97,7 +97,7 @@ sequenceDiagram
 - `ace evolve`: run reflect -> curate -> commit from an explicit task document.
 - `ace pipeline`: either run the built-in generator loop or process external execution feedback with `--feedback`.
 - `ace refine`: merge near-duplicates and archive low-utility bullets.
-- `ace serve`: start the FastAPI serving layer with `/health`, `/retrieve`, `/feedback`, `/stats`, and `/playbook/version`.
+- `ace serve`: start the FastAPI serving layer with `/health`, `/retrieve`, `/feedback`, `/stats`, `/metrics`, and `/playbook/version`.
 - `python -m ace_mcp_server`: expose the `ace_*` tool surface over FastMCP.
 
 ## Quickstart

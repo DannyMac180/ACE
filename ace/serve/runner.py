@@ -19,6 +19,7 @@ from ace.core.config import ACEConfig, load_config
 from ace.core.logging_utils import configure_logging
 from ace.core.merge import Delta as MergeDelta
 from ace.core.merge import apply_delta
+from ace.core.metrics import MetricsTracker, get_tracker
 from ace.core.retrieve import Retriever
 from ace.core.schema import Playbook
 from ace.core.storage.store_adapter import Store
@@ -28,6 +29,7 @@ from ace.refine.runner import refine as run_refine
 from ace.reflector.reflector import Reflector
 from ace.reflector.schema import BulletTag, CandidateBullet, Reflection
 
+from .prometheus import build_metrics_registry, metrics_response
 from .schema import (
     AdaptationMode,
     CommitRequest,
@@ -424,6 +426,7 @@ def create_app(
     warmup_path: str | Path | None = None,
     auto_refine_every: int = 0,
     max_bullets: int | None = None,
+    metrics_tracker: MetricsTracker | None = None,
 ) -> FastAPI:
     """Create FastAPI application for online serving.
 
@@ -433,11 +436,13 @@ def create_app(
         warmup_path: Path to playbook JSON file for warm-start
         auto_refine_every: Run refine every N deltas (0 = disabled)
         max_bullets: Max bullets before triggering refine (overrides config)
+        metrics_tracker: Optional validation metrics tracker override
 
     Returns:
         FastAPI app instance
     """
     server_instance: list[OnlineServer] = []
+    tracker = metrics_tracker or get_tracker()
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
@@ -467,6 +472,8 @@ def create_app(
         if not server_instance:
             raise RuntimeError("Server not initialized")
         return server_instance[0]
+
+    metrics_registry = build_metrics_registry(get_server, tracker)
 
     app = FastAPI(
         title="ACE Online Server",
@@ -513,6 +520,11 @@ def create_app(
     async def stats() -> dict[str, Any]:
         """Get session statistics."""
         return get_server().get_stats().model_dump()
+
+    @app.get("/metrics")
+    async def metrics():
+        """Expose Prometheus metrics for the online ACE server."""
+        return metrics_response(metrics_registry)
 
     @app.get("/playbook")
     async def playbook() -> dict[str, Any]:
