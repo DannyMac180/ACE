@@ -158,6 +158,27 @@ live capture sheet before launch week starts.
 | Thursday, March 19, 2026 | run direct follow-ups between `12:00` and `13:00` ET | halfway through the pass | by `16:00` ET for dated next steps | by `17:30` ET |
 | Friday, March 20, 2026 | publish between `10:30` and `11:00` ET | `+30m` after publish | `+3h` after publish | by `17:30` ET |
 
+## Live Failure Rules
+
+Use these rules if the live launch surface breaks during a publish or
+follow-up window.
+
+- if the X composer or scheduler fails, switch to manual publish only after
+  re-checking the exact tracked URL, thread shape, and attached asset against
+  `plans/2026-03-13-cmo-week-one-publishing-surface.md`
+- if a tracked URL is shortened, lost, or reformatted, stop and rebuild the
+  draft from the canonical source instead of trying to fix it from memory
+- if the Wednesday proof visual fails to attach, spend up to `15` minutes
+  restoring `docs/assets/ace-proof-demo/still.svg` or an already approved
+  replacement; if that fails, mark the motion blocked instead of posting a
+  weaker ad hoc proof unit
+- if Dan cannot stay available for the first reply window, move the publish or
+  pass to the next same-day slot and log the slip in
+  `plans/2026-03-16-cmo-launch-operations-log.md` before shipping
+- any live publish-window break should be captured first in
+  `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`, then transferred into
+  the `Launch Contingency Log` in the canonical launch log
+
 ## Checkpoint Response Rules
 
 Use these rules when checkpoint data is weak or unexpectedly strong.
@@ -437,17 +458,19 @@ Before ending each launch day:
 6. add the most important checkpoint choice to the `Checkpoint Decision Log`
    when the day's metrics changed the next move, hook, CTA, or routing path
 7. add any bio, website-link, or pinned-post change to the `Profile Surface Log`
-8. move the best reusable quote, objection, metric jump, or workflow artifact
+8. add any composer, scheduler, tracked-link, asset, or timing problem to the
+   `Launch Contingency Log`
+9. move the best reusable quote, objection, metric jump, or workflow artifact
    into the `Content Reuse Queue`
-9. add any qualified builder to the design-partner pipeline
-10. add one friction row if a repeated objection or setup blocker surfaced
-11. if the live day was messy, preserve the raw notes in
+10. add any qualified builder to the design-partner pipeline
+11. add one friction row if a repeated objection or setup blocker surfaced
+12. if the live day was messy, preserve the raw notes in
    `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` before closing the
    session
-12. if the reply flow drifted, update
+13. if the reply flow drifted, update
    `plans/2026-03-13-cmo-week-one-response-bank.md` before the next launch
    motion instead of carrying a private workaround
-13. if the work was Sunday preflight rather than a live post or follow-up day,
+14. if the work was Sunday preflight rather than a live post or follow-up day,
     update the `Sunday Preflight Completion Receipt` in
     `plans/2026-03-16-cmo-launch-operations-log.md` before ending the session
 

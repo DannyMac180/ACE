@@ -81,6 +81,17 @@ into the canonical `Checkpoint Decision Log` in
 | 2026-03-19 | EOD follow-up review |  |  |  | pending | use when Friday adoption routing needs to change before publish |
 | 2026-03-20 | `+3h` or EOD adoption review |  |  |  | pending | use when week two needs an explicit messaging, docs, or routing fix |
 
+## Launch Incident Scratchpad
+
+Use this the moment a live publish or follow-up surface breaks.
+
+This is the raw counterpart to the `Launch Contingency Log` in
+`plans/2026-03-16-cmo-launch-operations-log.md`.
+
+| Time | Motion | Failure mode | What broke | Immediate containment | Next check time | Transferred to launch log | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+|  |  |  |  |  |  | pending | use this for scheduler failures, broken tracked URLs, missing proof assets, or publish-window slips |
+
 ## Quick Routing Rules
 
 Use this triage in the moment:
@@ -465,12 +476,13 @@ Before closing each launch day:
 5. move the most important checkpoint decision into the `Checkpoint Decision Log`
 6. move any bio, website-link, or pinned-post change into the
    `Profile Surface Log`
-7. move the best reusable metric jump, quote, objection, or workflow artifact
+7. move any launch incident into the `Launch Contingency Log`
+8. move the best reusable metric jump, quote, objection, or workflow artifact
    into the `Content Reuse Queue`
-8. add every qualified builder to the design-partner pipeline with a score and
+9. add every qualified builder to the design-partner pipeline with a score and
    next step plus a real due date
-9. copy repeated message, proof, or setup blockers into the friction log
-10. roll up the day's profile visits and new follows into the launch log notes
+10. copy repeated message, proof, or setup blockers into the friction log
+11. roll up the day's profile visits and new follows into the launch log notes
     or scoreboard inputs while the platform snapshots are still easy to verify
-11. mark any missing metrics or untracked links explicitly instead of leaving
+12. mark any missing metrics or untracked links explicitly instead of leaving
    blanks

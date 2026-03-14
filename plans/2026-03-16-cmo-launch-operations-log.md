@@ -225,6 +225,35 @@ Minimum evidence rule:
   URL, calendar import confirmation, scheduler confirmation, or validated
   watchlist note
 
+## Live Launch Contingency Rules
+
+Use these rules if a live launch motion breaks inside the operating window.
+
+- never improvise a new link, rewrite the post from memory, or ship an
+  untracked substitute just to stay on schedule
+- if the X composer or scheduler breaks before publish, switch to manual
+  publish only after the exact tracked URL, thread shape, and attached asset
+  are re-verified against the canonical publishing surface
+- if the tracked URL is shortened, reformatted, or lost, stop the motion,
+  rebuild it from the canonical source, and log the incident before trying
+  again
+- if the Wednesday proof visual fails to attach, spend up to `15` minutes
+  restoring `docs/assets/ace-proof-demo/still.svg` or an already approved
+  replacement; if the asset still cannot be attached, mark the motion
+  `blocked` instead of shipping a weaker ad hoc proof post
+- if Dan cannot stay available for the first reply window, move the motion to
+  the next same-day slot only after logging the slip and the new check times in
+  the contingency log below
+
+## Launch Contingency Log
+
+Use this table for any scheduler, composer, link, asset, timing, or profile
+issue that could force week-one drift.
+
+| Date | Motion | Failure mode | What broke | Containment move | Next check time | Status | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+|  |  |  |  |  |  | pending | log every live publish-window problem here even if it was fixed within minutes |
+
 ## Publishing Run Sheet
 
 ### Monday, March 16, 2026
@@ -441,17 +470,20 @@ Use this file as the only shared scoreboard source of truth.
    objection, or a public workflow report that can anchor another content unit.
 6. CMO adds one row to the `Checkpoint Decision Log` whenever checkpoint data
    changes the next hook, CTA, routing path, or follow-up motion.
-7. CMO uses `plans/2026-03-13-cmo-week-one-response-bank.md` for every live
+7. CMO adds one row to the `Launch Contingency Log` whenever a live motion
+   slips, a tracked URL has to be rebuilt, a proof asset fails, or a publish
+   window changes from the governed default.
+8. CMO uses `plans/2026-03-13-cmo-week-one-response-bank.md` for every live
    follow-up so the routing language stays consistent across posts, replies,
    and DMs.
-8. CMO updates the design-partner pipeline and friction log from the same raw
+9. CMO updates the design-partner pipeline and friction log from the same raw
    notes within 24 hours.
-9. CEO reviews the log for completeness and consolidates week-one results into
+10. CEO reviews the log for completeness and consolidates week-one results into
    the single scoreboard row below on Friday, including the rolled-up profile
    visits and new follows captured in launch-week snapshots.
-10. If a launch link was used that is not in the approved registry, log it as
+11. If a launch link was used that is not in the approved registry, log it as
     an instrumentation miss in the closeout section.
-11. On Sunday, March 15, 2026, Dan completes the `Sunday Preflight Completion
+12. On Sunday, March 15, 2026, Dan completes the `Sunday Preflight Completion
     Receipt` above so the remaining operator-side readiness work has timestamps
     and evidence before the first week-one post goes live.
 
@@ -469,6 +501,9 @@ Minimum capture standard:
 - add the distribution session to the `Distribution Pass Log` if the
   interaction came from a Tuesday or Thursday push or from reply distribution on
   adjacent conversations
+- add one row to the `Launch Contingency Log` if the composer, scheduler,
+  tracked URL, proof asset, or publish timing broke and required a governed
+  containment move
 - add the qualified reply burst or DM thread to the `Engagement Follow-Up Log`
 - add the public issue or discussion to the `Workflow Intake Log` if the
   interaction turned into a reusable GitHub artifact
@@ -536,6 +571,18 @@ implicit.
 | 2026-03-18 | `+3h` proof-post review |  |  | 2026-03-19 | pending | record whether Friday should lead with setup fit, mechanism clarity, or public workflow capture |
 | 2026-03-19 | EOD follow-up review |  |  | 2026-03-20 | pending | record the exact Friday emphasis: worked example, MCP path, API detail, or issue intake |
 | 2026-03-20 | EOD adoption review |  |  | 2026-03-23 | pending | record the concrete week-two messaging, docs, or routing fix that launch week proved necessary |
+
+## Contingency Review Rule
+
+If the `Launch Contingency Log` gets any row during week one:
+
+- resolve or re-check the issue the same day whenever possible
+- record whether the motion still shipped with the approved tracked URL and
+  governed asset set
+- if the issue changed publish timing, update the related metric notes so the
+  scoreboard does not compare unlike windows by accident
+- if the issue stayed unresolved, carry the blocker into Friday closeout as a
+  direct launch-system fix instead of burying it in general observations
 
 ## Scoreboard
 

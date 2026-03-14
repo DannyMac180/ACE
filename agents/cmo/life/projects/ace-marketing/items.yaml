@@ -206,3 +206,8 @@
   fact: "Later on Saturday, March 14, 2026, the CMO added a governed Sunday audience-baseline snapshot to the week-one launch stack so Dan must record the starting follower count, starting profile-visits reading, timestamp, and source surface before Monday launch-week audience-growth comparisons begin."
   source: "agents/cmo/memory/2026-03-14.md"
   recorded_at: "2026-03-14"
+- id: ace-marketing-2026-03-14-launch-contingency-layer
+  status: active
+  fact: "Later on Saturday, March 14, 2026, the CMO added a governed contingency layer to the week-one launch stack: the launch log now has `Live Launch Contingency Rules` plus a canonical `Launch Contingency Log`, the operator brief now defines `Live Failure Rules`, and the live capture sheet now has a `Launch Incident Scratchpad` so scheduler failures, broken tracked URLs, proof-asset attachment failures, and publish-window slips are contained and logged instead of improvised."
+  source: "agents/cmo/memory/2026-03-14.md"
+  recorded_at: "2026-03-14"
