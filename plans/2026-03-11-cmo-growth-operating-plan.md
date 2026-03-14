@@ -289,7 +289,8 @@ Deliverables:
 
 Acceptance criteria:
 
-- weekly review can report reach, clicks, adoption, and repeat usage with consistent definitions
+- weekly review can report reach, profile growth, clicks, adoption, and repeat
+  usage with consistent definitions
 
 ## Operating Principle
 

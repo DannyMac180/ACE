@@ -58,6 +58,8 @@ Secondary KPIs:
 - serious builder replies
 - setup-start signals
 - design-partner conversations
+- profile visits from governed week-one motions
+- new follows during launch week
 - reusable proof artifacts or objections that can power week-two content
 
 ## Canonical Destinations
@@ -357,6 +359,9 @@ Each meaningful launch motion should contribute at least one reusable artifact:
 Use these rules so Friday numbers reflect the same funnel logic all week.
 
 - Count click metrics as total tracked clicks, not unique people.
+- Count `Profile visits` and `New follows` as the weekly total from governed
+  week-one post analytics, profile-surface checks, and logged Tuesday or
+  Thursday distribution effects.
 - Count conversation, setup, and repeat-user metrics as unique builders for the
   week.
 - A builder can count once in each funnel stage they genuinely reach, so one
@@ -375,6 +380,8 @@ Use these definitions when filling the Friday scoreboard row.
 | Qualified impressions | impressions on the governed week-one posts plus logged Tuesday or Thursday distribution replies in clearly relevant coding-agent conversations | unrelated account-level impressions or generic AI chatter that was not part of a governed launch motion |
 | Engagement rate | the platform-reported engagement rate for the governed launch posts | a hand-added blend of different post types or raw reply counts without the platform denominator |
 | Outbound clicks | total tracked clicks across all approved week-one launch URLs | untracked clicks, profile taps without a tracked destination, or estimates from memory |
+| Profile visits | total profile visits attributed to governed week-one post snapshots, Monday pinning checks, and logged Tuesday or Thursday distribution effects | baseline account traffic outside governed launch windows or guessed profile interest without a captured snapshot |
+| New follows | total new follows observed during governed week-one post snapshots and profile-surface checks after baseline is captured on Sunday, March 15, 2026 | historical follower growth outside launch week, unfalsifiable estimates, or repeat touches from existing followers |
 | README clicks | tracked clicks on `w1_thread_readme`, `reply_w1_thread_readme`, `dm_w1_readme`, and `profile_w1_readme` | clicks to proof, example, MCP, or API destinations |
 | Proof clicks | tracked clicks on `w1_proof_demo` and `reply_w1_proof_demo` | README or example clicks, even if they came from the Wednesday audience |
 | Setup starts | a unique builder who asks for or begins a concrete setup path through the worked example, MCP guide, API route, or a live issue during launch week | vague curiosity, passive likes, or category-only replies with no setup intent |
@@ -413,7 +420,8 @@ Use this file as the only shared scoreboard source of truth.
 8. CMO updates the design-partner pipeline and friction log from the same raw
    notes within 24 hours.
 9. CEO reviews the log for completeness and consolidates week-one results into
-   the single scoreboard row below on Friday.
+   the single scoreboard row below on Friday, including the rolled-up profile
+   visits and new follows captured in launch-week snapshots.
 10. If a launch link was used that is not in the approved registry, log it as
     an instrumentation miss in the closeout section.
 11. On Sunday, March 15, 2026, Dan completes the `Sunday Preflight Completion
@@ -483,9 +491,9 @@ implicit.
 
 Update this on Friday after the adoption post and reply follow-up.
 
-| Week | Qualified impressions | Engagement rate | Outbound clicks | README clicks | Proof clicks | Setup starts | Setup completions | Adoption signals | Serious conversations | Repeat-user signals |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 |  |  |  |  |  |  |  |  |  |  |
+| Week | Qualified impressions | Engagement rate | Outbound clicks | Profile visits | New follows | README clicks | Proof clicks | Setup starts | Setup completions | Adoption signals | Serious conversations | Repeat-user signals |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 |  |  |  |  |  |  |  |  |  |  |  |  |
 
 ## Design-Partner Pipeline
 

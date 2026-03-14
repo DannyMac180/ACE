@@ -196,3 +196,8 @@
   fact: "On Saturday, March 14, 2026, the CMO added a governed Sunday, March 15, 2026 `20:00` ET go-or-no-go gate to the launch log, operator brief, and live capture sheet so the week-one launch is explicitly `go` only when the profile surface, calendar import, scheduler drafts, and validated watchlist all have evidence, otherwise the state is `blocked` and escalated to the CEO."
   source: "agents/cmo/memory/2026-03-14.md"
   recorded_at: "2026-03-14"
+- id: ace-marketing-2026-03-14-audience-growth-scoreboard
+  status: active
+  fact: "On Saturday, March 14, 2026, the CMO promoted `Profile visits` and `New follows` to first-class governed week-one metrics by adding them to the launch scoreboard definitions, raw capture tables, and editorial targets, so ACE week-one can measure owned-audience growth alongside clicks, setup intent, and conversations."
+  source: "agents/cmo/memory/2026-03-14.md"
+  recorded_at: "2026-03-14"

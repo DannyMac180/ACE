@@ -111,6 +111,8 @@ Use these raw tags in notes or next-step cells so the transfer into
 Raw-tag rules:
 
 - click metrics still come from tracked URLs, not these tags
+- profile visits and new follows still come from captured platform snapshots,
+  not from builder-signal tags
 - count people once per tag per week unless the second touch qualifies as
   `repeat_user_signal`
 - if the signal is unclear, capture the quote or action first and decide during
@@ -270,12 +272,12 @@ Post code: `w1_thread_readme`
 
 ### Metrics
 
-| Window | Impressions | Engagements | Engagement rate | Link clicks | Profile visits | Bookmarks | Reposts | Notes |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| publish |  |  |  |  |  |  |  |  |
-| +30m |  |  |  |  |  |  |  |  |
-| +3h |  |  |  |  |  |  |  |  |
-| EOD |  |  |  |  |  |  |  |  |
+| Window | Impressions | Engagements | Engagement rate | Link clicks | Profile visits | New follows | Bookmarks | Reposts | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| publish |  |  |  |  |  |  |  |  |  |
+| +30m |  |  |  |  |  |  |  |  |  |
+| +3h |  |  |  |  |  |  |  |  |  |
+| EOD |  |  |  |  |  |  |  |  |  |
 
 ### High-Signal Replies
 
@@ -305,10 +307,10 @@ Motion: adjacent conversation distribution pass
 
 ### Metrics
 
-| Window | Adjacent replies shipped | DMs started | Qualified interactions | README clicks influenced | Profile visits influenced | Notes |
-| --- | --- | --- | --- | --- | --- | --- |
-| `12:30 ET` |  |  |  |  |  |  |
-| EOD |  |  |  |  |  |  |
+| Window | Adjacent replies shipped | DMs started | Qualified interactions | README clicks influenced | Profile visits influenced | New follows influenced | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `12:30 ET` |  |  |  |  |  |  |  |
+| EOD |  |  |  |  |  |  |  |
 
 ### Friction Notes
 
@@ -330,12 +332,12 @@ Visual: `docs/assets/ace-proof-demo/still.svg`
 
 ### Metrics
 
-| Window | Impressions | Engagements | Engagement rate | Link clicks | Profile visits | Bookmarks | Reposts | Replies | Notes |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| publish |  |  |  |  |  |  |  |  |  |
-| +30m |  |  |  |  |  |  |  |  |  |
-| +3h |  |  |  |  |  |  |  |  |  |
-| EOD |  |  |  |  |  |  |  |  |  |
+| Window | Impressions | Engagements | Engagement rate | Link clicks | Profile visits | New follows | Bookmarks | Reposts | Replies | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| publish |  |  |  |  |  |  |  |  |  |  |
+| +30m |  |  |  |  |  |  |  |  |  |  |
+| +3h |  |  |  |  |  |  |  |  |  |  |
+| EOD |  |  |  |  |  |  |  |  |  |  |
 
 ### High-Signal Replies
 
@@ -365,10 +367,10 @@ Motion: proof-to-adoption follow-up pass
 
 ### Metrics
 
-| Window | Follow-ups sent | DMs advanced | Qualified prospects with dated next step | Profile visits influenced | Strongest repeated objection | Notes |
-| --- | --- | --- | --- | --- | --- | --- |
-| `12:30 ET` |  |  |  |  |  |  |
-| EOD |  |  |  |  |  |  |
+| Window | Follow-ups sent | DMs advanced | Qualified prospects with dated next step | Profile visits influenced | New follows influenced | Strongest repeated objection | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `12:30 ET` |  |  |  |  |  |  |  |
+| EOD |  |  |  |  |  |  |  |
 
 ### Friction Notes
 
@@ -389,12 +391,12 @@ Post code: `w1_adoption_example`
 
 ### Metrics
 
-| Window | Impressions | Engagements | Engagement rate | Link clicks | Profile visits | Replies | Bookmarks | DMs started | Notes |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| publish |  |  |  |  |  |  |  |  |  |
-| +30m |  |  |  |  |  |  |  |  |  |
-| +3h |  |  |  |  |  |  |  |  |  |
-| EOD |  |  |  |  |  |  |  |  |  |
+| Window | Impressions | Engagements | Engagement rate | Link clicks | Profile visits | New follows | Replies | Bookmarks | DMs started | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| publish |  |  |  |  |  |  |  |  |  |  |
+| +30m |  |  |  |  |  |  |  |  |  |  |
+| +3h |  |  |  |  |  |  |  |  |  |  |
+| EOD |  |  |  |  |  |  |  |  |  |  |
 
 ### High-Signal Replies
 
@@ -451,5 +453,7 @@ Before closing each launch day:
 8. add every qualified builder to the design-partner pipeline with a score and
    next step
 9. copy repeated message, proof, or setup blockers into the friction log
-10. mark any missing metrics or untracked links explicitly instead of leaving
+10. roll up the day's profile visits and new follows into the launch log notes
+    or scoreboard inputs while the platform snapshots are still easy to verify
+11. mark any missing metrics or untracked links explicitly instead of leaving
    blanks

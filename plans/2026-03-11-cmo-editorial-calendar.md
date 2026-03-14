@@ -69,6 +69,8 @@ Primary KPI:
 Target:
 
 - 25,000 qualified impressions
+- 150 profile visits from governed week-one motions
+- 25 new follows during launch week
 - 50 tracked README clicks
 - 8 high-signal replies
 
@@ -93,6 +95,7 @@ CTA:
 Success threshold:
 
 - at least 2.5 percent engagement rate
+- at least 25 profile visits by end of day
 - at least 20 README clicks in 24 hours
 
 ### Tuesday, March 17
