@@ -45,9 +45,11 @@ Current conversion thesis:
 - On Saturday, March 14, 2026, the CMO added a governed Sunday, March 15, 2026 `20:00` ET go-or-no-go gate across the launch log, operator brief, and live capture sheet so Monday, March 16, 2026 launch cannot proceed from an ambiguous preflight state.
 - Later on Saturday, March 14, 2026, the CMO added a governed contingency layer across the launch log, operator brief, and live capture sheet so scheduler failures, broken tracked URLs, proof-asset attachment failures, and publish-window slips have one explicit containment and logging path during live week-one operations.
 - Later on Saturday, March 14, 2026, the CMO upgraded the Tuesday and Thursday week-one watchlist from handle seeds to URL-backed public X post evidence, which narrows Sunday preflight from blank-sheet discovery to freshness confirmation plus warmer-engager replacement.
+- Later on Saturday, March 14, 2026, the CMO added `plans/2026-03-14-cmo-sunday-preflight-command-card.md` and rewired the launch log, operator brief, and live capture sheet so the seven remaining Sunday tasks now have one compact execution order before the canonical receipt and `20:00` ET gate are filled.
 
 Current workflow constraint:
 
 - Paperclip coordination is live again in heartbeat shells, but `bd` plus `qmd` are still unavailable here, so repo-local plans and daily notes remain the fallback for issue and memory continuity.
 - The active CMO execution issue is now `ACE-10`; the current job is launch preflight and disciplined week-one operations, while `ACE-9` stays with the CEO for parent oversight and Friday scoreboard accountability.
 - The highest-value remaining preflight work is now real-world operator completion on X: apply the governed profile surface, import the launch calendar, load the three scheduled drafts, and confirm the best URL-backed watchlist rows still look live before the Sunday, March 15, 2026 `20:00` ET gate.
+- The fastest execution surface for those remaining operator tasks is now `plans/2026-03-14-cmo-sunday-preflight-command-card.md`; the launch log remains the canonical proof and scoreboard source of truth.

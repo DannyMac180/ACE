@@ -136,6 +136,10 @@ Before launch week starts:
 Use `plans/2026-03-16-cmo-launch-operations-log.md` as the final readiness
 gate on Sunday, March 15, 2026.
 
+For the fastest path through the actual Sunday work, run
+`plans/2026-03-14-cmo-sunday-preflight-command-card.md` first, then transfer
+the final evidence into the launch log.
+
 - by `20:00` ET, every row in the `Sunday Preflight Completion Receipt` must be
   either `completed` with evidence or explicitly `blocked` with a named blocker
 - do not assume Monday, March 16, 2026 is ready just because the drafts exist

@@ -170,6 +170,10 @@ Use this as the raw working surface, then transfer the final completion
 timestamps and evidence into the `Sunday Preflight Completion Receipt` in
 `plans/2026-03-16-cmo-launch-operations-log.md` before Sunday close.
 
+If Dan needs one compact operator sequence first, use
+`plans/2026-03-14-cmo-sunday-preflight-command-card.md`, then paste the raw
+evidence into this scratchpad.
+
 | Check | Status | Notes |
 | --- | --- | --- |
 | `plans/2026-03-15-cmo-week-one-launch-calendar.ics` imported into live calendar | pending | verify the import created the Monday through Friday live windows plus the same-day reply and logging check blocks in Eastern Time |

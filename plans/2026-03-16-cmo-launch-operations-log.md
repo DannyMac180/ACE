@@ -120,6 +120,10 @@ Use these exact links unless the destination changes.
 
 Complete this gate by Sunday, March 15, 2026 before anything is published.
 
+For the fastest operator path through the remaining Dan-owned tasks, use
+`plans/2026-03-14-cmo-sunday-preflight-command-card.md` as the one-screen
+execution order, then record the canonical proof in the tables below.
+
 | Check | Owner | Status | Notes |
 | --- | --- | --- | --- |
 | Confirm `ACE-10` is the execution owner and `ACE-9` remains oversight only | CMO | ready | delegated on 2026-03-13 so week-one execution no longer depends on ad hoc handoff through the parent issue |
@@ -319,6 +323,10 @@ Use this within `5` minutes of every Monday, Wednesday, and Friday publish.
 
 ### Sunday, March 15, 2026 Preflight
 
+- use `plans/2026-03-14-cmo-sunday-preflight-command-card.md` as the primary
+  Sunday execution surface so the remaining profile, baseline, calendar,
+  scheduler, watchlist, and receipt steps happen in one order instead of file
+  hopping
 - open this file and confirm every `ready` and `pending` preflight row has an
   explicit owner and status before end of day
 - import `plans/2026-03-15-cmo-week-one-launch-calendar.ics` into the live
