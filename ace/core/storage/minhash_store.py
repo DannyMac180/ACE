@@ -18,10 +18,18 @@ class MinHashStore:
 
     def add_signature(self, bullet_id: str, text: str):
         sig = self.generate_signature(text)
-        self.db.execute(
-            "INSERT OR REPLACE INTO minhash_sigs (bullet_id, signature) VALUES (?, ?)",
-            (bullet_id, sig),
-        )
+        if self.db.is_sqlite:
+            self.db.execute(
+                "INSERT OR REPLACE INTO minhash_sigs (bullet_id, signature) VALUES (?, ?)",
+                (bullet_id, sig),
+            )
+        else:
+            self.db.execute(
+                """INSERT INTO minhash_sigs (bullet_id, signature)
+                   VALUES (?, ?)
+                   ON CONFLICT (bullet_id) DO UPDATE SET signature = EXCLUDED.signature""",
+                (bullet_id, sig),
+            )
 
     def get_signature(self, bullet_id: str) -> MinHash | None:
         rows = self.db.fetchall(

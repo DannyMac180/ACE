@@ -35,6 +35,11 @@ class EmbeddingStore:
         self.load_index()
 
     def load_index(self):
+        if not self.db.is_sqlite:
+            self.index = None
+            self.id_to_idx = {}
+            self.idx_to_id = {}
+            return
         if os.path.exists(self.index_path):
             self.index = faiss.read_index(self.index_path)
             # Load mappings
@@ -47,14 +52,28 @@ class EmbeddingStore:
             self.idx_to_id = {}
 
     def save_index(self):
+        if not self.db.is_sqlite:
+            return
         faiss.write_index(self.index, self.index_path)
         with open(self.index_path + ".mapping", "wb") as f:
             pickle.dump((self.id_to_idx, self.idx_to_id), f)
+
+    @staticmethod
+    def _to_pgvector_literal(vector: np.ndarray[tuple[int], np.dtype[np.float32]]) -> str:
+        return "[" + ",".join(f"{float(value):.9f}" for value in vector) + "]"
 
     def add_embedding(self, bullet_id: str, text: str):
         if bullet_id in self.id_to_idx:
             return  # Already exists
         vector = generate_embedding(text)
+        if not self.db.is_sqlite:
+            self.db.execute(
+                """INSERT INTO embeddings (bullet_id, vector)
+                   VALUES (?, ?::vector)
+                   ON CONFLICT (bullet_id) DO UPDATE SET vector = EXCLUDED.vector""",
+                (bullet_id, self._to_pgvector_literal(vector)),
+            )
+            return
         assert self.index is not None
         idx = self.index.ntotal
         self.index.add(vector.reshape(1, -1))
@@ -67,12 +86,23 @@ class EmbeddingStore:
         )
 
     def search(self, query: str, top_k: int = 24) -> list[str]:
-        assert self.index is not None
         vector = generate_embedding(query)
+        if not self.db.is_sqlite:
+            rows = self.db.fetchall(
+                """SELECT bullet_id FROM embeddings
+                   ORDER BY vector <=> ?::vector
+                   LIMIT ?""",
+                (self._to_pgvector_literal(vector), top_k),
+            )
+            return [row[0] for row in rows]
+        assert self.index is not None
         distances, indices = self.index.search(vector.reshape(1, -1), top_k)
         return [self.idx_to_id[idx] for idx in indices[0] if idx != -1]
 
     def remove_embedding(self, bullet_id: str):
+        if not self.db.is_sqlite:
+            self.db.execute("DELETE FROM embeddings WHERE bullet_id = ?", (bullet_id,))
+            return
         if bullet_id not in self.id_to_idx:
             return
         idx = self.id_to_idx[bullet_id]
@@ -86,6 +116,8 @@ class EmbeddingStore:
         self.rebuild_index()
 
     def rebuild_index(self):
+        if not self.db.is_sqlite:
+            return
         self.index = faiss.IndexFlatIP(384)
         assert self.index is not None
         rows = self.db.fetchall("SELECT bullet_id, vector FROM embeddings")

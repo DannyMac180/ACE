@@ -53,6 +53,12 @@ class DatabaseConnection:
                 database=parsed.path.lstrip("/") if parsed.path else "",
             )
 
+    def _prepare_query(self, query: str) -> str:
+        """Translate parameter placeholders for the active database driver."""
+        if self.is_sqlite:
+            return query
+        return query.replace("?", "%s")
+
     def close(self):
         if self.conn:
             self.conn.close()
@@ -62,7 +68,7 @@ class DatabaseConnection:
             self.connect()
         assert self.conn is not None
         cursor = self.conn.cursor()
-        cursor.execute(query, params)
+        cursor.execute(self._prepare_query(query), params)
         self.conn.commit()
         return cursor
 
@@ -71,7 +77,7 @@ class DatabaseConnection:
             self.connect()
         assert self.conn is not None
         cursor = self.conn.cursor()
-        cursor.execute(query, params)
+        cursor.execute(self._prepare_query(query), params)
         return list(cursor.fetchall())
 
 
