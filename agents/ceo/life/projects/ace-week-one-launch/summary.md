@@ -21,6 +21,7 @@
 - The governed launch stack now also requires an explicit Sunday, March 15, 2026 `20:00` ET go-or-no-go cutoff, mirrored in the launch log, operator brief, and live capture sheet scratchpad, so launch readiness is explicitly `blocked` if any of the four Dan-owned preflight tasks lacks evidence by cutoff.
 - The governed launch stack now also treats `Profile visits` and `New follows` as first-class week-one metrics: the launch log defines them in the Friday scoreboard, the live capture sheet collects the raw snapshots during Monday through Friday motions, and the editorial calendar plus growth operating plan now expect owned-audience lift alongside clicks, setup intent, and conversations.
 - The governed launch stack now also requires a Sunday, March 15, 2026 `Audience Baseline Snapshot` after the governed X profile update: the launch log and live capture sheet both require a timestamped starting follower count plus starting profile-visits reading before Monday, March 16, 2026 launch-week comparisons begin, and the operator brief plus profile surface now instruct Dan to capture that baseline during Sunday preflight.
+- The governed Sunday, March 15, 2026 preflight gate is now split into seven auditable checks instead of bundled rows: Dan must provide separate evidence for the governed X profile surface, calendar import, Monday draft, Wednesday draft, Friday draft, Tuesday watchlist, and Thursday watchlist before the `20:00` ET go-or-no-go cutoff.
 
 ## Dates
 
