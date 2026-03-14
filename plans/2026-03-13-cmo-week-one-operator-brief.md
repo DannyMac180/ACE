@@ -117,13 +117,15 @@ Before launch week starts:
     `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` with at least `5`
     live Tuesday targets before launch week starts, using the seeded builder
     pool plus the source-pool order and search seeds in that file instead of
-    starting from a blank X search, and paste a concrete post URL or dated
-    search note into each validated row so Sunday proof is based on live
-    threads rather than handle memory
+    starting from a blank X search; the file now carries URL-backed
+    `2026-03-14 search note` rows, so Sunday proof is to confirm the best
+    `5` still look live and swap in warmer Monday engagers where possible
 11. validate the Thursday watchlist in the same file with at least `5` live
     Thursday targets, replacing colder seeds with warmer Wednesday engagers
-    first when possible, and paste a concrete post URL or dated search note
-    into each validated row before marking the task complete
+    first when possible; the file now carries URL-backed `2026-03-14 search
+    note` rows, so Sunday proof is to confirm the best `5` still look live and
+    upgrade them with warmer Wednesday engagers where possible before marking
+    the task complete
 12. complete the `Sunday Preflight Completion Receipt` in
    `plans/2026-03-16-cmo-launch-operations-log.md` before Sunday close so the
    profile update, calendar import, each scheduler draft, and each watchlist
