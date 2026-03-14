@@ -500,6 +500,27 @@ Use the qualification rubric and 20-minute call structure from
 `plans/2026-03-11-cmo-design-partner-engine.md` when a prospect is strong
 enough for live help instead of docs-only follow-up.
 
+## Pipeline Follow-Up SLA
+
+Use this rule whenever someone is added to the design-partner pipeline so a
+qualified prospect does not stall between first interest and the next concrete
+move.
+
+| Qualification score or trigger | First response deadline | Required next move | Pipeline rule |
+| --- | --- | --- | --- |
+| `5-6` or any builder with a concrete repeated failure plus live workflow | same day, or within `12h` if the signal lands late | send the best-fit doc path plus either a call invite or a GitHub issue ask | add the prospect at least at `qualified` with a real `Next step due by` date before end of day |
+| `3-4` with credible setup intent | within `24h` | send one concrete setup path, ask one qualification question, and set a dated follow-up | do not leave the row at `engaged` without a due date |
+| `0-2` but strategically relevant | within `72h` or explicitly park | answer briefly, route to the lightest useful doc, or mark `inactive` with a reason | if parked, state why in `Outcome` instead of letting the row go stale |
+| public workflow issue or discussion opened | same day acknowledgement | confirm receipt publicly and set the next product or setup follow-up within `24h` | log both the GitHub artifact and the dated next step in the pipeline |
+
+SLA rules:
+
+- update `Last touch` every time a public reply, DM, issue comment, or call
+  happens
+- every active row needs a real date in `Next step due by`, not a vague note
+- if the due date passes without action, either ship the follow-up the same day
+  or move the row to `inactive` with the blocker in `Outcome`
+
 ## Checkpoint Decision Log
 
 Use this table when a checkpoint changes the next move.
@@ -528,9 +549,9 @@ Update this on Friday after the adoption post and reply follow-up.
 
 Add one row for each builder who shows real workflow pain or setup intent.
 
-| Handle or name | Source | Post code | Stack | Failure pattern | Qualification score | Next step | Last touch | Current stage | Outcome |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-|  |  |  |  |  |  |  |  |  |  |
+| Handle or name | Source | Post code | Stack | Failure pattern | Qualification score | Next step | Next step due by | Last touch | Current stage | Outcome |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+|  |  |  |  |  |  |  |  |  |  |  |
 
 Stage values:
 

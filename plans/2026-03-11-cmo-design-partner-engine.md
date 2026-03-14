@@ -215,10 +215,30 @@ Capture these fields for every qualified prospect:
 - failure pattern
 - qualification score
 - chosen next step
+- next-step due date
 - date of last contact
 - outcome after 7 days
 
 If the workflow reveals product gaps, route them into GitHub issues or Paperclip tasks instead of burying them in DMs.
+
+## Follow-Up SLA
+
+Use this to keep design-partner follow-up tight enough that week-one attention
+turns into real setup motion instead of soft intent.
+
+| Qualification score or trigger | Response window | Required move |
+| --- | --- | --- |
+| `5-6` or a builder with a clear repeated failure pattern plus live workflow | same day, or within `12h` if the signal lands late | send the best-fit doc path, ask for the stack plus failure pattern if still missing, and offer a short working session when setup friction is blocking action |
+| `3-4` with real curiosity and plausible fit | within `24h` | send one concrete setup path, ask one qualification question, and set a dated follow-up |
+| `0-2` but still strategically interesting | within `72h` or explicitly park | answer briefly, route to the lightest useful doc, and either park or watch for a stronger signal |
+| public issue or discussion opened from ACE traffic | same day acknowledgement | confirm receipt and set the next setup or product follow-up within `24h` |
+
+Follow-up rules:
+
+- every active prospect needs one dated next step, not just a stage label
+- if a due date slips, either ship the follow-up the same day or mark the
+  prospect inactive with the blocker
+- update `date of last contact` on every reply, DM, issue comment, or call
 
 ## Weekly Operating Cadence
 

@@ -468,7 +468,7 @@ Before closing each launch day:
 7. move the best reusable metric jump, quote, objection, or workflow artifact
    into the `Content Reuse Queue`
 8. add every qualified builder to the design-partner pipeline with a score and
-   next step
+   next step plus a real due date
 9. copy repeated message, proof, or setup blockers into the friction log
 10. roll up the day's profile visits and new follows into the launch log notes
     or scoreboard inputs while the platform snapshots are still easy to verify
