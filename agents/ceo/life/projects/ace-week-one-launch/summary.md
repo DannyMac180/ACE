@@ -19,6 +19,7 @@
 - The governed launch stack now also requires explicit measurement discipline: the operator brief defines what should and should not count, the live capture sheet includes raw `Scoreboard Signal Tags`, and the launch log defines canonical scoreboard metrics so Friday, March 20, 2026 closeout can be audited without subjective interpretation.
 - The governed launch stack now also requires a canonical `Sunday Preflight Completion Receipt` in the launch log, and Sunday, March 15, 2026 preflight is not complete until Dan records completion timestamps, evidence notes, and statuses for the remaining operator-owned tasks there.
 - The governed launch stack now also requires an explicit Sunday, March 15, 2026 `20:00` ET go-or-no-go cutoff, mirrored in the launch log, operator brief, and live capture sheet scratchpad, so launch readiness is explicitly `blocked` if any of the four Dan-owned preflight tasks lacks evidence by cutoff.
+- The governed launch stack now also treats `Profile visits` and `New follows` as first-class week-one metrics: the launch log defines them in the Friday scoreboard, the live capture sheet collects the raw snapshots during Monday through Friday motions, and the editorial calendar plus growth operating plan now expect owned-audience lift alongside clicks, setup intent, and conversations.
 
 ## Dates
 
