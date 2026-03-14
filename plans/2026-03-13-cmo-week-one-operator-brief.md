@@ -93,29 +93,38 @@ Before launch week starts:
    record the starting follower count plus profile-visits reading in the
    `Audience Baseline Snapshot` section of
    `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`
-3. copy the approved Monday, Wednesday, and Friday post drafts into the
-   actual X composer or scheduler from
-   `plans/2026-03-13-cmo-week-one-publishing-surface.md` without editing the
-   tracked URLs, and confirm the Monday anchor draft is loaded as a connected
-   `9`-post thread instead of one long post
-4. open `plans/2026-03-13-cmo-week-one-response-bank.md` so the first same-day
+3. copy the approved Monday anchor thread into the actual X composer or
+   scheduler from `plans/2026-03-13-cmo-week-one-publishing-surface.md`
+   without editing the tracked URL, and confirm the draft is loaded as a
+   connected `9`-post thread instead of one long post
+4. copy the approved Wednesday proof post into the actual X composer or
+   scheduler from the same publishing surface without editing the tracked URL,
+   and confirm `docs/assets/ace-proof-demo/still.svg` is still attached unless
+   a replacement has already been approved and logged
+5. copy the approved Friday adoption post into the actual X composer or
+   scheduler from the same publishing surface without editing the tracked URL,
+   so Friday does not depend on last-minute assembly
+6. open `plans/2026-03-13-cmo-week-one-response-bank.md` so the first same-day
    replies and DMs do not require improvising copy mid-launch
-5. keep `plans/2026-03-16-cmo-launch-operations-log.md` open as the only live
+7. keep `plans/2026-03-16-cmo-launch-operations-log.md` open as the only live
    scoreboard and logging surface
-6. confirm `docs/assets/ace-proof-demo/still.svg` is still the selected
+8. confirm `docs/assets/ace-proof-demo/still.svg` is still the selected
    Wednesday proof visual
-7. open `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` for live post
+9. open `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` for live post
    URLs, raw metrics, qualified replies, DM handles, and objections so same-day
    logging takes minutes instead of getting skipped
-8. prefill the `Tuesday And Thursday Watchlist` section in
-   `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` with at least `5`
-   Tuesday targets and `5` Thursday targets before launch week starts, using the
-   seeded builder pool plus the source-pool order and search seeds in that file
-   instead of starting from a blank X search
-9. complete the `Sunday Preflight Completion Receipt` in
+10. validate the Tuesday watchlist in
+    `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` with at least `5`
+    live Tuesday targets before launch week starts, using the seeded builder
+    pool plus the source-pool order and search seeds in that file instead of
+    starting from a blank X search
+11. validate the Thursday watchlist in the same file with at least `5` live
+    Thursday targets, replacing colder seeds with warmer Wednesday engagers
+    first when possible
+12. complete the `Sunday Preflight Completion Receipt` in
    `plans/2026-03-16-cmo-launch-operations-log.md` before Sunday close so the
-   profile update, calendar import, draft-loading, and watchlist validation
-   have one timestamped proof-of-completion surface
+   profile update, calendar import, each scheduler draft, and each watchlist
+   validation have their own timestamped proof-of-completion row
 
 ## Sunday Go Or No-Go Rule
 
@@ -127,7 +136,7 @@ gate on Sunday, March 15, 2026.
 - do not assume Monday, March 16, 2026 is ready just because the drafts exist
   in the repo; the live profile, calendar, scheduler, and watchlist checks are
   the real go-or-no-go inputs
-- if any of the four Dan-owned preflight tasks is still incomplete at `20:00`
+- if any of the seven Dan-owned preflight tasks is still incomplete at `20:00`
   ET, log the blocker in the receipt the same night and treat launch readiness
   as blocked until the missing item is fixed
 - if the gate is blocked, CEO decides whether Monday keeps the default publish
@@ -450,7 +459,8 @@ Before ending each launch day:
 - CEO keeps Friday scoreboard review and parent-level oversight under `ACE-9`
 - Sunday preflight is not complete until the `Sunday Preflight Completion
   Receipt` in `plans/2026-03-16-cmo-launch-operations-log.md` has a current
-  status for each remaining Dan-owned readiness task
+  status for the profile row, calendar row, each scheduler-draft row, and each
+  watchlist row
 
 ## If The Day Goes Sideways
 

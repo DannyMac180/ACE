@@ -139,8 +139,11 @@ Complete this gate by Sunday, March 15, 2026 before anything is published.
 | Lock default publish windows and reply-check cadence in the operator stack | CMO | ready | operator brief, publishing surface, and live capture sheet now default to `11:00-11:30` ET Monday and Wednesday, `10:30-11:00` ET Friday, plus explicit `+30m`, `+3h`, and `17:30` ET check windows |
 | Apply the governed week-one X profile surface before Sunday close | Dan | pending | use `plans/2026-03-13-cmo-week-one-profile-surface.md` to update the bio and website link to `profile_w1_readme`; leave the existing pin alone until the Monday anchor thread is live |
 | Import the week-one launch calendar and verify every live block before Sunday close | Dan | pending | import `plans/2026-03-15-cmo-week-one-launch-calendar.ics`, then verify the Monday and Wednesday publish windows, Tuesday and Thursday operating passes, Friday publish window, plus the same-day reply and logging checks all land in Eastern Time before launch week starts |
-| Prefill a Tuesday and Thursday distribution watchlist before launch week starts | Dan | pending | the fallback seed pool plus search-seed workflow are now loaded in `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`; before Sunday close, validate and keep at least `5` live Tuesday targets plus `5` live Thursday targets, replacing colder seeds with warmer Monday or Wednesday engagers first |
-| Paste the canonical drafts from the publishing surface into the actual X composer or scheduler before Sunday close | Dan | pending | use `plans/2026-03-13-cmo-week-one-publishing-surface.md` without editing tracked URLs, and confirm the Monday anchor loads as a connected `9`-post thread so launch-day publishing stays exact |
+| Validate the Tuesday distribution watchlist before launch week starts | Dan | pending | the fallback seed pool plus search-seed workflow are now loaded in `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`; before Sunday close, keep at least `5` live Tuesday targets and replace colder seeds with warmer Monday engagers first when possible |
+| Validate the Thursday follow-up watchlist before launch week starts | Dan | pending | before Sunday close, keep at least `5` live Thursday targets and prefer warmer Wednesday proof engagers over colder fallback seeds where possible |
+| Paste the Monday anchor thread into the actual X composer or scheduler before Sunday close | Dan | pending | use `plans/2026-03-13-cmo-week-one-publishing-surface.md` without editing tracked URLs, and confirm the Monday anchor loads as a connected `9`-post thread so launch-day publishing stays exact |
+| Paste the Wednesday proof post into the actual X composer or scheduler before Sunday close | Dan | pending | use the canonical publishing surface without editing the tracked URL and confirm `docs/assets/ace-proof-demo/still.svg` remains attached as the default visual |
+| Paste the Friday adoption post into the actual X composer or scheduler before Sunday close | Dan | pending | use the canonical publishing surface without editing the tracked URL so Friday does not depend on last-minute copy assembly |
 
 ## Sunday Preflight Completion Receipt
 
@@ -154,8 +157,11 @@ explicitly instead of leaving the row blank.
 | --- | --- | --- | --- | --- | --- |
 | Governed X profile surface applied |  | live X profile URL or note | `plans/2026-03-13-cmo-week-one-profile-surface.md` | pending | confirm the bio matches the governed week-one wording and the website field uses `profile_w1_readme` |
 | Week-one launch calendar imported and verified |  | calendar name, screenshot note, or import confirmation | `plans/2026-03-15-cmo-week-one-launch-calendar.ics` | pending | confirm all Monday through Friday live windows plus same-day check blocks landed in Eastern Time |
-| Monday, Wednesday, and Friday drafts pasted into live composer or scheduler |  | scheduler name or draft confirmation | `plans/2026-03-13-cmo-week-one-publishing-surface.md` | pending | confirm Monday is loaded as a connected `9`-post thread and the tracked URLs were not edited |
-| Tuesday and Thursday watchlist validated against live conversations |  | source handles, search notes, or validation note | `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` | pending | keep at least `5` Tuesday targets plus `5` Thursday targets after replacing colder seeds with warmer live prospects where possible |
+| Monday anchor draft pasted into live composer or scheduler |  | scheduler name or draft confirmation | `plans/2026-03-13-cmo-week-one-publishing-surface.md` | pending | confirm Monday is loaded as a connected `9`-post thread and the tracked URL was not edited |
+| Wednesday proof draft pasted into live composer or scheduler |  | scheduler name or draft confirmation | `plans/2026-03-13-cmo-week-one-publishing-surface.md` | pending | confirm the tracked URL was not edited and `docs/assets/ace-proof-demo/still.svg` remains attached unless an approved replacement is logged first |
+| Friday adoption draft pasted into live composer or scheduler |  | scheduler name or draft confirmation | `plans/2026-03-13-cmo-week-one-publishing-surface.md` | pending | confirm the tracked URL was not edited and the worked-example CTA still points to `w1_adoption_example` |
+| Tuesday distribution watchlist validated against live conversations |  | source handles, search notes, or validation note | `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` | pending | keep at least `5` Tuesday targets after replacing colder seeds with warmer live prospects where possible |
+| Thursday follow-up watchlist validated against live conversations |  | source handles, search notes, or validation note | `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` | pending | keep at least `5` Thursday targets after replacing colder seeds with warmer Wednesday engagers where possible |
 
 ## Audience Baseline Snapshot
 
@@ -187,17 +193,22 @@ Go condition:
 
 - the governed X profile surface is live
 - the week-one launch calendar is imported and verified in Eastern Time
-- the Monday, Wednesday, and Friday drafts are loaded into the live composer or
-  scheduler, with Monday confirmed as a connected `9`-post thread
-- the Tuesday and Thursday watchlist is validated with at least `5` Tuesday
-  targets plus `5` Thursday targets
+- the Monday anchor draft is loaded into the live composer or scheduler as a
+  connected `9`-post thread
+- the Wednesday proof draft is loaded into the live composer or scheduler with
+  the approved proof visual still attached unless an exception is logged
+- the Friday adoption draft is loaded into the live composer or scheduler with
+  the worked-example CTA intact
+- the Tuesday distribution watchlist is validated with at least `5` live
+  targets
+- the Thursday follow-up watchlist is validated with at least `5` live targets
 
 No-go condition:
 
-- if any of those four conditions is still incomplete at `20:00` ET on Sunday,
-  March 15, 2026, log the blocker in the receipt, flag the miss in the `Notes`
-  column, and treat launch readiness as `blocked` until the missing item is
-  cleared
+- if any of those seven conditions is still incomplete at `20:00` ET on
+  Sunday, March 15, 2026, log the blocker in the receipt, flag the miss in the
+  `Notes` column, and treat launch readiness as `blocked` until the missing
+  item is cleared
 
 Escalation rule:
 

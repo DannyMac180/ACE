@@ -153,14 +153,15 @@ timestamps and evidence into the `Sunday Preflight Completion Receipt` in
 | Friday publish window blocked on calendar (`10:30-11:00` ET) | pending | confirm the imported event matches this slot |
 | week-one bio updated from `plans/2026-03-13-cmo-week-one-profile-surface.md` | pending | |
 | X website field updated to `profile_w1_readme` | pending | |
-| Monday draft pasted into live X composer or scheduler as a connected `9`-post thread | pending | |
-| Wednesday draft pasted into live X composer or scheduler | pending | |
-| Friday draft pasted into live X composer or scheduler | pending | |
+| Monday anchor draft pasted into live X composer or scheduler as a connected `9`-post thread | pending | note the scheduler or composer surface used so Monday can be verified fast if the thread breaks |
+| Wednesday proof draft pasted into live X composer or scheduler | pending | confirm the tracked URL stayed exact and `docs/assets/ace-proof-demo/still.svg` is still attached unless an approved replacement was logged |
+| Friday adoption draft pasted into live X composer or scheduler | pending | confirm the tracked URL stayed exact and the worked-example CTA still points to `w1_adoption_example` |
 | week-one response bank open and ready | pending | |
 | `docs/assets/ace-proof-demo/still.svg` confirmed as proof visual | pending | |
 | launch operations log open and ready | pending | |
 | this live capture sheet open and ready | pending | |
-| watchlist for Tuesday and Thursday adjacent conversations prepared | pending | base seed pool is loaded below; before Sunday close, swap in the strongest live Monday or Wednesday engagers first and keep at least 5 Tuesday plus 5 Thursday targets |
+| Tuesday distribution watchlist prepared | pending | base seed pool is loaded below; before Sunday close, swap in the strongest live Monday engagers first and keep at least 5 Tuesday targets |
+| Thursday follow-up watchlist prepared | pending | before Sunday close, swap in the strongest live Wednesday engagers first and keep at least 5 Thursday targets |
 
 ## Sunday Go Or No-Go Scratchpad
 
@@ -172,7 +173,7 @@ This is the raw note that feeds the canonical `Sunday Go Or No-Go Gate` in
 
 | Time checked | Gate status | Missing item or blocker | Next check time | Transferred to launch log | Notes |
 | --- | --- | --- | --- | --- | --- |
-| 2026-03-15 20:00 ET | pending |  |  | pending | mark `go` only if the governed profile, calendar, scheduler drafts, and validated watchlist are all complete with evidence |
+| 2026-03-15 20:00 ET | pending |  |  | pending | mark `go` only if the governed profile, calendar, each scheduler draft, and each validated watchlist are all complete with evidence |
 
 ## Audience Baseline Snapshot
 
