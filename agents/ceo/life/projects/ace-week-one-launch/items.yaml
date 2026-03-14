@@ -250,7 +250,7 @@
   related_entities:
     - projects/ace-week-one-launch
   last_accessed: "2026-03-14"
-  access_count: 1
+  access_count: 2
 - id: ace-week-one-launch-024
   fact: "As of Saturday, March 14, 2026, the Sunday, March 15, 2026 preflight gate is explicitly seven auditable checks in `plans/2026-03-16-cmo-launch-operations-log.md`, mirrored in `plans/2026-03-13-cmo-week-one-operator-brief.md` and the live capture sheet scratchpad: Dan must provide separate evidence for the governed X profile surface, calendar import, Monday anchor draft, Wednesday proof draft, Friday adoption draft, Tuesday watchlist, and Thursday watchlist before the `20:00` ET go-or-no-go cutoff."
   category: status
@@ -261,7 +261,7 @@
   related_entities:
     - projects/ace-week-one-launch
   last_accessed: "2026-03-14"
-  access_count: 3
+  access_count: 4
 - id: ace-week-one-launch-025
   fact: "As of Saturday, March 14, 2026, the governed week-one launch stack requires dated follow-up accountability after traffic lands: `plans/2026-03-16-cmo-launch-operations-log.md` defines a `Pipeline Follow-Up SLA` and requires `Next step due by` fields across the distribution, engagement, workflow-intake, and design-partner pipeline surfaces, with the same due-date discipline mirrored in `plans/2026-03-11-cmo-design-partner-engine.md` and `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`."
   category: status
@@ -283,9 +283,31 @@
   related_entities:
     - projects/ace-week-one-launch
   last_accessed: "2026-03-14"
-  access_count: 2
+  access_count: 3
 - id: ace-week-one-launch-027
   fact: "As of Saturday, March 14, 2026, the Sunday, March 15, 2026 Tuesday and Thursday watchlists cannot clear preflight from handles or memory alone: `plans/2026-03-16-cmo-launch-operations-log.md`, `plans/2026-03-13-cmo-week-one-operator-brief.md`, and `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` now require each validated target to carry one concrete live post URL or one dated search note from the last `72h` before the `20:00` ET go-or-no-go cutoff."
+  category: status
+  timestamp: "2026-03-14"
+  source: "2026-03-14"
+  status: active
+  superseded_by: null
+  related_entities:
+    - projects/ace-week-one-launch
+  last_accessed: "2026-03-14"
+  access_count: 2
+- id: ace-week-one-launch-028
+  fact: "As of Saturday, March 14, 2026, the governed week-one launch stack requires a first-five-minute `Immediate Publish QA` pass after each Monday, Wednesday, and Friday public post: `plans/2026-03-16-cmo-launch-operations-log.md` now defines an `Immediate Publish QA Rule` plus `Immediate Publish QA Log`, `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` adds the raw `Immediate Publish QA Scratchpad` and `immediate QA completed at` fields, and `plans/2026-03-13-cmo-week-one-operator-brief.md` now blocks Monday pinning and broad reply work until the live URL, exact tracked URL, and live shape or asset are verified."
+  category: status
+  timestamp: "2026-03-14"
+  source: "2026-03-14"
+  status: active
+  superseded_by: null
+  related_entities:
+    - projects/ace-week-one-launch
+  last_accessed: "2026-03-14"
+  access_count: 1
+- id: ace-week-one-launch-029
+  fact: "As of Saturday, March 14, 2026, the Tuesday and Thursday watchlist seed pool is URL-backed instead of handle-only: `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` upgrades the fallback rows into `2026-03-14 search note` targets with direct public X post URLs, and `plans/2026-03-16-cmo-launch-operations-log.md` plus `plans/2026-03-13-cmo-week-one-operator-brief.md` now frame Sunday's remaining watchlist work as freshness confirmation plus replacing colder rows with warmer Monday or Wednesday engagers before the `20:00` ET gate."
   category: status
   timestamp: "2026-03-14"
   source: "2026-03-14"
