@@ -116,6 +116,22 @@ Before launch week starts:
    profile update, calendar import, draft-loading, and watchlist validation
    have one timestamped proof-of-completion surface
 
+## Sunday Go Or No-Go Rule
+
+Use `plans/2026-03-16-cmo-launch-operations-log.md` as the final readiness
+gate on Sunday, March 15, 2026.
+
+- by `20:00` ET, every row in the `Sunday Preflight Completion Receipt` must be
+  either `completed` with evidence or explicitly `blocked` with a named blocker
+- do not assume Monday, March 16, 2026 is ready just because the drafts exist
+  in the repo; the live profile, calendar, scheduler, and watchlist checks are
+  the real go-or-no-go inputs
+- if any of the four Dan-owned preflight tasks is still incomplete at `20:00`
+  ET, log the blocker in the receipt the same night and treat launch readiness
+  as blocked until the missing item is fixed
+- if the gate is blocked, CEO decides whether Monday keeps the default publish
+  window or shifts after the missing preflight item is cleared
+
 ## Default Publish And Check Windows
 
 Use these as the default scheduler and follow-up windows in Eastern Time.

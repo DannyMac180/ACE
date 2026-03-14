@@ -160,6 +160,18 @@ timestamps and evidence into the `Sunday Preflight Completion Receipt` in
 | this live capture sheet open and ready | pending | |
 | watchlist for Tuesday and Thursday adjacent conversations prepared | pending | base seed pool is loaded below; before Sunday close, swap in the strongest live Monday or Wednesday engagers first and keep at least 5 Tuesday plus 5 Thursday targets |
 
+## Sunday Go Or No-Go Scratchpad
+
+Use this only on Sunday, March 15, 2026 after the preflight checklist above is
+updated.
+
+This is the raw note that feeds the canonical `Sunday Go Or No-Go Gate` in
+`plans/2026-03-16-cmo-launch-operations-log.md`.
+
+| Time checked | Gate status | Missing item or blocker | Next check time | Transferred to launch log | Notes |
+| --- | --- | --- | --- | --- | --- |
+| 2026-03-15 20:00 ET | pending |  |  | pending | mark `go` only if the governed profile, calendar, scheduler drafts, and validated watchlist are all complete with evidence |
+
 ## Profile Surface Raw Capture
 
 Use this table for the governed week-one bio, website link, and Monday pinning

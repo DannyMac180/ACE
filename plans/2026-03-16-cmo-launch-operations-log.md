@@ -155,6 +155,48 @@ explicitly instead of leaving the row blank.
 | Monday, Wednesday, and Friday drafts pasted into live composer or scheduler |  | scheduler name or draft confirmation | `plans/2026-03-13-cmo-week-one-publishing-surface.md` | pending | confirm Monday is loaded as a connected `9`-post thread and the tracked URLs were not edited |
 | Tuesday and Thursday watchlist validated against live conversations |  | source handles, search notes, or validation note | `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` | pending | keep at least `5` Tuesday targets plus `5` Thursday targets after replacing colder seeds with warmer live prospects where possible |
 
+## Sunday Go Or No-Go Gate
+
+Use this rule on Sunday, March 15, 2026 so Monday, March 16, 2026 launch does
+not start from an ambiguous preflight state.
+
+Cutoff:
+
+- by `20:00` ET on Sunday, March 15, 2026, every row in the `Sunday
+  Preflight Completion Receipt` above should be either `completed` with
+  evidence or explicitly `blocked` with a named blocker
+
+Go condition:
+
+- the governed X profile surface is live
+- the week-one launch calendar is imported and verified in Eastern Time
+- the Monday, Wednesday, and Friday drafts are loaded into the live composer or
+  scheduler, with Monday confirmed as a connected `9`-post thread
+- the Tuesday and Thursday watchlist is validated with at least `5` Tuesday
+  targets plus `5` Thursday targets
+
+No-go condition:
+
+- if any of those four conditions is still incomplete at `20:00` ET on Sunday,
+  March 15, 2026, log the blocker in the receipt, flag the miss in the `Notes`
+  column, and treat launch readiness as `blocked` until the missing item is
+  cleared
+
+Escalation rule:
+
+- if the gate is `blocked`, Dan records the blocker in this file the same
+  night, states the exact missing asset or confirmation, and names the next
+  check time on Monday, March 16, 2026
+- CEO uses that blocker note to decide whether Monday should ship on the
+  default window or after the missing preflight item is fixed
+
+Minimum evidence rule:
+
+- do not mark the gate `go` from memory alone
+- each completed row needs one concrete proof surface such as a live profile
+  URL, calendar import confirmation, scheduler confirmation, or validated
+  watchlist note
+
 ## Publishing Run Sheet
 
 ### Monday, March 16, 2026

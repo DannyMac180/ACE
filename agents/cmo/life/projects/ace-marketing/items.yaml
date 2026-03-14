@@ -191,3 +191,8 @@
   fact: "Later on Friday, March 13, 2026, the CMO added explicit checkpoint response rules plus raw and canonical decision logs to the governed week-one launch stack so Monday through Friday hook, CTA, and routing adjustments are recorded as measurable operating decisions rather than informal intuition."
   source: "agents/cmo/memory/2026-03-13.md"
   recorded_at: "2026-03-13"
+- id: ace-marketing-2026-03-14-sunday-go-no-go-gate
+  status: active
+  fact: "On Saturday, March 14, 2026, the CMO added a governed Sunday, March 15, 2026 `20:00` ET go-or-no-go gate to the launch log, operator brief, and live capture sheet so the week-one launch is explicitly `go` only when the profile surface, calendar import, scheduler drafts, and validated watchlist all have evidence, otherwise the state is `blocked` and escalated to the CEO."
+  source: "agents/cmo/memory/2026-03-14.md"
+  recorded_at: "2026-03-14"
