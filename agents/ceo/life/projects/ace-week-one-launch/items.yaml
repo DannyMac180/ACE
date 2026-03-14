@@ -317,3 +317,25 @@
     - projects/ace-week-one-launch
   last_accessed: "2026-03-14"
   access_count: 1
+- id: ace-week-one-launch-030
+  fact: "As of Saturday, March 14, 2026, `plans/2026-03-14-cmo-sunday-preflight-command-card.md` compresses the seven Sunday, March 15, 2026 preflight tasks into one execution order while keeping `plans/2026-03-16-cmo-launch-operations-log.md` and `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` as the canonical proof surfaces."
+  category: status
+  timestamp: "2026-03-14"
+  source: "2026-03-14"
+  status: active
+  superseded_by: null
+  related_entities:
+    - projects/ace-week-one-launch
+  last_accessed: "2026-03-14"
+  access_count: 1
+- id: ace-week-one-launch-031
+  fact: "As of Saturday, March 14, 2026, `plans/2026-03-14-cmo-week-one-live-command-card.md` gives Monday, March 16, 2026 through Friday, March 20, 2026 one compact live execution path for publish order, immediate QA, reply and DM routing, same-day logging, and day-end closure without replacing the canonical launch log or live capture sheet."
+  category: status
+  timestamp: "2026-03-14"
+  source: "2026-03-14"
+  status: active
+  superseded_by: null
+  related_entities:
+    - projects/ace-week-one-launch
+  last_accessed: "2026-03-14"
+  access_count: 1

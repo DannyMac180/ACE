@@ -27,6 +27,8 @@
 - The governed week-one stack now also requires dated follow-up accountability after traffic lands: `plans/2026-03-16-cmo-launch-operations-log.md` defines a `Pipeline Follow-Up SLA` and requires `Next step due by` fields across the distribution, engagement, workflow-intake, and design-partner pipeline surfaces, with matching due-date discipline carried into `plans/2026-03-11-cmo-design-partner-engine.md` and `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`.
 - The governed week-one stack now also has an explicit live-launch contingency layer: `plans/2026-03-16-cmo-launch-operations-log.md` defines `Live Launch Contingency Rules` plus a `Launch Contingency Log`, `plans/2026-03-13-cmo-week-one-operator-brief.md` gives Dan concrete failure rules for scheduler, tracked-link, proof-asset, and timing breaks, and `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` now includes a raw `Launch Incident Scratchpad` so live failures are contained and logged instead of improvised.
 - The governed week-one stack now also has an explicit first-five-minute live QA layer: `plans/2026-03-16-cmo-launch-operations-log.md` carries an `Immediate Publish QA Rule` plus `Immediate Publish QA Log`, `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` adds the raw `Immediate Publish QA Scratchpad` plus `immediate QA completed at` fields on each public motion, and `plans/2026-03-13-cmo-week-one-operator-brief.md` now requires Monday pinning and broad reply work to wait until the live unit passes URL and shape verification.
+- The governed week-one stack now includes `plans/2026-03-14-cmo-sunday-preflight-command-card.md` as the one-screen Sunday, March 15, 2026 execution order for the seven preflight tasks while the launch log and live capture sheet remain the canonical proof surfaces.
+- The governed week-one stack now includes `plans/2026-03-14-cmo-week-one-live-command-card.md` as the one-screen Monday, March 16, 2026 through Friday, March 20, 2026 live execution surface for publish order, immediate QA, reply or DM routing, same-day logging, and day-end closure.
 
 ## Dates
 
@@ -42,3 +44,5 @@
 - Launch calendar: `plans/2026-03-15-cmo-week-one-launch-calendar.ics`
 - Live capture sheet: `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`
 - Response bank: `plans/2026-03-13-cmo-week-one-response-bank.md`
+- Sunday preflight command card: `plans/2026-03-14-cmo-sunday-preflight-command-card.md`
+- Live execution command card: `plans/2026-03-14-cmo-week-one-live-command-card.md`
