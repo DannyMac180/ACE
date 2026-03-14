@@ -247,10 +247,11 @@ export ACE_LOG_LEVEL=WARNING
 export ACE_LOG_FORMAT=json
 export MCP_TRANSPORT=http
 export MCP_PORT=9000
-export ACE_LLM_PROVIDER=anthropic
-export ACE_LLM_MODEL=claude-3-5-sonnet-20241022
+export ACE_LLM_PROVIDER=openrouter
+export ACE_LLM_MODEL=anthropic/claude-3-5-sonnet-20241022
 export ACE_LLM_TEMPERATURE=0.1
 export ACE_LLM_MAX_TOKENS=4000
+export OPENROUTER_API_KEY=your-openrouter-api-key
 ```
 
 ## Notes and tips
@@ -260,6 +261,7 @@ export ACE_LLM_MAX_TOKENS=4000
 - Be sure numeric environment variable values are valid; they are parsed with int()/float() and must fit the validation ranges above.
 - logging.level supports CRITICAL even if the comment in default TOML only lists up to ERROR.
 - mcp.port is only used when transport=http.
+- Built-in client construction currently supports `mock` and `openrouter`. For other providers, inject a custom `LLMClient`; see [Custom LLM provider example](custom-llm-provider-example.md).
 
 ## Training Data Format
 

@@ -210,6 +210,7 @@ docs/              architecture, API reference, MCP usage, paper
 ## Documentation
 
 - [Getting started example](docs/getting-started-example.md)
+- [Custom LLM provider example](docs/custom-llm-provider-example.md)
 - [Proof demo asset](docs/ace-proof-demo.md)
 - [Configuration guide](docs/configuration.md)
 - [API reference](docs/api-reference.md)
