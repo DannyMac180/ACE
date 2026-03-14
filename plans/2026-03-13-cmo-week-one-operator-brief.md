@@ -182,6 +182,23 @@ follow-up window.
   `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`, then transferred into
   the `Launch Contingency Log` in the canonical launch log
 
+## Immediate Publish QA
+
+Use this within `5` minutes of every Monday, Wednesday, and Friday publish
+before broad replies, pinning, or metric interpretation.
+
+1. paste the live post URL into `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`
+2. confirm the tracked URL in the live post still matches the approved launch
+   code exactly
+3. confirm the live unit shipped in the right shape:
+   - Monday: connected `9`-post thread
+   - Wednesday: `docs/assets/ace-proof-demo/still.svg` attached and rendering
+   - Friday: worked-example CTA still points to `w1_adoption_example`
+4. if any check fails, stop the reply wave, capture the break in the live
+   capture sheet, and move it into the `Launch Contingency Log` before trying
+   again
+5. only pin the Monday thread after this QA pass is complete
+
 ## Checkpoint Response Rules
 
 Use these rules when checkpoint data is weak or unexpectedly strong.
@@ -248,7 +265,8 @@ Same-day follow-up:
 - reply to the first 10 high-signal comments
 - move qualified builders to DM the same day
 - pin the Monday anchor thread after the live URL is verified and before end of
-  day so profile visitors hit the same governed thesis
+  day so profile visitors hit the same governed thesis; do not pin before the
+  immediate publish QA checks pass
 - record the pinned-thread URL plus the Monday `+3h` and `EOD` profile visits
   in the live capture sheet so the profile-surface lift can be transferred into
   the launch log the same day

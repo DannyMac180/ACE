@@ -28,6 +28,9 @@ into the launch log before the day ends.
   pinned post changes so the same-day transfer into the launch log stays fast.
 - If a reply or DM surfaces a repeated blocker, copy it into the friction
   section here before it gets lost.
+- Run the immediate publish QA pass here within `5` minutes of each Monday,
+  Wednesday, and Friday post before broad replies, pinning, or early metric
+  interpretation.
 
 ## Capture Windows
 
@@ -91,6 +94,19 @@ This is the raw counterpart to the `Launch Contingency Log` in
 | Time | Motion | Failure mode | What broke | Immediate containment | Next check time | Transferred to launch log | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 |  |  |  |  |  |  | pending | use this for scheduler failures, broken tracked URLs, missing proof assets, or publish-window slips |
+
+## Immediate Publish QA Scratchpad
+
+Use this right after each Monday, Wednesday, and Friday public post goes live.
+
+This is the raw counterpart to the `Immediate Publish QA Log` in
+`plans/2026-03-16-cmo-launch-operations-log.md`.
+
+| Time | Motion | Live post URL | Tracked URL exact | Live shape or asset verified | Contingency needed | Transferred to launch log | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+|  | Monday anchor thread |  | pending | pending | no | pending | confirm the live unit is a connected `9`-post thread before pinning or wide reply distribution |
+|  | Wednesday proof post |  | pending | pending | no | pending | confirm `docs/assets/ace-proof-demo/still.svg` is attached and rendering before proof replies begin |
+|  | Friday adoption post |  | pending | pending | no | pending | confirm the worked-example CTA still points to `w1_adoption_example` before routing builders |
 
 ## Quick Routing Rules
 
@@ -303,6 +319,7 @@ Post code: `w1_thread_readme`
 - publish time:
 - live post URL:
 - exact tracked URL used:
+- immediate QA completed at:
 - first reply posted:
 - next checks due: `+30m`, `+3h`, `17:30 ET`
 
@@ -363,6 +380,7 @@ Visual: `docs/assets/ace-proof-demo/still.svg`
 - publish time:
 - live post URL:
 - exact tracked URL used:
+- immediate QA completed at:
 - visual attached:
 - next checks due: `+30m`, `+3h`, `17:30 ET`
 
@@ -422,6 +440,7 @@ Post code: `w1_adoption_example`
 - publish time:
 - live post URL:
 - exact tracked URL used:
+- immediate QA completed at:
 - first workflow reply:
 - next checks due: `+30m`, `+3h`, `17:30 ET`
 
@@ -476,21 +495,22 @@ worth reusing publicly next week.
 Before closing each launch day:
 
 1. move the live post URL and final same-day metrics into the `Execution Log`
-2. move every Tuesday or Thursday distribution session into the
+2. move the immediate publish QA result into the `Immediate Publish QA Log`
+3. move every Tuesday or Thursday distribution session into the
    `Distribution Pass Log`
-3. add at least one `Engagement Follow-Up Log` row for each qualified reply
+4. add at least one `Engagement Follow-Up Log` row for each qualified reply
    burst, outbound DM, or inbound DM thread
-4. move every public workflow issue or discussion into the `Workflow Intake Log`
-5. move the most important checkpoint decision into the `Checkpoint Decision Log`
-6. move any bio, website-link, or pinned-post change into the
+5. move every public workflow issue or discussion into the `Workflow Intake Log`
+6. move the most important checkpoint decision into the `Checkpoint Decision Log`
+7. move any bio, website-link, or pinned-post change into the
    `Profile Surface Log`
-7. move any launch incident into the `Launch Contingency Log`
-8. move the best reusable metric jump, quote, objection, or workflow artifact
+8. move any launch incident into the `Launch Contingency Log`
+9. move the best reusable metric jump, quote, objection, or workflow artifact
    into the `Content Reuse Queue`
-9. add every qualified builder to the design-partner pipeline with a score and
+10. add every qualified builder to the design-partner pipeline with a score and
    next step plus a real due date
-10. copy repeated message, proof, or setup blockers into the friction log
-11. roll up the day's profile visits and new follows into the launch log notes
+11. copy repeated message, proof, or setup blockers into the friction log
+12. roll up the day's profile visits and new follows into the launch log notes
     or scoreboard inputs while the platform snapshots are still easy to verify
-12. mark any missing metrics or untracked links explicitly instead of leaving
+13. mark any missing metrics or untracked links explicitly instead of leaving
    blanks

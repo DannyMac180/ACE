@@ -254,6 +254,23 @@ issue that could force week-one drift.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 |  |  |  |  |  |  | pending | log every live publish-window problem here even if it was fixed within minutes |
 
+## Immediate Publish QA Rule
+
+Use this within `5` minutes of every Monday, Wednesday, and Friday publish.
+
+- paste the live post URL into the raw capture sheet immediately after the post
+  lands
+- confirm the tracked URL in the live post still matches the approved launch
+  code exactly
+- confirm the post shipped in the expected live shape before any reply push
+  starts:
+  - Monday: connected `9`-post thread
+  - Wednesday: proof still attached and rendered correctly
+  - Friday: worked-example CTA still points to `w1_adoption_example`
+- if any of those checks fail, stop the follow-up motion, log the break in the
+  contingency path, and fix the live unit before treating early metrics as real
+- only pin the Monday anchor thread after this QA pass is marked complete
+
 ## Publishing Run Sheet
 
 ### Monday, March 16, 2026
@@ -344,6 +361,19 @@ add the live post URL, metric snapshot, and follow-up notes on the same day.
 | 2026-03-16 | anchor thread | `w1_thread_readme` |  | `https://github.com/DannyMac180/ACE/blob/main/README.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=w1_thread_readme` |  | 2026-03-17 | pending | verify the published thread points to this exact URL before logging results |
 | 2026-03-18 | proof post | `w1_proof_demo` |  | `https://github.com/DannyMac180/ACE/blob/main/docs/ace-proof-demo.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=w1_proof_demo` |  | 2026-03-19 | pending | attach `docs/assets/ace-proof-demo/still.svg` unless an approved replacement is logged before publish |
 | 2026-03-20 | adoption post | `w1_adoption_example` |  | `https://github.com/DannyMac180/ACE/blob/main/docs/getting-started-example.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=w1_adoption_example` |  | 2026-03-21 | pending | log the first concrete workflow reply or explain why none qualified |
+
+## Immediate Publish QA Log
+
+Use this right after each public week-one post goes live.
+
+This prevents reply distribution, pinning, and metric review from building on
+the wrong live unit.
+
+| Date | Motion | QA completed at | Live post URL verified | Tracked URL exact | Live shape or asset verified | Contingency needed | Status | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 2026-03-16 | anchor thread |  |  | pending | pending | no | pending | confirm the live unit is a connected `9`-post thread before pinning or replying at scale |
+| 2026-03-18 | proof post |  |  | pending | pending | no | pending | confirm `docs/assets/ace-proof-demo/still.svg` is attached and rendered before the first public proof replies |
+| 2026-03-20 | adoption post |  |  | pending | pending | no | pending | confirm the worked-example CTA in the live post still points to `w1_adoption_example` before routing builders |
 
 ## Profile Surface Log
 
@@ -459,33 +489,37 @@ Use this file as the only shared scoreboard source of truth.
    When available, include profile visits and new follows in the metric
    snapshot or notes so week-one audience growth is attributable alongside
    clicks and replies.
-3. CMO records one Sunday row in `Audience Baseline Snapshot` before Monday
+3. CMO completes the `Immediate Publish QA Log` within `5` minutes of each
+   Monday, Wednesday, and Friday public post so live URL integrity, thread
+   shape, and asset correctness are verified before pinning or scaled reply
+   work begins.
+4. CMO records one Sunday row in `Audience Baseline Snapshot` before Monday
    launch, then adds one row to the `Profile Surface Log` whenever the week-one
    bio, website link, or pinned post changes, including the Monday `+3h` and
    `EOD` profile-lift snapshot after the anchor thread pin lands.
-4. CMO adds one row to the `Workflow Intake Log` for every GitHub issue or
+5. CMO adds one row to the `Workflow Intake Log` for every GitHub issue or
    discussion opened from launch-week traffic.
-5. CMO adds one row to the `Content Reuse Queue` whenever a launch motion
+6. CMO adds one row to the `Content Reuse Queue` whenever a launch motion
    produces a screenshot-worthy metric jump, a reusable quote, a sharp
    objection, or a public workflow report that can anchor another content unit.
-6. CMO adds one row to the `Checkpoint Decision Log` whenever checkpoint data
+7. CMO adds one row to the `Checkpoint Decision Log` whenever checkpoint data
    changes the next hook, CTA, routing path, or follow-up motion.
-7. CMO adds one row to the `Launch Contingency Log` whenever a live motion
+8. CMO adds one row to the `Launch Contingency Log` whenever a live motion
    slips, a tracked URL has to be rebuilt, a proof asset fails, or a publish
    window changes from the governed default.
-8. CMO uses `plans/2026-03-13-cmo-week-one-response-bank.md` for every live
+9. CMO uses `plans/2026-03-13-cmo-week-one-response-bank.md` for every live
    follow-up so the routing language stays consistent across posts, replies,
    and DMs.
-9. CMO updates the design-partner pipeline and friction log from the same raw
+10. CMO updates the design-partner pipeline and friction log from the same raw
    notes within 24 hours.
-10. CEO reviews the log for completeness and consolidates week-one results into
+11. CEO reviews the log for completeness and consolidates week-one results into
    the single scoreboard row below on Friday, including the rolled-up profile
    visits and new follows captured in launch-week snapshots.
-11. If a launch link was used that is not in the approved registry, log it as
-    an instrumentation miss in the closeout section.
-12. On Sunday, March 15, 2026, Dan completes the `Sunday Preflight Completion
-    Receipt` above so the remaining operator-side readiness work has timestamps
-    and evidence before the first week-one post goes live.
+12. If a launch link was used that is not in the approved registry, log it as
+   an instrumentation miss in the closeout section.
+13. On Sunday, March 15, 2026, Dan completes the `Sunday Preflight Completion
+   Receipt` above so the remaining operator-side readiness work has timestamps
+   and evidence before the first week-one post goes live.
 
 ## 24-Hour Logging Rule
 
@@ -494,6 +528,9 @@ Every qualified public reply or DM must be logged in this file within 24 hours.
 Minimum capture standard:
 
 - add the source post to the `Execution Log` above if it is not already there
+- complete the `Immediate Publish QA Log` first if the interaction came from a
+  Monday, Wednesday, or Friday public post and the live unit has not yet been
+  verified
 - confirm the Sunday `Audience Baseline Snapshot` is filled before counting any
   launch-week `New follows` lift
 - add the profile action to the `Profile Surface Log` if the bio, website link,
@@ -653,6 +690,7 @@ Mark every row before calling week one complete.
 | --- | --- | --- | --- |
 | Scoreboard row is fully populated for week 1 | CEO | pending | include every required metric, even if the value is `0` |
 | Execution Log rows are complete for Monday, March 16, 2026 through Friday, March 20, 2026 | CEO | pending | if a motion did not publish, say so explicitly in `Notes` instead of leaving the row blank |
+| Immediate Publish QA Log is complete for Monday, Wednesday, and Friday | CMO | pending | each public post should show the live URL check, exact tracked URL check, and live shape or asset verification before broad reply work |
 | Profile Surface Log is current through the Friday, March 20, 2026 close | Dan | pending | include the applied `profile_w1_readme` state, the Monday pinned-thread URL, and the Monday profile-lift snapshot |
 | Distribution Pass Log is complete for Tuesday, March 17, 2026 and Thursday, March 19, 2026 | CEO | pending | if a pass slipped, state why and record the catch-up or lost-conversion impact explicitly |
 | Engagement Follow-Up Log is current within the 24-hour rule | CEO | pending | audit every qualified reply burst, outbound DM, and inbound DM thread |
