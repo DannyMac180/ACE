@@ -132,6 +132,18 @@ def init_schema(db_conn: DatabaseConnection):
                 FOREIGN KEY (bullet_id) REFERENCES bullets(id)
             )
         """)
+        db_conn.execute("""
+            CREATE TABLE IF NOT EXISTS playbook_version (
+                version INTEGER PRIMARY KEY
+            )
+        """)
+        db_conn.execute("""
+            CREATE TABLE IF NOT EXISTS playbook_snapshots (
+                version INTEGER PRIMARY KEY,
+                snapshot TEXT NOT NULL,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
         # Table for minhash signatures
         db_conn.execute("""
             CREATE TABLE IF NOT EXISTS minhash_sigs (
@@ -161,6 +173,18 @@ def init_schema(db_conn: DatabaseConnection):
                 bullet_id TEXT PRIMARY KEY,
                 vector VECTOR(384),  -- assuming 384 dim
                 FOREIGN KEY (bullet_id) REFERENCES bullets(id)
+            )
+        """)
+        db_conn.execute("""
+            CREATE TABLE IF NOT EXISTS playbook_version (
+                version INTEGER PRIMARY KEY
+            )
+        """)
+        db_conn.execute("""
+            CREATE TABLE IF NOT EXISTS playbook_snapshots (
+                version INTEGER PRIMARY KEY,
+                snapshot JSONB NOT NULL,
+                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
             )
         """)
         # For minhash, use bytea

@@ -153,7 +153,13 @@ def cmd_playbook_dump(args: argparse.Namespace) -> None:
 
     config = load_config()
     store = Store(config.database.url)
-    playbook = store.load_playbook()
+    if args.version is None:
+        playbook = store.load_playbook()
+    else:
+        historical_playbook = store.get_playbook_version(args.version)
+        if historical_playbook is None:
+            raise SystemExit(f"Playbook version {args.version} not found")
+        playbook = historical_playbook
 
     playbook_json = playbook.model_dump()
 
@@ -163,6 +169,31 @@ def cmd_playbook_dump(args: argparse.Namespace) -> None:
         print(f"Playbook exported to {args.out}")
     else:
         print_output(playbook_json, as_json=True)
+
+
+def cmd_playbook_history(args: argparse.Namespace) -> None:
+    """List available playbook versions."""
+    from ace.core.storage.store_adapter import Store
+
+    config = load_config()
+    store = Store(config.database.url)
+    history = store.list_playbook_versions()
+    print_output(history, as_json=args.json)
+
+
+def cmd_playbook_rollback(args: argparse.Namespace) -> None:
+    """Restore the playbook to a previous version."""
+    from ace.core.storage.store_adapter import Store
+
+    config = load_config()
+    store = Store(config.database.url)
+    playbook = store.rollback_to_version(args.version)
+
+    result: dict[str, Any] = {
+        "version": playbook.version,
+        "bullets_restored": len(playbook.bullets),
+    }
+    print_output(result, as_json=args.json)
 
 
 def cmd_playbook_import(args: argparse.Namespace) -> None:
@@ -645,12 +676,33 @@ def main() -> NoReturn:
     playbook_subparsers = playbook_parser.add_subparsers(dest="playbook_cmd", required=True)
     playbook_dump = playbook_subparsers.add_parser("dump", help="Dump full playbook JSON")
     playbook_dump.add_argument("--out", help="Output file path (default: stdout)")
+    playbook_dump.add_argument(
+        "--version",
+        type=int,
+        help="Dump a historical playbook version instead of the current one",
+    )
     playbook_dump.set_defaults(func=cmd_playbook_dump)
 
     playbook_import = playbook_subparsers.add_parser("import", help="Import playbook JSON")
     playbook_import.add_argument("--file", help="Input file path (or '-' for stdin)")
     playbook_import.add_argument("--json", action="store_true", help="Output as JSON")
     playbook_import.set_defaults(func=cmd_playbook_import)
+
+    playbook_history = playbook_subparsers.add_parser("history", help="List playbook versions")
+    playbook_history.add_argument("--json", action="store_true", help="Output as JSON")
+    playbook_history.set_defaults(func=cmd_playbook_history)
+
+    playbook_rollback = playbook_subparsers.add_parser(
+        "rollback", help="Restore the playbook to a previous version"
+    )
+    playbook_rollback.add_argument(
+        "--version",
+        type=int,
+        required=True,
+        help="Historical playbook version to restore",
+    )
+    playbook_rollback.add_argument("--json", action="store_true", help="Output as JSON")
+    playbook_rollback.set_defaults(func=cmd_playbook_rollback)
 
     tag_parser = subparsers.add_parser("tag", help="Tag bullet as helpful or harmful")
     tag_parser.add_argument("bullet_id", help="Bullet ID to tag")

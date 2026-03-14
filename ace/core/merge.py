@@ -60,5 +60,6 @@ def apply_delta(playbook: Playbook, delta: Delta, store: Store) -> Playbook:
                 store.save_bullet(bullet)
 
     new_version = playbook.version + 1
-    store.set_version(new_version)
-    return Playbook(version=new_version, bullets=list(bullets.values()))
+    updated_playbook = Playbook(version=new_version, bullets=list(bullets.values()))
+    store.set_version(new_version, snapshot_playbook=updated_playbook)
+    return updated_playbook

@@ -1,3 +1,4 @@
+import hashlib
 import os
 import pickle
 from typing import Any
@@ -10,16 +11,40 @@ from .db import DatabaseConnection
 
 # Load embedding model (all-MiniLM-L6-v2: 384d, Apache 2.0 license)
 _model: SentenceTransformer | None = None
+_model_name: str | None = None
+
+
+def _get_model_name() -> str:
+    return os.getenv("ACE_EMBEDDINGS", "sentence-transformers/all-MiniLM-L6-v2")
+
+
+def _uses_mock_embeddings(model_name: str) -> bool:
+    return model_name.lower() in {"mock", "deterministic", "test"}
+
+
+def _generate_mock_embedding(text: str) -> np.ndarray[tuple[int], np.dtype[np.float32]]:
+    seed = int.from_bytes(hashlib.sha256(text.encode("utf-8")).digest()[:8], "big")
+    rng = np.random.default_rng(seed)
+    vector = rng.standard_normal(384).astype(np.float32)
+    norm = np.linalg.norm(vector)
+    if norm > 0:
+        vector /= norm
+    return vector
 
 
 def _get_model() -> SentenceTransformer:
-    global _model
-    if _model is None:
-        _model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+    global _model, _model_name
+    model_name = _get_model_name()
+    if _model is None or _model_name != model_name:
+        _model = SentenceTransformer(model_name)
+        _model_name = model_name
     return _model
 
 
 def generate_embedding(text: str) -> np.ndarray[tuple[int], np.dtype[np.float32]]:
+    model_name = _get_model_name()
+    if _uses_mock_embeddings(model_name):
+        return _generate_mock_embedding(text)
     model = _get_model()
     embedding = model.encode(text, convert_to_numpy=True)
     return np.array(embedding, dtype=np.float32)
@@ -63,8 +88,6 @@ class EmbeddingStore:
         return "[" + ",".join(f"{float(value):.9f}" for value in vector) + "]"
 
     def add_embedding(self, bullet_id: str, text: str):
-        if bullet_id in self.id_to_idx:
-            return  # Already exists
         vector = generate_embedding(text)
         if not self.db.is_sqlite:
             self.db.execute(
@@ -75,15 +98,17 @@ class EmbeddingStore:
             )
             return
         assert self.index is not None
-        idx = self.index.ntotal
-        self.index.add(vector.reshape(1, -1))
-        self.id_to_idx[bullet_id] = idx
-        self.idx_to_id[idx] = bullet_id
-        # Persist to DB
         self.db.execute(
             "INSERT OR REPLACE INTO embeddings (bullet_id, vector) VALUES (?, ?)",
             (bullet_id, vector.tobytes()),
         )
+        if bullet_id in self.id_to_idx:
+            self.rebuild_index()
+            return
+        idx = self.index.ntotal
+        self.index.add(vector.reshape(1, -1))
+        self.id_to_idx[bullet_id] = idx
+        self.idx_to_id[idx] = bullet_id
 
     def search(self, query: str, top_k: int = 24) -> list[str]:
         vector = generate_embedding(query)
@@ -103,6 +128,7 @@ class EmbeddingStore:
         if not self.db.is_sqlite:
             self.db.execute("DELETE FROM embeddings WHERE bullet_id = ?", (bullet_id,))
             return
+        self.db.execute("DELETE FROM embeddings WHERE bullet_id = ?", (bullet_id,))
         if bullet_id not in self.id_to_idx:
             return
         idx = self.id_to_idx[bullet_id]
@@ -111,7 +137,6 @@ class EmbeddingStore:
         # TODO: Implement proper removal
         del self.id_to_idx[bullet_id]
         del self.idx_to_id[idx]
-        self.db.execute("DELETE FROM embeddings WHERE bullet_id = ?", (bullet_id,))
         # Rebuild index
         self.rebuild_index()
 
@@ -120,6 +145,8 @@ class EmbeddingStore:
             return
         self.index = faiss.IndexFlatIP(384)
         assert self.index is not None
+        self.id_to_idx = {}
+        self.idx_to_id = {}
         rows = self.db.fetchall("SELECT bullet_id, vector FROM embeddings")
         for bullet_id, vector_bytes in rows:
             vector = np.frombuffer(vector_bytes, dtype=np.float32)
