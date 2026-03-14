@@ -49,6 +49,7 @@ Current conversion thesis:
 - Later on Saturday, March 14, 2026, the CMO added `plans/2026-03-14-cmo-week-one-live-command-card.md` and rewired the launch log, operator brief, and live capture sheet so Monday through Friday launch motions now have one compact day-of execution path instead of relying on long-document navigation during live publishing windows.
 - Later on Saturday, March 14, 2026, the CMO added a governed post-preflight freeze plus `Launch Change Log` to the week-one launch stack so last-minute copy, URL, asset, or profile edits cannot happen off-book after the Sunday, March 15, 2026 `20:00` ET gate.
 - Later on Saturday, March 14, 2026, the CMO added an attribution guardrail across the week-one instrumentation stack so GitHub `utm_*` launch URLs are treated as governed routing labels, public click counts must come from real measured surfaces such as X analytics, and unmeasurable DM or profile-link traffic must be logged as downstream evidence rather than guessed clicks.
+- Later on Saturday, March 14, 2026, the CMO added an explicit Friday closeout rule for the X profile surface so week-one does not bleed into week two by default: the README-first bio, website link, and Monday pin must either earn carry-forward status with a logged reason or be replaced by an exact next surface before closeout is complete.
 
 Current workflow constraint:
 
@@ -58,3 +59,4 @@ Current workflow constraint:
 - The fastest execution surface for those remaining operator tasks is now `plans/2026-03-14-cmo-sunday-preflight-command-card.md`; the launch log remains the canonical proof and scoreboard source of truth.
 - Once Sunday preflight clears, the fastest Monday-through-Friday operating surface is now `plans/2026-03-14-cmo-week-one-live-command-card.md`; the launch log still remains the canonical proof and scoreboard source of truth.
 - Once Sunday preflight clears, governed week-one assets are now supposed to stay frozen; if Dan has to change a draft, tracked URL, proof visual, or profile surface after the gate, the edit must be logged and re-verified before launch continues.
+- Friday, March 20, 2026 closeout now also requires one explicit post-launch profile decision in the `Profile Surface Log`; the week-one README-first profile state cannot stay live into Monday, March 23, 2026 by inertia alone.

@@ -444,6 +444,7 @@ post changes that affect profile conversion.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 2026-03-15 | apply the governed week-one bio and website link | `profile_w1_readme` |  | baseline snapshot recorded in `Audience Baseline Snapshot` before Monday publish | 2026-03-16 | pending | confirm the website field uses the exact `profile_w1_readme` URL, note any bio shortening forced by X character limits, and point to the Sunday baseline row |
 | 2026-03-16 | pin the Monday anchor thread after live URL verification | `profile_w1_readme` |  | `+3h` and `EOD` Monday profile visits plus new follows after the pin lands | 2026-03-17 | pending | log the live pinned-thread URL and leave the website field on `profile_w1_readme` through Friday close unless an exception is logged first |
+| 2026-03-20 | decide the post-launch profile state before Friday closeout | `profile_w1_readme` or week-two replacement |  | final week-one profile visits plus new follows snapshot | 2026-03-23 | pending | choose one explicit state before end of day Friday: keep the governed README-first surface into week two with a reason, or log the exact revert or replacement surface plus when it goes live |
 
 ## Distribution Pass Log
 
@@ -560,27 +561,31 @@ Use this file as the only shared scoreboard source of truth.
    launch, then adds one row to the `Profile Surface Log` whenever the week-one
    bio, website link, or pinned post changes, including the Monday `+3h` and
    `EOD` profile-lift snapshot after the anchor thread pin lands.
-5. CMO adds one row to the `Workflow Intake Log` for every GitHub issue or
+5. Before Friday closeout, CMO records one explicit `Profile Surface Log`
+   decision for the post-launch state: either keep the governed README-first
+   surface into week two with a reason, or record the exact revert or
+   replacement surface plus when it should go live.
+6. CMO adds one row to the `Workflow Intake Log` for every GitHub issue or
    discussion opened from launch-week traffic.
-6. CMO adds one row to the `Content Reuse Queue` whenever a launch motion
+7. CMO adds one row to the `Content Reuse Queue` whenever a launch motion
    produces a screenshot-worthy metric jump, a reusable quote, a sharp
    objection, or a public workflow report that can anchor another content unit.
-7. CMO adds one row to the `Checkpoint Decision Log` whenever checkpoint data
+8. CMO adds one row to the `Checkpoint Decision Log` whenever checkpoint data
    changes the next hook, CTA, routing path, or follow-up motion.
-8. CMO adds one row to the `Launch Contingency Log` whenever a live motion
+9. CMO adds one row to the `Launch Contingency Log` whenever a live motion
    slips, a tracked URL has to be rebuilt, a proof asset fails, or a publish
    window changes from the governed default.
-9. CMO uses `plans/2026-03-13-cmo-week-one-response-bank.md` for every live
+10. CMO uses `plans/2026-03-13-cmo-week-one-response-bank.md` for every live
    follow-up so the routing language stays consistent across posts, replies,
    and DMs.
-10. CMO updates the design-partner pipeline and friction log from the same raw
+11. CMO updates the design-partner pipeline and friction log from the same raw
    notes within 24 hours.
-11. CEO reviews the log for completeness and consolidates week-one results into
+12. CEO reviews the log for completeness and consolidates week-one results into
    the single scoreboard row below on Friday, including the rolled-up profile
    visits and new follows captured in launch-week snapshots.
-12. If a launch link was used that is not in the approved registry, log it as
+13. If a launch link was used that is not in the approved registry, log it as
    an instrumentation miss in the closeout section.
-13. On Sunday, March 15, 2026, Dan completes the `Sunday Preflight Completion
+14. On Sunday, March 15, 2026, Dan completes the `Sunday Preflight Completion
    Receipt` above so the remaining operator-side readiness work has timestamps
    and evidence before the first week-one post goes live.
 
@@ -755,6 +760,7 @@ Mark every row before calling week one complete.
 | Execution Log rows are complete for Monday, March 16, 2026 through Friday, March 20, 2026 | CEO | pending | if a motion did not publish, say so explicitly in `Notes` instead of leaving the row blank |
 | Immediate Publish QA Log is complete for Monday, Wednesday, and Friday | CMO | pending | each public post should show the live URL check, exact tracked URL check, and live shape or asset verification before broad reply work |
 | Profile Surface Log is current through the Friday, March 20, 2026 close | Dan | pending | include the applied `profile_w1_readme` state, the Monday pinned-thread URL, and the Monday profile-lift snapshot |
+| Post-launch profile state is explicitly decided before Friday closeout | CMO | pending | either keep the governed README-first profile surface into week two with a reason, or log the exact revert or replacement surface plus when it goes live |
 | Distribution Pass Log is complete for Tuesday, March 17, 2026 and Thursday, March 19, 2026 | CEO | pending | if a pass slipped, state why and record the catch-up or lost-conversion impact explicitly |
 | Engagement Follow-Up Log is current within the 24-hour rule | CEO | pending | audit every qualified reply burst, outbound DM, and inbound DM thread |
 | Workflow Intake Log captures every issue or discussion opened from live audience traffic | CEO | pending | include the GitHub URL, source motion, repeated failure pattern, and next step for each public workflow report |

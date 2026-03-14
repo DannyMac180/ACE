@@ -249,6 +249,7 @@ motions before transferring the final details into the `Profile Surface Log` in
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 2026-03-15 | apply week-one bio and website link | `profile_w1_readme` |  | baseline snapshot recorded above before Monday publish | baseline snapshot recorded above before Monday publish | pending | paste the live website-field URL here, note if the bio had to be shortened for X character limits, and make sure the audience baseline row above is filled |
 | 2026-03-16 | pin the Monday anchor thread after URL verification | `profile_w1_readme` |  | `+3h` and `EOD` Monday profile visits | `+3h` and `EOD` Monday follows | pending | leave the README-first website link in place through Friday unless the launch log records an exception |
+| 2026-03-20 | decide the post-launch profile state before closeout | `profile_w1_readme` or week-two replacement |  | final week-one profile snapshot | final week-one follow snapshot | pending | note whether the README-first profile surface stays live into week two or list the exact revert or replacement surface plus timing before transferring the decision into the launch log |
 
 ## Tuesday And Thursday Watchlist
 
@@ -526,13 +527,16 @@ Before closing each launch day:
 6. move the most important checkpoint decision into the `Checkpoint Decision Log`
 7. move any bio, website-link, or pinned-post change into the
    `Profile Surface Log`
-8. move any launch incident into the `Launch Contingency Log`
-9. move the best reusable metric jump, quote, objection, or workflow artifact
+8. on Friday, transfer the explicit post-launch profile decision into the
+   `Profile Surface Log` so the week-one bio, website link, and pin do not
+   drift into week two by default
+9. move any launch incident into the `Launch Contingency Log`
+10. move the best reusable metric jump, quote, objection, or workflow artifact
    into the `Content Reuse Queue`
-10. add every qualified builder to the design-partner pipeline with a score and
+11. add every qualified builder to the design-partner pipeline with a score and
    next step plus a real due date
-11. copy repeated message, proof, or setup blockers into the friction log
-12. roll up the day's profile visits and new follows into the launch log notes
-    or scoreboard inputs while the platform snapshots are still easy to verify
+12. copy repeated message, proof, or setup blockers into the friction log
+13. roll up the day's profile visits and new follows into the launch log notes
+   or scoreboard inputs while the platform snapshots are still easy to verify
 13. mark any missing metrics or untracked links explicitly instead of leaving
    blanks

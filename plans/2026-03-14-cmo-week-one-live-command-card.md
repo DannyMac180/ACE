@@ -186,6 +186,9 @@ Execution order:
 7. update the `Execution Log`, `Immediate Publish QA Log`,
    `Engagement Follow-Up Log`, `Workflow Intake Log`, pipeline, friction log,
    `Content Reuse Queue`, and Friday scoreboard inputs
+8. decide the post-launch profile state before closeout: either keep the
+   governed README-first profile surface into week two with a reason, or log
+   the exact revert or replacement surface plus when it should go live
 
 Done means:
 
@@ -193,6 +196,8 @@ Done means:
 - QA is complete
 - first workflow-fit reply or DM is logged
 - the week-one scoreboard inputs are complete enough for Friday closeout
+- the post-launch profile state is explicit instead of drifting past Friday by
+  default
 
 ## Day-End Rule
 
@@ -205,5 +210,8 @@ Before closing any launch day:
 4. if the live window broke, update the contingency log before exiting
 5. if any frozen launch asset changed, make sure the change also landed in the
    `Launch Change Log`
+6. on Friday, make sure the `Profile Surface Log` also records whether the
+   week-one README-first profile state stays live into week two or gets
+   replaced
 
 If the day was messy, preserve the raw notes first and normalize them second.

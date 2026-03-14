@@ -110,3 +110,27 @@ After the anchor thread publishes:
 - if someone asks what ACE is from the profile alone, treat that as validation
   that the profile surface is doing category work; log the observation in the
   friction or notes fields instead of changing the link impulsively
+
+## Friday, March 20, 2026 Closeout Rule
+
+Before Friday closeout ends, make one explicit profile decision instead of
+letting the week-one launch surface drift into week two by inertia.
+
+Allowed outcomes:
+
+1. keep the week-one README-first bio, website link, and Monday pin in place
+   into week two because it is still the highest-converting surface
+2. revert or replace one or more profile elements with the exact next surface
+   that should go live after week one
+
+Logging rule:
+
+- record the decision in the `Profile Surface Log` in
+  `plans/2026-03-16-cmo-launch-operations-log.md` before Friday closeout is
+  called complete
+- if the week-one surface stays live, state why it earned carry-forward status
+- if the surface changes, name the exact replacement URL, pinned post, or bio
+  state and when the change should go live
+
+Do not leave the launch-week profile state running into Monday, March 23, 2026
+without that logged decision.
