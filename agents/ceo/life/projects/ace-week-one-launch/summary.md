@@ -31,6 +31,7 @@
 - The governed week-one stack now includes `plans/2026-03-14-cmo-week-one-live-command-card.md` as the one-screen Monday, March 16, 2026 through Friday, March 20, 2026 live execution surface for publish order, immediate QA, reply or DM routing, same-day logging, and day-end closure.
 - The governed week-one stack now also includes post-cutoff freeze control: after the Sunday, March 15, 2026 `20:00` ET gate, the launch log defines a `Launch Freeze Rule` plus `Launch Change Log`, and the operator surfaces now require any post-freeze copy, tracked URL, proof asset, profile, or scheduler change to be logged before publish.
 - The governed week-one stack now also includes an attribution guardrail: GitHub `utm_*` parameters are route labels only, so public click counts must come from a measured sending surface such as X-native analytics and any unmeasured surface must record `unavailable` while relying on downstream evidence like replies, DMs, workflow issues, setup starts, or setup completions.
+- The governed week-one stack now also requires an explicit Friday, March 20, 2026 post-launch X profile decision: before closeout, the `Profile Surface Log`, live command card, profile-surface rules, and live capture sheet must either carry the README-first week-one surface into week two with a reason or log the exact revert or replacement surface plus when it goes live.
 
 ## Dates
 

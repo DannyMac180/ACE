@@ -361,3 +361,14 @@
     - projects/ace-week-one-launch
   last_accessed: "2026-03-14"
   access_count: 1
+- id: ace-week-one-launch-033
+  fact: "As of Saturday, March 14, 2026, Friday, March 20, 2026 closeout must include one explicit post-launch X profile decision: `plans/2026-03-16-cmo-launch-operations-log.md`, `plans/2026-03-13-cmo-week-one-profile-surface.md`, `plans/2026-03-14-cmo-week-one-live-command-card.md`, and `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` now require either carrying the governed README-first week-one profile surface into week two with a reason or logging the exact revert or replacement surface plus when it goes live."
+  category: status
+  timestamp: "2026-03-14"
+  source: "2026-03-14"
+  status: active
+  superseded_by: null
+  related_entities:
+    - projects/ace-week-one-launch
+  last_accessed: "2026-03-14"
+  access_count: 1
