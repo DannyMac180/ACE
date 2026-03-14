@@ -29,6 +29,7 @@
 - The governed week-one stack now also has an explicit first-five-minute live QA layer: `plans/2026-03-16-cmo-launch-operations-log.md` carries an `Immediate Publish QA Rule` plus `Immediate Publish QA Log`, `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` adds the raw `Immediate Publish QA Scratchpad` plus `immediate QA completed at` fields on each public motion, and `plans/2026-03-13-cmo-week-one-operator-brief.md` now requires Monday pinning and broad reply work to wait until the live unit passes URL and shape verification.
 - The governed week-one stack now includes `plans/2026-03-14-cmo-sunday-preflight-command-card.md` as the one-screen Sunday, March 15, 2026 execution order for the seven preflight tasks while the launch log and live capture sheet remain the canonical proof surfaces.
 - The governed week-one stack now includes `plans/2026-03-14-cmo-week-one-live-command-card.md` as the one-screen Monday, March 16, 2026 through Friday, March 20, 2026 live execution surface for publish order, immediate QA, reply or DM routing, same-day logging, and day-end closure.
+- The governed week-one stack now also includes post-cutoff freeze control: after the Sunday, March 15, 2026 `20:00` ET gate, the launch log defines a `Launch Freeze Rule` plus `Launch Change Log`, and the operator surfaces now require any post-freeze copy, tracked URL, proof asset, profile, or scheduler change to be logged before publish.
 
 ## Dates
 
