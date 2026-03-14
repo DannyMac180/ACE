@@ -1,25 +1,34 @@
 .PHONY: setup lint type test run-mcp seed refine bench
 
+VENV ?= .venv
+PYTHON := $(VENV)/bin/python
+PIP := $(PYTHON) -m pip
+RUFF := $(VENV)/bin/ruff
+MYPY := $(VENV)/bin/mypy
+PYTEST := $(VENV)/bin/pytest
+
 setup:
-	python3 -m venv .venv && . .venv/bin/activate && pip install -U pip && pip install -e .[dev]
+	python3 -m venv $(VENV)
+	$(PIP) install -U pip
+	$(PIP) install -e .[dev]
 
 lint:
-	ruff check .
+	$(RUFF) check .
 
 type:
-	mypy ace
+	$(MYPY) ace
 
 test:
-	pytest -q
+	$(PYTEST) -q
 
 run-mcp:
-	python3 -m ace_mcp_server
+	$(PYTHON) -m ace_mcp_server
 
 seed:
-	python3 scripts/seed.py
+	$(PYTHON) scripts/seed.py
 
 refine:
-	python3 -m ace.refine.run --threshold 0.90
+	$(PYTHON) -m ace.refine.run --threshold 0.90
 
 bench:
-	pytest -o "addopts=-v" -m benchmark eval/test_reflection_bench.py eval/test_retrieval_bench.py
+	$(PYTEST) -o "addopts=-v" -m benchmark eval/test_reflection_bench.py eval/test_retrieval_bench.py

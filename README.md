@@ -222,6 +222,7 @@ docs/              architecture, API reference, MCP usage, paper
 ## Development
 
 ```bash
+make setup
 make lint
 make type
 make test
