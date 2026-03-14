@@ -69,6 +69,8 @@ class TestOpenRouterClientIntegration:
 
         assert isinstance(response, CompletionResponse)
         assert response.text == "This is a test response from the API"
+        assert response.usage is not None
+        assert response.usage.total_tokens == 50
 
         mock_post.assert_called_once()
         call_args = mock_post.call_args

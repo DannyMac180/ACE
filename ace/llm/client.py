@@ -1,12 +1,23 @@
 import logging
 import os
 from abc import ABC, abstractmethod
+from typing import Any
 
 import requests
 
-from ace.llm.schemas import CompletionResponse, Message
+from ace.llm.schemas import CompletionResponse, Message, TokenUsage
 
 logger = logging.getLogger(__name__)
+
+
+def _coerce_optional_int(value: Any) -> int | None:
+    """Convert provider usage values to ints when possible."""
+    if value is None:
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
 
 
 class LLMClient(ABC):
@@ -204,7 +215,28 @@ class OpenRouterClient(LLMClient):
                 f"Tokens: {data.get('usage', {}).get('total_tokens', 'unknown')}"
             )
 
-            return CompletionResponse(text=content)
+            usage = None
+            usage_data = data.get("usage")
+            if isinstance(usage_data, dict):
+                prompt_tokens = _coerce_optional_int(usage_data.get("prompt_tokens"))
+                completion_tokens = _coerce_optional_int(usage_data.get("completion_tokens"))
+                total_tokens = _coerce_optional_int(usage_data.get("total_tokens"))
+                if (
+                    total_tokens is None
+                    and prompt_tokens is not None
+                    and completion_tokens is not None
+                ):
+                    total_tokens = prompt_tokens + completion_tokens
+                if any(
+                    value is not None for value in (prompt_tokens, completion_tokens, total_tokens)
+                ):
+                    usage = TokenUsage(
+                        prompt_tokens=prompt_tokens,
+                        completion_tokens=completion_tokens,
+                        total_tokens=total_tokens,
+                    )
+
+            return CompletionResponse(text=content, usage=usage)
 
         except requests.exceptions.RequestException as e:
             logger.error(f"OpenRouter API request failed: {e}")

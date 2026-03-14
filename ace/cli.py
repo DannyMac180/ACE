@@ -430,6 +430,7 @@ def cmd_pipeline(args: argparse.Namespace) -> None:
         "bullet_tags": len(result.reflection.bullet_tags),
         "delta_ops_applied": result.delta_ops_applied,
         "retrieved_bullets": len(result.retrieved_bullets),
+        "metrics": asdict(result.metrics),
     }
 
     if args.dry_run:
@@ -445,6 +446,23 @@ def cmd_pipeline(args: argparse.Namespace) -> None:
         print(f"  Candidate bullets: {output['candidate_bullets']}")
         print(f"  Bullet tags: {output['bullet_tags']}")
         print(f"  Delta ops applied: {output['delta_ops_applied']}")
+        metrics = result.metrics
+        print(
+            "  Timings (ms): "
+            f"retrieve={metrics.retrieve_ms:.2f}, "
+            f"generate={metrics.generate_ms:.2f}, "
+            f"reflect={metrics.reflect_ms:.2f}, "
+            f"curate={metrics.curate_ms:.2f}, "
+            f"merge={metrics.merge_ms:.2f}, "
+            f"total={metrics.total_ms:.2f}"
+        )
+        print(
+            "  LLM usage: "
+            f"calls={metrics.llm_calls}, "
+            f"prompt_tokens={metrics.prompt_tokens}, "
+            f"completion_tokens={metrics.completion_tokens}, "
+            f"total_tokens={metrics.total_tokens}"
+        )
         if args.dry_run:
             print("  (DRY RUN - no changes committed)")
 
@@ -536,12 +554,26 @@ def cmd_smoke_test_model(args: argparse.Namespace) -> None:
             "model": config.llm.model,
             "response_length": len(response.text),
         }
+        if response.usage is not None:
+            if response.usage.prompt_tokens is not None:
+                result["prompt_tokens"] = response.usage.prompt_tokens
+            if response.usage.completion_tokens is not None:
+                result["completion_tokens"] = response.usage.completion_tokens
+            if response.usage.total_tokens is not None:
+                result["total_tokens"] = response.usage.total_tokens
 
         if args.json:
             print_output(result, as_json=True)
         else:
             print("✓ Smoke test PASSED")
             print(f"  Provider '{config.llm.provider}' is working correctly")
+            if "total_tokens" in result:
+                print(
+                    "  Token usage: "
+                    f"prompt={result.get('prompt_tokens', 0)}, "
+                    f"completion={result.get('completion_tokens', 0)}, "
+                    f"total={result['total_tokens']}"
+                )
 
     except ValueError as e:
         error_msg = str(e)

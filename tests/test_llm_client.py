@@ -1,6 +1,6 @@
 import pytest
 
-from ace.llm import CompletionResponse, LLMClient, Message, MockLLMClient
+from ace.llm import CompletionResponse, LLMClient, Message, MockLLMClient, TokenUsage
 
 
 class TestLLMClient:
@@ -143,5 +143,10 @@ class TestMockLLMClient:
         assert msg.content == "Hello"
 
     def test_completion_response_structure(self):
-        response = CompletionResponse(text="Test response")
+        response = CompletionResponse(
+            text="Test response",
+            usage=TokenUsage(prompt_tokens=12, completion_tokens=7, total_tokens=19),
+        )
         assert response.text == "Test response"
+        assert response.usage is not None
+        assert response.usage.total_tokens == 19

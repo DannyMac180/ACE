@@ -5,6 +5,7 @@ Tests the full cycle: Query → Retrieve → Generator → Reflector → Curator
 """
 import os
 import tempfile
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -158,6 +159,7 @@ class TestPipelineFullCycle:
         assert isinstance(result.reflection, Reflection)
         assert isinstance(result.delta_ops_applied, int)
         assert isinstance(result.retrieved_bullets, list)
+        assert result.metrics.total_ms >= 0.0
 
     @patch("ace.pipeline.Reflector")
     def test_full_cycle_with_custom_executor(
@@ -205,6 +207,34 @@ class TestPipelineFullCycle:
 
         assert result.playbook.version > initial_version
         assert result.delta_ops_applied > 0
+
+    @patch("ace.pipeline.Reflector")
+    def test_full_cycle_surfaces_reflection_usage_metrics(
+        self, mock_reflector_class, store_with_bullets
+    ):
+        """run_full_cycle should copy LLM usage metrics from the reflector."""
+        mock_reflector = MagicMock()
+        mock_reflector.reflect.return_value = Reflection(
+            bullet_tags=[],
+            candidate_bullets=[],
+        )
+        mock_reflector.last_usage_metrics = SimpleNamespace(
+            llm_calls=2,
+            prompt_tokens=30,
+            completion_tokens=12,
+            total_tokens=42,
+        )
+        mock_reflector_class.return_value = mock_reflector
+
+        pipeline = Pipeline(store=store_with_bullets)
+        pipeline.reflector = mock_reflector
+
+        result = pipeline.run_full_cycle("test query", auto_commit=False)
+
+        assert result.metrics.llm_calls == 2
+        assert result.metrics.prompt_tokens == 30
+        assert result.metrics.completion_tokens == 12
+        assert result.metrics.total_tokens == 42
 
     @patch("ace.pipeline.Reflector")
     def test_full_cycle_dry_run(self, mock_reflector_class, store_with_bullets):

@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from ace.generator.schemas import Step, Trajectory, TrajectoryDoc
-from ace.llm import CompletionResponse, LLMClient, MockLLMClient
+from ace.llm import CompletionResponse, LLMClient, MockLLMClient, TokenUsage
 from ace.reflector import (
     BulletTag,
     CandidateBullet,
@@ -515,6 +515,46 @@ class TestLLMClientInjection:
 
         mock_factory.assert_called_once()
         assert reflector.client is mock_client
+
+
+class TestReflectorUsageMetrics:
+    """Tests for aggregated LLM usage tracking on Reflector."""
+
+    def test_reflect_records_usage_metrics(self):
+        mock_client = MagicMock(spec=LLMClient)
+        mock_client.complete.return_value = CompletionResponse(
+            text='{"bullet_tags": [], "candidate_bullets": []}',
+            usage=TokenUsage(prompt_tokens=11, completion_tokens=5, total_tokens=16),
+        )
+
+        reflector = Reflector(llm_client=mock_client)
+        reflector.reflect(TrajectoryDoc(query="test", retrieved_bullet_ids=[]))
+
+        assert reflector.last_usage_metrics.llm_calls == 1
+        assert reflector.last_usage_metrics.prompt_tokens == 11
+        assert reflector.last_usage_metrics.completion_tokens == 5
+        assert reflector.last_usage_metrics.total_tokens == 16
+
+    def test_reflect_multi_accumulates_usage_metrics_across_passes(self):
+        mock_client = MagicMock(spec=LLMClient)
+        mock_client.complete.side_effect = [
+            CompletionResponse(
+                text='{"bullet_tags": [], "candidate_bullets": []}',
+                usage=TokenUsage(prompt_tokens=10, completion_tokens=4, total_tokens=14),
+            ),
+            CompletionResponse(
+                text='{"bullet_tags": [], "candidate_bullets": []}',
+                usage=TokenUsage(prompt_tokens=9, completion_tokens=3, total_tokens=12),
+            ),
+        ]
+
+        reflector = Reflector(llm_client=mock_client)
+        reflector.reflect_multi(TrajectoryDoc(query="test", retrieved_bullet_ids=[]), num_passes=2)
+
+        assert reflector.last_usage_metrics.llm_calls == 2
+        assert reflector.last_usage_metrics.prompt_tokens == 19
+        assert reflector.last_usage_metrics.completion_tokens == 7
+        assert reflector.last_usage_metrics.total_tokens == 26
 
 
 # --- Tests for iterative refinement ---

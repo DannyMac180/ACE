@@ -9,7 +9,8 @@ This module wires all ACE components together into a single cohesive pipeline.
 """
 import logging
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from time import perf_counter
 from typing import Any
 
 from ace.core.merge import Delta as MergeDelta
@@ -28,6 +29,22 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
+class PipelineMetrics:
+    """Execution timings and LLM usage for a pipeline run."""
+
+    retrieve_ms: float = 0.0
+    generate_ms: float = 0.0
+    reflect_ms: float = 0.0
+    curate_ms: float = 0.0
+    merge_ms: float = 0.0
+    total_ms: float = 0.0
+    llm_calls: int = 0
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+    total_tokens: int = 0
+
+
+@dataclass
 class PipelineResult:
     """Result of a full pipeline cycle."""
 
@@ -36,6 +53,7 @@ class PipelineResult:
     reflection: Reflection
     delta_ops_applied: int
     retrieved_bullets: list[Bullet]
+    metrics: PipelineMetrics = field(default_factory=PipelineMetrics)
 
 
 class Pipeline:
@@ -112,14 +130,18 @@ class Pipeline:
             and metrics about the cycle.
         """
         logger.info(f"Starting full cycle for query: {query}")
+        overall_start = perf_counter()
 
         # 1. Retrieve relevant bullets (for duplicate checking later)
+        retrieve_start = perf_counter()
         retrieved_bullets = self.retriever.retrieve(query, top_k=self.retrieval_top_k)
+        retrieve_ms = (perf_counter() - retrieve_start) * 1000
         logger.info(f"Retrieved {len(retrieved_bullets)} bullets for context")
 
         # 2. Run generator to execute task and produce trajectory
         # Stash and restore executor to avoid persisting custom executor across calls
         original_executor = self.generator.tool_executor
+        generate_start = perf_counter()
         try:
             if execute_fn:
                 self.generator.tool_executor = execute_fn
@@ -127,6 +149,7 @@ class Pipeline:
             trajectory = self.generator.run(query)
         finally:
             self.generator.tool_executor = original_executor
+        generate_ms = (perf_counter() - generate_start) * 1000
 
         logger.info(
             f"Generator completed: {trajectory.total_steps} steps, "
@@ -135,7 +158,9 @@ class Pipeline:
 
         # 3. Convert trajectory to TrajectoryDoc and reflect
         trajectory_doc = trajectory.to_trajectory_doc()
+        reflect_start = perf_counter()
         reflection = self.reflector.reflect(trajectory_doc)
+        reflect_ms = (perf_counter() - reflect_start) * 1000
         logger.info(
             f"Reflection generated: {len(reflection.candidate_bullets)} candidate bullets, "
             f"{len(reflection.bullet_tags)} bullet tags"
@@ -143,14 +168,17 @@ class Pipeline:
 
         # 4. Curator converts insights to delta operations
         existing_bullets = self.store.get_all_bullets()
+        curate_start = perf_counter()
         delta = curate(
             reflection,
             existing_bullets=existing_bullets,
             threshold=self.curator_threshold,
         )
+        curate_ms = (perf_counter() - curate_start) * 1000
         logger.info(f"Curated {len(delta.ops)} delta operations")
 
         # 5. Load current playbook
+        merge_start = perf_counter()
         playbook = self.store.load_playbook()
 
         # 6. Merge: apply delta to update playbook
@@ -163,6 +191,21 @@ class Pipeline:
                 logger.info("Auto-commit disabled, skipping delta application")
             elif not delta.ops:
                 logger.info("No delta operations to apply")
+        merge_ms = (perf_counter() - merge_start) * 1000
+
+        usage_metrics = getattr(self.reflector, "last_usage_metrics", None)
+        metrics = PipelineMetrics(
+            retrieve_ms=round(retrieve_ms, 2),
+            generate_ms=round(generate_ms, 2),
+            reflect_ms=round(reflect_ms, 2),
+            curate_ms=round(curate_ms, 2),
+            merge_ms=round(merge_ms, 2),
+            total_ms=round((perf_counter() - overall_start) * 1000, 2),
+            llm_calls=getattr(usage_metrics, "llm_calls", 0),
+            prompt_tokens=getattr(usage_metrics, "prompt_tokens", 0),
+            completion_tokens=getattr(usage_metrics, "completion_tokens", 0),
+            total_tokens=getattr(usage_metrics, "total_tokens", 0),
+        )
 
         return PipelineResult(
             playbook=playbook,
@@ -170,6 +213,7 @@ class Pipeline:
             reflection=reflection,
             delta_ops_applied=len(delta.ops) if auto_commit else 0,
             retrieved_bullets=retrieved_bullets,
+            metrics=metrics,
         )
 
     def run_retrieve_only(self, query: str) -> list[Bullet]:
@@ -215,9 +259,12 @@ class Pipeline:
             PipelineResult with reflection and delta data (trajectory will be empty)
         """
         logger.info(f"Starting cycle with explicit feedback for: {query}")
+        overall_start = perf_counter()
 
         # 1. Retrieve bullets for context and duplicate checking
+        retrieve_start = perf_counter()
         retrieved_bullets = self.retriever.retrieve(query, top_k=self.retrieval_top_k)
+        retrieve_ms = (perf_counter() - retrieve_start) * 1000
         logger.info(f"Retrieved {len(retrieved_bullets)} bullets for context")
 
         # 2. Build retrieved bullet info for reflector
@@ -235,10 +282,12 @@ class Pipeline:
             logs=logs,
             env_meta=env_meta or {},
         )
+        reflect_start = perf_counter()
         reflection = self.reflector.reflect(
             trajectory_doc,
             retrieved_bullets=retrieved_bullet_dicts,
         )
+        reflect_ms = (perf_counter() - reflect_start) * 1000
         logger.info(
             f"Reflection generated: {len(reflection.candidate_bullets)} candidate bullets, "
             f"{len(reflection.bullet_tags)} bullet tags"
@@ -246,19 +295,23 @@ class Pipeline:
 
         # 4. Curator converts insights to delta operations
         existing_bullets = self.store.get_all_bullets()
+        curate_start = perf_counter()
         delta = curate(
             reflection,
             existing_bullets=existing_bullets,
             threshold=self.curator_threshold,
         )
+        curate_ms = (perf_counter() - curate_start) * 1000
         logger.info(f"Curated {len(delta.ops)} delta operations")
 
         # 5. Load and update playbook
+        merge_start = perf_counter()
         playbook = self.store.load_playbook()
         if auto_commit and delta.ops:
             merge_delta = MergeDelta.from_dict(delta.model_dump())
             playbook = apply_delta(playbook, merge_delta, self.store)
             logger.info(f"Applied delta, playbook now at version {playbook.version}")
+        merge_ms = (perf_counter() - merge_start) * 1000
 
         # Create an empty trajectory since execution happened externally
         empty_trajectory = Trajectory(
@@ -268,12 +321,27 @@ class Pipeline:
             used_bullet_ids=retrieved_bullet_ids,
         )
 
+        usage_metrics = getattr(self.reflector, "last_usage_metrics", None)
+        metrics = PipelineMetrics(
+            retrieve_ms=round(retrieve_ms, 2),
+            generate_ms=0.0,
+            reflect_ms=round(reflect_ms, 2),
+            curate_ms=round(curate_ms, 2),
+            merge_ms=round(merge_ms, 2),
+            total_ms=round((perf_counter() - overall_start) * 1000, 2),
+            llm_calls=getattr(usage_metrics, "llm_calls", 0),
+            prompt_tokens=getattr(usage_metrics, "prompt_tokens", 0),
+            completion_tokens=getattr(usage_metrics, "completion_tokens", 0),
+            total_tokens=getattr(usage_metrics, "total_tokens", 0),
+        )
+
         return PipelineResult(
             playbook=playbook,
             trajectory=empty_trajectory,
             reflection=reflection,
             delta_ops_applied=len(delta.ops) if auto_commit else 0,
             retrieved_bullets=retrieved_bullets,
+            metrics=metrics,
         )
 
 
