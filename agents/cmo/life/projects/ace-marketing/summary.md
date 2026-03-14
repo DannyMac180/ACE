@@ -47,6 +47,7 @@ Current conversion thesis:
 - Later on Saturday, March 14, 2026, the CMO upgraded the Tuesday and Thursday week-one watchlist from handle seeds to URL-backed public X post evidence, which narrows Sunday preflight from blank-sheet discovery to freshness confirmation plus warmer-engager replacement.
 - Later on Saturday, March 14, 2026, the CMO added `plans/2026-03-14-cmo-sunday-preflight-command-card.md` and rewired the launch log, operator brief, and live capture sheet so the seven remaining Sunday tasks now have one compact execution order before the canonical receipt and `20:00` ET gate are filled.
 - Later on Saturday, March 14, 2026, the CMO added `plans/2026-03-14-cmo-week-one-live-command-card.md` and rewired the launch log, operator brief, and live capture sheet so Monday through Friday launch motions now have one compact day-of execution path instead of relying on long-document navigation during live publishing windows.
+- Later on Saturday, March 14, 2026, the CMO added a governed post-preflight freeze plus `Launch Change Log` to the week-one launch stack so last-minute copy, URL, asset, or profile edits cannot happen off-book after the Sunday, March 15, 2026 `20:00` ET gate.
 
 Current workflow constraint:
 
@@ -55,3 +56,4 @@ Current workflow constraint:
 - The highest-value remaining preflight work is now real-world operator completion on X: apply the governed profile surface, import the launch calendar, load the three scheduled drafts, and confirm the best URL-backed watchlist rows still look live before the Sunday, March 15, 2026 `20:00` ET gate.
 - The fastest execution surface for those remaining operator tasks is now `plans/2026-03-14-cmo-sunday-preflight-command-card.md`; the launch log remains the canonical proof and scoreboard source of truth.
 - Once Sunday preflight clears, the fastest Monday-through-Friday operating surface is now `plans/2026-03-14-cmo-week-one-live-command-card.md`; the launch log still remains the canonical proof and scoreboard source of truth.
+- Once Sunday preflight clears, governed week-one assets are now supposed to stay frozen; if Dan has to change a draft, tracked URL, proof visual, or profile surface after the gate, the edit must be logged and re-verified before launch continues.

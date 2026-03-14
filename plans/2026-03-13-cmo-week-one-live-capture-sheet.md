@@ -98,6 +98,17 @@ This is the raw counterpart to the `Launch Contingency Log` in
 | --- | --- | --- | --- | --- | --- | --- | --- |
 |  |  |  |  |  |  | pending | use this for scheduler failures, broken tracked URLs, missing proof assets, or publish-window slips |
 
+## Launch Change Scratchpad
+
+Use this if a frozen launch asset needs to change after the Sunday gate.
+
+This is the raw counterpart to the `Launch Change Log` in
+`plans/2026-03-16-cmo-launch-operations-log.md`.
+
+| Time | Changed surface | Affected motion or code | Why change was required | Re-verified in raw capture | Transferred to launch log | Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+|  |  |  |  | pending | pending | log post-freeze edits here before launch continues |
+
 ## Immediate Publish QA Scratchpad
 
 Use this right after each Monday, Wednesday, and Friday public post goes live.

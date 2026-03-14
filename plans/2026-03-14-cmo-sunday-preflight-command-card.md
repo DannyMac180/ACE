@@ -123,6 +123,9 @@ Done means:
   default window
 - if no, mark the raw gate row `blocked`, name the exact missing item, and set
   the next Monday check time
+- if the gate is `go`, freeze the governed profile surface, tracked URLs,
+  proof visual, and loaded drafts; any later edit must land in the `Launch
+  Change Log` before launch continues
 
 Done means:
 

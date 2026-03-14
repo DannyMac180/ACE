@@ -45,6 +45,8 @@ Use these docs in this order:
 
 - Do not publish any untracked launch URL.
 - Do not swap destinations mid-week without updating the launch log first.
+- Do not make post-freeze copy, URL, asset, or profile changes off-book after
+  the Sunday gate.
 - Do not publish a weaker fallback asset if the approved asset is ready.
 - Do not let qualified replies or DMs sit unlogged for more than 24 hours.
 - Do not use generic AI language when the sharper category line is available.
@@ -157,6 +159,11 @@ not depend on paging through the full operator brief mid-motion.
   as blocked until the missing item is fixed
 - if the gate is blocked, CEO decides whether Monday keeps the default publish
   window or shifts after the missing preflight item is cleared
+- if the gate is `go`, treat the governed profile surface, tracked URLs, proof
+  visual, and loaded Monday or Wednesday or Friday drafts as frozen launch
+  assets; only change them if the edit is first logged in the `Launch Change
+  Log` in `plans/2026-03-16-cmo-launch-operations-log.md` and then re-verified
+  against the canonical source
 
 ## Default Publish And Check Windows
 
@@ -194,6 +201,19 @@ follow-up window.
 - any live publish-window break should be captured first in
   `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`, then transferred into
   the `Launch Contingency Log` in the canonical launch log
+
+## Launch Change Control
+
+Use this if Dan has to alter a frozen launch asset after the Sunday gate.
+
+1. log the intended change first in the `Launch Change Log` in
+   `plans/2026-03-16-cmo-launch-operations-log.md`
+2. name the exact surface changing: profile, tracked URL, scheduler draft,
+   proof asset, or CTA copy
+3. re-check the edited unit against the canonical publishing surface, profile
+   surface, or response bank before treating it as ready
+4. if the change touches a public post after publish, run the immediate QA path
+   again before scaling replies or interpreting metrics
 
 ## Immediate Publish QA
 

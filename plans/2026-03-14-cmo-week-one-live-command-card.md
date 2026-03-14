@@ -33,6 +33,8 @@ Keep these surfaces open before the live window starts:
 
 - do not publish or DM any launch link that is not already in the tracked-link
   registry
+- do not make post-freeze draft, URL, asset, or profile edits without logging
+  them first in the canonical `Launch Change Log`
 - do not pin the Monday thread or scale replies until the immediate publish QA
   pass is complete
 - do not leave a qualified reply, DM, or workflow issue unlogged past the
@@ -201,5 +203,7 @@ Before closing any launch day:
    reason it did not progress
 3. capture one reusable artifact for week two
 4. if the live window broke, update the contingency log before exiting
+5. if any frozen launch asset changed, make sure the change also landed in the
+   `Launch Change Log`
 
 If the day was messy, preserve the raw notes first and normalize them second.

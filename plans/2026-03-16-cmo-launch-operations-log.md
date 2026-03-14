@@ -236,6 +236,33 @@ Minimum evidence rule:
   URL, calendar import confirmation, scheduler confirmation, or validated
   watchlist note
 
+## Launch Freeze Rule
+
+Use this immediately after the Sunday, March 15, 2026 `20:00` ET gate.
+
+- once the gate is `go`, treat the governed X profile surface, tracked URLs,
+  Monday or Wednesday or Friday draft copy, proof visual, and loaded scheduler
+  entries as frozen launch assets
+- do not change copy, links, assets, or profile routing after the gate just
+  because a last-minute rewrite feels sharper
+- if a real change is required, log it in the `Launch Change Log` below before
+  publish, name the exact affected surface, and re-verify the draft against the
+  canonical source before treating it as ready again
+- any post-freeze change to a tracked URL, CTA, asset, or thread shape should
+  trigger another exact verification in the receipt, raw capture sheet, or
+  immediate publish QA path before launch continues
+
+## Launch Change Log
+
+Use this table for any post-freeze edit to week-one copy, tracked URLs,
+attached assets, profile routing, or scheduler state.
+
+If nothing changes after the Sunday gate, leave the default row untouched.
+
+| Time | Changed surface | Affected motion or code | Why change was required | Re-verified against canonical source by | Status | Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+|  |  |  |  |  | pending | log every post-freeze launch change before publish, not after metrics arrive |
+
 ## Live Launch Contingency Rules
 
 Use these rules if a live launch motion breaks inside the operating window.
