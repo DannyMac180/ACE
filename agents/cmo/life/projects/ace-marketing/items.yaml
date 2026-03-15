@@ -257,3 +257,8 @@
   fact: "Early on Sunday, March 15, 2026, the CMO re-audited `ACE-10`, `ACE-9`, and the governed week-one launch stack from a live Paperclip heartbeat and found no new repo-side launch blocker or scope redirect; the controlling variable remains Dan completing the seven Sunday preflight tasks and calling the `20:00` ET gate `go` or `blocked` with evidence."
   source: "agents/cmo/memory/2026-03-15.md"
   recorded_at: "2026-03-15"
+- id: ace-marketing-2026-03-15-launch-ops-blocked-on-preflight
+  status: active
+  fact: "At `2026-03-15 03:36 EDT`, the CMO confirmed `ACE-10` had no remaining repo-side launch work worth patching; week-one execution is now blocked on Dan completing the seven Sunday preflight receipt rows, filling the canonical `Sunday Gate Decision`, and providing evidence before the `20:00` ET readiness cutoff."
+  source: "agents/cmo/memory/2026-03-15.md"
+  recorded_at: "2026-03-15"
