@@ -1,16 +1,18 @@
 import hashlib
 import os
 import pickle
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import faiss  # type: ignore
 import numpy as np
-from sentence_transformers import SentenceTransformer
 
 from .db import DatabaseConnection
 
+if TYPE_CHECKING:
+    from sentence_transformers import SentenceTransformer
+
 # Load embedding model (all-MiniLM-L6-v2: 384d, Apache 2.0 license)
-_model: SentenceTransformer | None = None
+_model: Any | None = None
 _model_name: str | None = None
 
 
@@ -32,10 +34,12 @@ def _generate_mock_embedding(text: str) -> np.ndarray[tuple[int], np.dtype[np.fl
     return vector
 
 
-def _get_model() -> SentenceTransformer:
+def _get_model() -> "SentenceTransformer":
     global _model, _model_name
     model_name = _get_model_name()
     if _model is None or _model_name != model_name:
+        from sentence_transformers import SentenceTransformer
+
         _model = SentenceTransformer(model_name)
         _model_name = model_name
     return _model
