@@ -35,7 +35,7 @@ class FakeStore:
 
 def test_seed_initial_playbook_closes_store(monkeypatch):
     fake_store = FakeStore()
-    monkeypatch.setattr(seed_module, "Store", lambda: fake_store)
+    monkeypatch.setattr(seed_module, "Store", lambda *_args, **_kwargs: fake_store)
 
     seed_module.seed_initial_playbook()
 

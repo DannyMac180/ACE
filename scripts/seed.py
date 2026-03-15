@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """Seed initial playbook with high-leverage bullets."""
 
+from ace.core.config import load_config
 from ace.core.schema import Bullet
 from ace.core.storage.store_adapter import Store
 
 
 def seed_initial_playbook() -> None:
     """Create and persist initial seed bullets to bootstrap the playbook."""
-    store = Store()
+    config = load_config()
+    store = Store(config.database.url)
     try:
         seed_bullets = [
             Bullet(

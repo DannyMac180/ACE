@@ -16,7 +16,7 @@
       "op": "ADD",
       "target_id": null,
       "new_bullet": {
-        "id": "stra-6d8ad1c6",
+        "id": "stra-9ea3af12",
         "section": "strategies_and_hard_rules",
         "content": "When retrieval returns a generic result, tighten the query with the concrete task and tool names before reflecting.",
         "tags": [

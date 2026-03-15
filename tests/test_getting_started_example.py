@@ -23,6 +23,7 @@ def test_getting_started_example_runs_end_to_end(tmp_path):
     env = {
         **os.environ,
         "ACE_DB_URL": db_url,
+        "ACE_EMBEDDINGS": "mock",
         "ACE_LOG_LEVEL": "ERROR",
     }
 
@@ -87,3 +88,25 @@ def test_getting_started_example_runs_end_to_end(tmp_path):
     assert stats_payload["total_bullets"] == 12
     assert stats_payload["helpful"] == 2
     assert stats_payload["harmful"] == 0
+
+
+def test_seed_script_accepts_legacy_relative_db_url_env(tmp_path):
+    env = {
+        **os.environ,
+        "ACE_DB_URL": "ace.db",
+        "ACE_EMBEDDINGS": "mock",
+        "ACE_LOG_LEVEL": "ERROR",
+    }
+
+    result = subprocess.run(
+        [sys.executable, str(REPO_ROOT / "scripts" / "seed.py")],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        env=env,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "Seeded 11 initial bullets" in result.stdout
+    assert (tmp_path / "ace.db").exists()

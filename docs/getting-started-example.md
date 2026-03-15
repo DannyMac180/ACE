@@ -10,13 +10,13 @@ You will:
 4. curate that reflection into delta ops
 5. commit the delta and confirm the playbook changed
 
-The example uses a deterministic reflection helper so you can run it without configuring an external LLM first. After that, you can swap in `ace reflect` with your own provider.
+The example uses deterministic mock embeddings plus a deterministic reflection helper, so you can run it without configuring an external LLM or downloading an embedding model first. After that, you can swap in `ace reflect` with your own provider.
 
 ## Prerequisites
 
 - cloned repo
 - project venv available at `.venv/`
-- about one minute for the first embedding model load
+- no external model setup for the default offline path
 
 ## Run The Example
 
@@ -27,12 +27,12 @@ REPO_ROOT=$(pwd)
 WORKDIR=$(mktemp -d)
 cd "$WORKDIR"
 
-"$REPO_ROOT/.venv/bin/python" "$REPO_ROOT/scripts/seed.py"
-ACE_DB_URL=ace.db "$REPO_ROOT/.venv/bin/python" -m ace.cli retrieve "hybrid retrieval" --top-k 3
+ACE_EMBEDDINGS=mock "$REPO_ROOT/.venv/bin/python" "$REPO_ROOT/scripts/seed.py"
+ACE_DB_URL=ace.db ACE_EMBEDDINGS=mock "$REPO_ROOT/.venv/bin/python" -m ace.cli retrieve "hybrid retrieval" --top-k 3
 "$REPO_ROOT/.venv/bin/python" "$REPO_ROOT/scripts/demo_reflect.py" "$REPO_ROOT/docs/assets/ace-proof-demo/demo-task.json" > reflection.json
-ACE_DB_URL=ace.db "$REPO_ROOT/.venv/bin/python" -m ace.cli curate --reflection reflection.json --json > delta.json
-ACE_DB_URL=ace.db "$REPO_ROOT/.venv/bin/python" -m ace.cli commit --delta delta.json --json
-ACE_DB_URL=ace.db "$REPO_ROOT/.venv/bin/python" -m ace.cli stats --json
+ACE_DB_URL=ace.db ACE_EMBEDDINGS=mock "$REPO_ROOT/.venv/bin/python" -m ace.cli curate --reflection reflection.json --json > delta.json
+ACE_DB_URL=ace.db ACE_EMBEDDINGS=mock "$REPO_ROOT/.venv/bin/python" -m ace.cli commit --delta delta.json --json
+ACE_DB_URL=ace.db ACE_EMBEDDINGS=mock "$REPO_ROOT/.venv/bin/python" -m ace.cli stats --json
 ```
 
 ## What You Should See

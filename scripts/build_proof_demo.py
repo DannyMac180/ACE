@@ -219,9 +219,9 @@ def write_explainer(output_path: Path) -> None:
         4. `commit` applies those deltas and bumps the playbook version.
 
         The clip is intentionally offline and reproducible. It uses the repo's
-        real CLI, a seeded local database, and a deterministic reflection
-        helper so the proof asset can be rebuilt before launch without external
-        API dependencies.
+        real CLI, deterministic mock embeddings, a seeded local database, and a
+        deterministic reflection helper so the proof asset can be rebuilt
+        before launch without external API dependencies or model downloads.
         """
     )
     output_path.write_text(explainer, encoding="utf-8")
@@ -251,6 +251,7 @@ def write_doc(output_path: Path, asset_dir: Path) -> None:
         ## Recording notes
 
         - The terminal transcript is generated from a throwaway workspace.
+        - The demo forces `ACE_EMBEDDINGS=mock` so the offline path stays deterministic.
         - Noisy model-load logs are trimmed from the published transcript for readability.
         - The reflection step is deterministic so the asset can be rebuilt offline.
         """
@@ -274,6 +275,7 @@ def main() -> int:
     env.update(
         {
             "ACE_DB_URL": "ace.db",
+            "ACE_EMBEDDINGS": "mock",
             "ACE_LOG_LEVEL": "ERROR",
             "HF_HUB_DISABLE_PROGRESS_BARS": "1",
             "TOKENIZERS_PARALLELISM": "false",
@@ -288,13 +290,13 @@ def main() -> int:
 
         commands = [
             (
-                f"$ {PYTHON_BIN} {REPO_ROOT / 'scripts' / 'seed.py'}",
+                f"$ ACE_EMBEDDINGS=mock {PYTHON_BIN} {REPO_ROOT / 'scripts' / 'seed.py'}",
                 [str(PYTHON_BIN), str(REPO_ROOT / "scripts" / "seed.py")],
                 None,
             ),
             (
-                '$ ACE_DB_URL=ace.db .venv/bin/python -m ace.cli retrieve "hybrid retrieval" '
-                "--top-k 3",
+                '$ ACE_DB_URL=ace.db ACE_EMBEDDINGS=mock .venv/bin/python -m ace.cli '
+                'retrieve "hybrid retrieval" --top-k 3',
                 [
                     str(PYTHON_BIN),
                     "-m",
@@ -316,8 +318,8 @@ def main() -> int:
                 output_dir / "reflection.json",
             ),
             (
-                "$ ACE_DB_URL=ace.db .venv/bin/python -m ace.cli curate "
-                "--reflection reflection.json --json",
+                "$ ACE_DB_URL=ace.db ACE_EMBEDDINGS=mock .venv/bin/python -m ace.cli "
+                "curate --reflection reflection.json --json",
                 [
                     str(PYTHON_BIN),
                     "-m",
@@ -330,7 +332,8 @@ def main() -> int:
                 output_dir / "delta.json",
             ),
             (
-                "$ ACE_DB_URL=ace.db .venv/bin/python -m ace.cli commit --delta delta.json --json",
+                "$ ACE_DB_URL=ace.db ACE_EMBEDDINGS=mock .venv/bin/python -m ace.cli "
+                "commit --delta delta.json --json",
                 [
                     str(PYTHON_BIN),
                     "-m",
@@ -343,7 +346,8 @@ def main() -> int:
                 None,
             ),
             (
-                "$ ACE_DB_URL=ace.db .venv/bin/python -m ace.cli stats --json",
+                "$ ACE_DB_URL=ace.db ACE_EMBEDDINGS=mock .venv/bin/python -m ace.cli "
+                "stats --json",
                 [str(PYTHON_BIN), "-m", "ace.cli", "stats", "--json"],
                 None,
             ),

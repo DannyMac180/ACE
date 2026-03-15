@@ -1,8 +1,10 @@
 # ACE proof demo asset
 
-This package is the reusable proof asset for launch posts scheduled the week of Monday, March 16, 2026.
+This package is the reusable proof asset for launch posts scheduled the
+week of Monday, March 16, 2026.
 
-It captures a real ACE loop on a clean local playbook and keeps the output stable enough to reuse across X posts, README callouts, and docs.
+It captures a real ACE loop on a clean local playbook and keeps the
+output stable enough to reuse across X posts, README callouts, and docs.
 
 ## Files
 
@@ -17,5 +19,6 @@ It captures a real ACE loop on a clean local playbook and keeps the output stabl
 ## Recording notes
 
 - The terminal transcript is generated from a throwaway workspace.
+- The demo forces `ACE_EMBEDDINGS=mock` so the offline path stays deterministic.
 - Noisy model-load logs are trimmed from the published transcript for readability.
 - The reflection step is deterministic so the asset can be rebuilt offline.

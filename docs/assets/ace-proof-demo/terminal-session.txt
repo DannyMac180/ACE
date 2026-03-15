@@ -1,10 +1,10 @@
-$ /home/dan-mcateer/dev/ACE/.venv/bin/python /home/dan-mcateer/dev/ACE/scripts/seed.py
+$ ACE_EMBEDDINGS=mock /home/dan-mcateer/dev/ACE/.venv/bin/python /home/dan-mcateer/dev/ACE/scripts/seed.py
 
 ✓ Seeded 11 initial bullets
   Version: 0
   Total bullets in store: 11
 
-$ ACE_DB_URL=ace.db .venv/bin/python -m ace.cli retrieve "hybrid retrieval" --top-k 3
+$ ACE_DB_URL=ace.db ACE_EMBEDDINGS=mock .venv/bin/python -m ace.cli retrieve "hybrid retrieval" --top-k 3
 
 Found 3 bullets:
 [strat-00001] (strategies_and_hard_rules)
@@ -15,9 +15,9 @@ Found 3 bullets:
   Ensure retrieval queries are specific and context-aware to prevent irrelevant or conflicting information from polluting the context.
   Tags: topic:retrieval, discipline:hygiene
   Helpful: 0 | Harmful: 0
-[strat-00003] (strategies_and_hard_rules)
-  Consider bullets near-duplicate if cosine>0.90 OR minhash Jaccard>0.85; keep clearer text; transfer counters.
-  Tags: topic:refine, retrieval
+[trbl-00001] (troubleshooting_and_pitfalls)
+  Reflector/Curator must emit valid JSON without markdown fencing; reject and retry on parse errors.
+  Tags: topic:parsing, robustness
   Helpful: 0 | Harmful: 0
 
 $ /home/dan-mcateer/dev/ACE/.venv/bin/python /home/dan-mcateer/dev/ACE/scripts/demo_reflect.py demo-task.json
@@ -52,7 +52,7 @@ $ /home/dan-mcateer/dev/ACE/.venv/bin/python /home/dan-mcateer/dev/ACE/scripts/d
   "parent_id": null
 }
 
-$ ACE_DB_URL=ace.db .venv/bin/python -m ace.cli curate --reflection reflection.json --json
+$ ACE_DB_URL=ace.db ACE_EMBEDDINGS=mock .venv/bin/python -m ace.cli curate --reflection reflection.json --json
 
 {
   "ops": [
@@ -72,7 +72,7 @@ $ ACE_DB_URL=ace.db .venv/bin/python -m ace.cli curate --reflection reflection.j
       "op": "ADD",
       "target_id": null,
       "new_bullet": {
-        "id": "stra-6d8ad1c6",
+        "id": "stra-9ea3af12",
         "section": "strategies_and_hard_rules",
         "content": "When retrieval returns a generic result, tighten the query with the concrete task and tool names before reflecting.",
         "tags": [
@@ -86,13 +86,13 @@ $ ACE_DB_URL=ace.db .venv/bin/python -m ace.cli curate --reflection reflection.j
   ]
 }
 
-$ ACE_DB_URL=ace.db .venv/bin/python -m ace.cli commit --delta delta.json --json
+$ ACE_DB_URL=ace.db ACE_EMBEDDINGS=mock .venv/bin/python -m ace.cli commit --delta delta.json --json
 
 {
   "version": 1
 }
 
-$ ACE_DB_URL=ace.db .venv/bin/python -m ace.cli stats --json
+$ ACE_DB_URL=ace.db ACE_EMBEDDINGS=mock .venv/bin/python -m ace.cli stats --json
 
 {
   "version": 1,
