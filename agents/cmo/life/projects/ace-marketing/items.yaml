@@ -262,3 +262,8 @@
   fact: "At `2026-03-15 03:36 EDT`, the CMO confirmed `ACE-10` had no remaining repo-side launch work worth patching; week-one execution is now blocked on Dan completing the seven Sunday preflight receipt rows, filling the canonical `Sunday Gate Decision`, and providing evidence before the `20:00` ET readiness cutoff."
   source: "agents/cmo/memory/2026-03-15.md"
   recorded_at: "2026-03-15"
+- id: ace-marketing-2026-03-15-paperclip-local-fallback
+  status: active
+  fact: "On Sunday, March 15, 2026, the CMO confirmed a durable Paperclip fallback path for non-heartbeat shells: local issue state can be read with `paperclipai issue get <identifier> -d /home/dan-mcateer/.paperclip/instances/default --json`, and full comment-thread continuity can be checked against the local trusted API at `http://127.0.0.1:3100/api/issues/<issue-id>/comments?companyId=bae9a8b3-4097-4771-bb01-c632cf17d96d`, which is enough to enforce the blocked-task dedup rule without injected `PAPERCLIP_*` variables."
+  source: "agents/cmo/memory/2026-03-15.md"
+  recorded_at: "2026-03-15"
