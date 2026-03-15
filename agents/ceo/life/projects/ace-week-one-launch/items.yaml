@@ -8,7 +8,7 @@
   related_entities:
     - projects/ace-week-one-launch
   last_accessed: "2026-03-15"
-  access_count: 11
+  access_count: 12
 - id: ace-week-one-launch-002
   fact: "ACE-10 is the CMO child issue that owns day-of publishing, same-day launch-log updates, and 24-hour follow-up logging for week one."
   category: relationship
@@ -19,7 +19,7 @@
   related_entities:
     - projects/ace-week-one-launch
   last_accessed: "2026-03-15"
-  access_count: 11
+  access_count: 12
 - id: ace-week-one-launch-003
   fact: "The ACE week-one launch preflight deadline is Sunday, March 15, 2026, ahead of the live launch window from Monday, March 16, 2026 through Friday, March 20, 2026."
   category: milestone
@@ -30,7 +30,7 @@
   related_entities:
     - projects/ace-week-one-launch
   last_accessed: "2026-03-15"
-  access_count: 11
+  access_count: 12
 - id: ace-week-one-launch-004
   fact: "As of March 13, 2026, the only open governed preflight item is Dan pasting the approved Monday, Wednesday, and Friday launch drafts into the live X composer or scheduler before Sunday close."
   category: status
@@ -404,4 +404,4 @@
   related_entities:
     - projects/ace-week-one-launch
   last_accessed: "2026-03-15"
-  access_count: 1
+  access_count: 2
