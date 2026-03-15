@@ -1,13 +1,15 @@
 """Prometheus exporter helpers for the online ACE server."""
 
 from collections.abc import Callable
-from typing import Any
+from typing import Any, Literal
 
 from prometheus_client import CONTENT_TYPE_LATEST, CollectorRegistry, generate_latest
 from prometheus_client.core import CounterMetricFamily, GaugeMetricFamily
 from starlette.responses import Response
 
 from ace.core.metrics import MetricsTracker
+
+SchemaType = Literal["reflection", "delta"]
 
 
 class ACEPrometheusCollector:
@@ -233,7 +235,8 @@ class ACEPrometheusCollector:
             labels=["schema_type"],
         )
 
-        for schema_type in ("all", "reflection", "delta"):
+        schema_types: tuple[Literal["all"], SchemaType, SchemaType] = ("all", "reflection", "delta")
+        for schema_type in schema_types:
             metrics = (
                 self._metrics_tracker.get_metrics()
                 if schema_type == "all"
