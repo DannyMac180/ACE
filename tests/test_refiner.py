@@ -1,4 +1,6 @@
 # tests/test_refiner.py
+from datetime import UTC, datetime
+
 from ace.core.schema import Bullet, Playbook
 from ace.refine import refine
 from ace.reflector.schema import BulletTag, CandidateBullet, Reflection
@@ -367,6 +369,98 @@ def test_consolidate_transfers_counters():
     # Verify target was removed from playbook
     assert len(playbook.bullets) == 1
     assert playbook.bullets[0].id == "strat-00001"
+
+
+def test_consolidate_preserves_most_recent_last_used():
+    """Test that consolidation keeps the freshest last_used value on the survivor."""
+    from ace.core.schema import RefineOp
+    from ace.refine.runner import RefineRunner
+
+    older = datetime(2026, 3, 10, 9, 0, tzinfo=UTC)
+    newer = datetime(2026, 3, 12, 17, 30, tzinfo=UTC)
+
+    playbook = Playbook(
+        version=1,
+        bullets=[
+            Bullet(
+                id="strat-00001",
+                section="strategies_and_hard_rules",
+                content="Canonical retrieval guidance",
+                tags=["topic:retrieval"],
+                helpful=4,
+                harmful=1,
+                last_used=older,
+            ),
+            Bullet(
+                id="strat-00002",
+                section="strategies_and_hard_rules",
+                content="Duplicate retrieval guidance",
+                tags=["topic:retrieval"],
+                helpful=2,
+                harmful=0,
+                last_used=newer,
+            ),
+        ],
+    )
+
+    merge_ops = [RefineOp(op="MERGE", target_ids=["strat-00002"], survivor_id="strat-00001")]
+
+    runner = RefineRunner(playbook=playbook)
+    runner._consolidate(merge_ops)
+
+    survivor = playbook.bullets[0]
+    assert survivor.last_used == newer
+    assert survivor.helpful == 6
+    assert survivor.harmful == 1
+
+
+def test_consolidate_merges_multiple_targets_into_one_survivor():
+    """Test that consolidation combines counters across multiple merged targets."""
+    from ace.core.schema import RefineOp
+    from ace.refine.runner import RefineRunner
+
+    playbook = Playbook(
+        version=1,
+        bullets=[
+            Bullet(
+                id="strat-00001",
+                section="strategies_and_hard_rules",
+                content="Canonical guidance",
+                helpful=1,
+                harmful=0,
+            ),
+            Bullet(
+                id="strat-00002",
+                section="strategies_and_hard_rules",
+                content="Duplicate one",
+                helpful=2,
+                harmful=3,
+            ),
+            Bullet(
+                id="strat-00003",
+                section="strategies_and_hard_rules",
+                content="Duplicate two",
+                helpful=4,
+                harmful=1,
+            ),
+        ],
+    )
+
+    merge_ops = [
+        RefineOp(
+            op="MERGE",
+            target_ids=["strat-00002", "strat-00003"],
+            survivor_id="strat-00001",
+        )
+    ]
+
+    runner = RefineRunner(playbook=playbook)
+    runner._consolidate(merge_ops)
+
+    survivor = playbook.bullets[0]
+    assert survivor.helpful == 7
+    assert survivor.harmful == 4
+    assert [bullet.id for bullet in playbook.bullets] == ["strat-00001"]
 
 
 def test_consolidate_handles_candidate_ids():

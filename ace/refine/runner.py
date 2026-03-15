@@ -159,11 +159,12 @@ class RefineRunner:
 
     def _consolidate(self, merge_ops: list[RefineOp]) -> None:
         """
-        Merge duplicate bullets, keeping clearest content and transferring counters.
+        Merge duplicate bullets, keeping the chosen survivor and transferring state.
 
         For each MERGE operation:
         - Find the survivor bullet in the playbook
         - Transfer helpful/harmful counters from target bullets to survivor
+        - Preserve the most recent last_used timestamp across merged bullets
         - Remove target bullets if they exist in the playbook
 
         Args:
@@ -188,6 +189,10 @@ class RefineRunner:
                     # Transfer counters
                     survivor.helpful += target.helpful
                     survivor.harmful += target.harmful
+                    if target.last_used and (
+                        survivor.last_used is None or target.last_used > survivor.last_used
+                    ):
+                        survivor.last_used = target.last_used
 
                     # Remove target from playbook
                     self.playbook.bullets.remove(target)
