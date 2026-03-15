@@ -63,22 +63,44 @@ class EmbeddingStore:
         self.idx_to_id: dict[int, str] = {}
         self.load_index()
 
+    def _sqlite_embedding_count(self) -> int:
+        rows = self.db.fetchall("SELECT COUNT(*) FROM embeddings")
+        return int(rows[0][0]) if rows else 0
+
     def load_index(self):
         if not self.db.is_sqlite:
             self.index = None
             self.id_to_idx = {}
             self.idx_to_id = {}
             return
-        if os.path.exists(self.index_path):
+
+        index_exists = os.path.exists(self.index_path)
+        mapping_exists = os.path.exists(self.index_path + ".mapping")
+
+        if index_exists:
             self.index = faiss.read_index(self.index_path)
             # Load mappings
-            if os.path.exists(self.index_path + ".mapping"):
+            if mapping_exists:
                 with open(self.index_path + ".mapping", "rb") as f:
                     self.id_to_idx, self.idx_to_id = pickle.load(f)
+            else:
+                self.id_to_idx = {}
+                self.idx_to_id = {}
         else:
             self.index = faiss.IndexFlatIP(384)  # Cosine similarity
             self.id_to_idx = {}
             self.idx_to_id = {}
+
+        expected_rows = self._sqlite_embedding_count()
+        observed_rows = len(self.id_to_idx)
+        observed_index_size = self.index.ntotal if self.index is not None else 0
+        if expected_rows and (
+            not index_exists
+            or not mapping_exists
+            or observed_rows != expected_rows
+            or observed_index_size != expected_rows
+        ):
+            self.rebuild_index()
 
     def save_index(self):
         if not self.db.is_sqlite:
@@ -113,6 +135,7 @@ class EmbeddingStore:
         self.index.add(vector.reshape(1, -1))
         self.id_to_idx[bullet_id] = idx
         self.idx_to_id[idx] = bullet_id
+        self.save_index()
 
     def search(self, query: str, top_k: int = 24) -> list[str]:
         vector = generate_embedding(query)
