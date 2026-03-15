@@ -5,7 +5,6 @@ Exposes endpoints for playbook retrieval, reflection, curation, and refinement.
 Built with FastMCP (FastAPI-based MCP implementation).
 """
 
-from dataclasses import asdict
 from typing import Any
 
 from fastmcp import FastMCP
@@ -145,7 +144,7 @@ async def commit(delta: dict) -> dict:
         return {"success": False, "error": str(e)}
 
 
-@mcp.resource("playbook://json")
+@mcp.resource("ace://playbook.json")
 async def get_playbook_json() -> str:
     """
     Resource handler for ace://playbook.json
@@ -158,12 +157,8 @@ async def get_playbook_json() -> str:
     import json
 
     store = Store()
-    version = store.get_version()
-    bullets = store.get_bullets()
-
-    playbook_dict = {"version": version, "bullets": [asdict(b) for b in bullets]}
-
-    return json.dumps(playbook_dict, indent=2, default=str)
+    playbook = store.load_playbook()
+    return json.dumps(playbook.model_dump(mode="json"), indent=2)
 
 
 def main() -> None:
