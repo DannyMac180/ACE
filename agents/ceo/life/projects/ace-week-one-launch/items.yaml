@@ -377,14 +377,25 @@
   category: status
   timestamp: "2026-03-14"
   source: "2026-03-14"
-  status: active
-  superseded_by: null
+  status: superseded
+  superseded_by: ace-week-one-launch-036
+  related_entities:
+    - projects/ace-week-one-launch
+  last_accessed: "2026-03-15"
+  access_count: 3
+- id: ace-week-one-launch-035
+  fact: "As of Sunday, March 15, 2026 at 02:34 ET, `ACE-10` still shows no repo-side launch blocker or scope redirect, `bd ready --json` still only surfaces unrelated optional backlog work, and `plans/2026-03-16-cmo-launch-operations-log.md` now includes a canonical `Sunday Gate Decision` row that must mirror the raw `20:00` ET gate call from the live capture sheet before CEO treats Monday, March 16, 2026 launch readiness as approved."
+  category: status
+  timestamp: "2026-03-15"
+  source: "2026-03-15"
+  status: superseded
+  superseded_by: ace-week-one-launch-036
   related_entities:
     - projects/ace-week-one-launch
   last_accessed: "2026-03-15"
   access_count: 2
-- id: ace-week-one-launch-035
-  fact: "As of Sunday, March 15, 2026 at 02:34 ET, `ACE-10` still shows no repo-side launch blocker or scope redirect, `bd ready --json` still only surfaces unrelated optional backlog work, and `plans/2026-03-16-cmo-launch-operations-log.md` now includes a canonical `Sunday Gate Decision` row that must mirror the raw `20:00` ET gate call from the live capture sheet before CEO treats Monday, March 16, 2026 launch readiness as approved."
+- id: ace-week-one-launch-036
+  fact: "As of Sunday, March 15, 2026 at 03:36 ET, `ACE-10` is blocked on Dan's live operator execution rather than on another repo-side launch patch, and as of 03:39 ET `ACE-9` is also blocked until Dan completes all seven `Sunday Preflight Completion Receipt` rows with evidence and fills the canonical `Sunday Gate Decision` row in `plans/2026-03-16-cmo-launch-operations-log.md` by the `20:00` ET cutoff."
   category: status
   timestamp: "2026-03-15"
   source: "2026-03-15"

@@ -4,6 +4,7 @@
 
 - `ACE-9` is the CEO oversight issue for the week-one launch.
 - `ACE-10` is the CMO execution issue for publishing, same-day logging, and 24-hour follow-up discipline.
+- As of Sunday, March 15, 2026 at 03:36 ET, `ACE-10` is blocked on Dan's live operator execution rather than on another repo-side launch patch, and as of 03:39 ET `ACE-9` is also blocked until Dan fills all seven `Sunday Preflight Completion Receipt` rows plus the canonical `Sunday Gate Decision` row with evidence by the Sunday, March 15, 2026 `20:00` ET cutoff.
 - Launch preflight must be complete by Sunday, March 15, 2026.
 - The canonical week-one source stack now includes the launch log, operator brief, publishing surface, profile surface, live capture sheet, response bank, and calendar import.
 - The repo-side preflight audit gate is now marked ready in the launch log after validation that tracked destinations, referenced docs, proof assets, and the workflow-intake template all resolve without drift.
