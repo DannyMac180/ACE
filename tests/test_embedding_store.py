@@ -20,6 +20,26 @@ def _mock_embedding(text: str) -> np.ndarray[tuple[int], np.dtype[np.float32]]:
     return vector
 
 
+def test_mock_embeddings_preserve_near_duplicate_similarity(monkeypatch):
+    monkeypatch.setenv("ACE_EMBEDDINGS", "mock")
+
+    from ace.core.storage.embedding_store import generate_embedding
+
+    existing = "Always validate input before processing"
+    near_duplicate = "Validate all inputs before any processing"
+    unrelated = "Check database connection timeout settings"
+
+    existing_vec = generate_embedding(existing)
+    near_duplicate_vec = generate_embedding(near_duplicate)
+    unrelated_vec = generate_embedding(unrelated)
+
+    near_duplicate_similarity = float(existing_vec @ near_duplicate_vec)
+    unrelated_similarity = float(existing_vec @ unrelated_vec)
+
+    assert near_duplicate_similarity > 0.90
+    assert unrelated_similarity < near_duplicate_similarity
+
+
 def test_mock_embeddings_do_not_import_sentence_transformers():
     script = textwrap.dedent(
         """

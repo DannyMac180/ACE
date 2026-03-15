@@ -1,6 +1,7 @@
 import hashlib
 import os
 import pickle
+import re
 from typing import TYPE_CHECKING, Any
 
 import faiss  # type: ignore
@@ -14,6 +15,38 @@ if TYPE_CHECKING:
 # Load embedding model (all-MiniLM-L6-v2: 384d, Apache 2.0 license)
 _model: Any | None = None
 _model_name: str | None = None
+_MOCK_EMBEDDING_DIM = 384
+_MOCK_STOPWORDS = {
+    "a",
+    "all",
+    "always",
+    "an",
+    "and",
+    "any",
+    "are",
+    "as",
+    "at",
+    "before",
+    "by",
+    "for",
+    "from",
+    "in",
+    "into",
+    "of",
+    "on",
+    "or",
+    "the",
+    "to",
+    "use",
+    "uses",
+    "using",
+    "with",
+}
+_MOCK_SYNONYMS = {
+    "embedding": "vector",
+    "embeddings": "vector",
+    "vectors": "vector",
+}
 
 
 def _get_model_name() -> str:
@@ -24,10 +57,44 @@ def _uses_mock_embeddings(model_name: str) -> bool:
     return model_name.lower() in {"mock", "deterministic", "test"}
 
 
+def _normalize_mock_token(token: str) -> str:
+    token = _MOCK_SYNONYMS.get(token, token)
+    if token.endswith("ing") and len(token) > 5:
+        token = token[:-3]
+    elif token.endswith("ed") and len(token) > 4:
+        token = token[:-2]
+    elif token.endswith("es") and len(token) > 4:
+        token = token[:-2]
+    elif token.endswith("s") and len(token) > 3:
+        token = token[:-1]
+    return _MOCK_SYNONYMS.get(token, token)
+
+
+def _mock_tokens(text: str) -> list[str]:
+    tokens = []
+    for raw_token in re.findall(r"[a-z0-9]+", text.lower()):
+        if raw_token in _MOCK_STOPWORDS:
+            continue
+        token = _normalize_mock_token(raw_token)
+        if token and token not in _MOCK_STOPWORDS:
+            tokens.append(token)
+    return tokens
+
+
 def _generate_mock_embedding(text: str) -> np.ndarray[tuple[int], np.dtype[np.float32]]:
-    seed = int.from_bytes(hashlib.sha256(text.encode("utf-8")).digest()[:8], "big")
-    rng = np.random.default_rng(seed)
-    vector = rng.standard_normal(384).astype(np.float32)
+    vector = np.zeros(_MOCK_EMBEDDING_DIM, dtype=np.float32)
+    tokens = _mock_tokens(text)
+
+    for token in tokens:
+        digest = hashlib.sha256(token.encode("utf-8")).digest()
+        index = int.from_bytes(digest[:8], "big") % _MOCK_EMBEDDING_DIM
+        vector[index] += 1.0
+
+    if not tokens:
+        digest = hashlib.sha256(text.encode("utf-8")).digest()
+        index = int.from_bytes(digest[:8], "big") % _MOCK_EMBEDDING_DIM
+        vector[index] = 1.0
+
     norm = np.linalg.norm(vector)
     if norm > 0:
         vector /= norm
