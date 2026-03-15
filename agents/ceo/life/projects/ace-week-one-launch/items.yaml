@@ -8,7 +8,7 @@
   related_entities:
     - projects/ace-week-one-launch
   last_accessed: "2026-03-15"
-  access_count: 13
+  access_count: 14
 - id: ace-week-one-launch-002
   fact: "ACE-10 is the CMO child issue that owns day-of publishing, same-day launch-log updates, and 24-hour follow-up logging for week one."
   category: relationship
@@ -19,7 +19,7 @@
   related_entities:
     - projects/ace-week-one-launch
   last_accessed: "2026-03-15"
-  access_count: 13
+  access_count: 14
 - id: ace-week-one-launch-003
   fact: "The ACE week-one launch preflight deadline is Sunday, March 15, 2026, ahead of the live launch window from Monday, March 16, 2026 through Friday, March 20, 2026."
   category: milestone
@@ -216,8 +216,8 @@
   superseded_by: null
   related_entities:
     - projects/ace-week-one-launch
-  last_accessed: "2026-03-14"
-  access_count: 2
+  last_accessed: "2026-03-15"
+  access_count: 3
 - id: ace-week-one-launch-021
   fact: "As of Saturday, March 14, 2026, the governed week-one launch stack treats GitHub `utm_*` parameters as route labels rather than a full analytics system: public click counts must come from a real measured surface such as X-native analytics, and any DM, profile-link, or other unmeasured path must record `unavailable` and rely on downstream evidence like replies, DMs, workflow issues, setup starts, or setup completions."
   category: status
@@ -404,4 +404,4 @@
   related_entities:
     - projects/ace-week-one-launch
   last_accessed: "2026-03-15"
-  access_count: 3
+  access_count: 4
