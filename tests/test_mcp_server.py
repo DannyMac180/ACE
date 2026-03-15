@@ -16,7 +16,12 @@ import tempfile
 from unittest.mock import MagicMock
 
 import pytest
-from fastmcp import Client
+
+fastmcp = pytest.importorskip(
+    "fastmcp",
+    reason="MCP server tests require the optional fastmcp dependency tree.",
+)
+Client = fastmcp.Client
 
 from ace.core.schema import Bullet
 from ace.core.storage.store_adapter import Store
