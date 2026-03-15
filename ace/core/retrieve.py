@@ -1,7 +1,14 @@
 # ace/core/retrieve.py
 
+import re
+
 from .schema import Bullet
 from .storage.store_adapter import Store
+
+
+def _tokenize(text: str) -> set[str]:
+    """Extract normalized word tokens for lightweight lexical scoring."""
+    return set(re.findall(r"\w+", text.lower()))
 
 
 class Retriever:
@@ -25,12 +32,12 @@ class Retriever:
                 bullets.append(bullet)
 
         # Rerank by lexical overlap with query terms
-        query_terms = set(query.lower().split())
+        query_terms = _tokenize(query)
         scored_bullets = []
         for bullet in bullets:
             # Score by overlap in content and tags
-            content_terms = set(bullet.content.lower().split())
-            tag_terms = set(" ".join(bullet.tags).lower().split())
+            content_terms = _tokenize(bullet.content)
+            tag_terms = _tokenize(" ".join(bullet.tags))
             all_terms = content_terms | tag_terms
             overlap = len(query_terms & all_terms)
             scored_bullets.append((overlap, bullet))
