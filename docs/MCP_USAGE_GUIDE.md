@@ -43,8 +43,10 @@ The process will wait for MCP stdio. Typically you let the client spawn it.
 ### Verify
 
 If your client can list MCP tools, you should see:
-- Tools: `ace_retrieve`, `ace_record_trajectory`, `ace_reflect`, `ace_curate`, `ace_commit`, `ace_refine`, `ace_stats`
+- Tools: `ace.retrieve`, `ace.record_trajectory`, `ace.reflect`, `ace.curate`, `ace.commit`, `ace.refine`, `ace.stats`
 - Resource: `ace://playbook.json`
+
+Legacy underscore aliases such as `ace_retrieve` and `ace_commit` are still exposed for compatibility.
 
 ## 2) Available Tools
 

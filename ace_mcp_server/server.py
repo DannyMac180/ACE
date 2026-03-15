@@ -23,8 +23,7 @@ reflector = Reflector()
 pipeline = Pipeline(store=store)
 
 
-@app.tool()
-def ace_retrieve(query: str, top_k: int = 24) -> list[dict[str, Any]]:
+def _ace_retrieve_impl(query: str, top_k: int = 24) -> list[dict[str, Any]]:
     """
     Retrieve relevant playbook bullets for a query.
 
@@ -39,8 +38,19 @@ def ace_retrieve(query: str, top_k: int = 24) -> list[dict[str, Any]]:
     return [b.model_dump() for b in bullets]
 
 
+@app.tool(name="ace.retrieve")
+def ace_retrieve_contract(query: str, top_k: int = 24) -> list[dict[str, Any]]:
+    """Stable ACE MCP contract for bullet retrieval."""
+    return _ace_retrieve_impl(query, top_k)
+
+
 @app.tool()
-def ace_record_trajectory(doc: dict[str, Any]) -> str:
+def ace_retrieve(query: str, top_k: int = 24) -> list[dict[str, Any]]:
+    """Legacy underscore alias for ACE retrieval."""
+    return _ace_retrieve_impl(query, top_k)
+
+
+def _ace_record_trajectory_impl(doc: dict[str, Any]) -> str:
     """
     Record a trajectory document.
 
@@ -54,8 +64,19 @@ def ace_record_trajectory(doc: dict[str, Any]) -> str:
     return trajectory.initial_goal
 
 
+@app.tool(name="ace.record_trajectory")
+def ace_record_trajectory_contract(doc: dict[str, Any]) -> str:
+    """Stable ACE MCP contract for trajectory recording."""
+    return _ace_record_trajectory_impl(doc)
+
+
 @app.tool()
-def ace_reflect(doc: dict[str, Any]) -> dict[str, Any]:
+def ace_record_trajectory(doc: dict[str, Any]) -> str:
+    """Legacy underscore alias for ACE trajectory recording."""
+    return _ace_record_trajectory_impl(doc)
+
+
+def _ace_reflect_impl(doc: dict[str, Any]) -> dict[str, Any]:
     """
     Generate a reflection from task execution data.
 
@@ -87,8 +108,19 @@ def ace_reflect(doc: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+@app.tool(name="ace.reflect")
+def ace_reflect_contract(doc: dict[str, Any]) -> dict[str, Any]:
+    """Stable ACE MCP contract for reflection."""
+    return _ace_reflect_impl(doc)
+
+
 @app.tool()
-def ace_curate(reflection_data: dict[str, Any]) -> dict[str, Any]:
+def ace_reflect(doc: dict[str, Any]) -> dict[str, Any]:
+    """Legacy underscore alias for ACE reflection."""
+    return _ace_reflect_impl(doc)
+
+
+def _ace_curate_impl(reflection_data: dict[str, Any]) -> dict[str, Any]:
     """
     Convert a reflection into delta operations.
 
@@ -104,8 +136,19 @@ def ace_curate(reflection_data: dict[str, Any]) -> dict[str, Any]:
     return delta.model_dump()
 
 
+@app.tool(name="ace.curate")
+def ace_curate_contract(reflection_data: dict[str, Any]) -> dict[str, Any]:
+    """Stable ACE MCP contract for curation."""
+    return _ace_curate_impl(reflection_data)
+
+
 @app.tool()
-def ace_commit(delta: dict[str, Any]) -> dict[str, int]:
+def ace_curate(reflection_data: dict[str, Any]) -> dict[str, Any]:
+    """Legacy underscore alias for ACE curation."""
+    return _ace_curate_impl(reflection_data)
+
+
+def _ace_commit_impl(delta: dict[str, Any]) -> dict[str, int]:
     """
     Apply a delta to the playbook and return the new version.
 
@@ -121,8 +164,19 @@ def ace_commit(delta: dict[str, Any]) -> dict[str, int]:
     return {"version": new_playbook.version}
 
 
+@app.tool(name="ace.commit")
+def ace_commit_contract(delta: dict[str, Any]) -> dict[str, int]:
+    """Stable ACE MCP contract for deterministic delta commits."""
+    return _ace_commit_impl(delta)
+
+
 @app.tool()
-def ace_refine(threshold: float = 0.90) -> dict[str, int]:
+def ace_commit(delta: dict[str, Any]) -> dict[str, int]:
+    """Legacy underscore alias for ACE commits."""
+    return _ace_commit_impl(delta)
+
+
+def _ace_refine_impl(threshold: float = 0.90) -> dict[str, int]:
     """
     Run refinement pipeline: dedup near-duplicates, consolidate, archive low-utility bullets.
 
@@ -142,8 +196,19 @@ def ace_refine(threshold: float = 0.90) -> dict[str, int]:
     return {"merged": result.merged, "archived": result.archived}
 
 
+@app.tool(name="ace.refine")
+def ace_refine_contract(threshold: float = 0.90) -> dict[str, int]:
+    """Stable ACE MCP contract for refinement."""
+    return _ace_refine_impl(threshold)
+
+
 @app.tool()
-def ace_stats() -> dict[str, Any]:
+def ace_refine(threshold: float = 0.90) -> dict[str, int]:
+    """Legacy underscore alias for ACE refinement."""
+    return _ace_refine_impl(threshold)
+
+
+def _ace_stats_impl() -> dict[str, Any]:
     """
     Get playbook statistics.
 
@@ -160,8 +225,19 @@ def ace_stats() -> dict[str, Any]:
     }
 
 
+@app.tool(name="ace.stats")
+def ace_stats_contract() -> dict[str, Any]:
+    """Stable ACE MCP contract for playbook stats."""
+    return _ace_stats_impl()
+
+
 @app.tool()
-def ace_pipeline(
+def ace_stats() -> dict[str, Any]:
+    """Legacy underscore alias for playbook stats."""
+    return _ace_stats_impl()
+
+
+def _ace_pipeline_impl(
     query: str,
     code_diff: str = "",
     test_output: str = "",
@@ -206,6 +282,30 @@ def ace_pipeline(
         "delta_ops_applied": result.delta_ops_applied,
         "retrieved_bullets": len(result.retrieved_bullets),
     }
+
+
+@app.tool(name="ace.pipeline")
+def ace_pipeline_contract(
+    query: str,
+    code_diff: str = "",
+    test_output: str = "",
+    logs: str = "",
+    auto_commit: bool = True,
+) -> dict[str, Any]:
+    """Stable dotted alias for the full ACE pipeline."""
+    return _ace_pipeline_impl(query, code_diff, test_output, logs, auto_commit)
+
+
+@app.tool()
+def ace_pipeline(
+    query: str,
+    code_diff: str = "",
+    test_output: str = "",
+    logs: str = "",
+    auto_commit: bool = True,
+) -> dict[str, Any]:
+    """Legacy underscore alias for the full ACE pipeline."""
+    return _ace_pipeline_impl(query, code_diff, test_output, logs, auto_commit)
 
 
 @app.resource("ace://playbook.json")

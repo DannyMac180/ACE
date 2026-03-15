@@ -167,14 +167,16 @@ ace smoke-test-model --json
 
 ACE exposes these MCP tools:
 
-- `ace_retrieve`
-- `ace_record_trajectory`
-- `ace_reflect`
-- `ace_curate`
-- `ace_commit`
-- `ace_refine`
-- `ace_stats`
-- `ace_pipeline`
+- `ace.retrieve`
+- `ace.record_trajectory`
+- `ace.reflect`
+- `ace.curate`
+- `ace.commit`
+- `ace.refine`
+- `ace.stats`
+- `ace.pipeline`
+
+Legacy underscore aliases such as `ace_retrieve` and `ace_commit` remain available for compatibility.
 
 Resource:
 

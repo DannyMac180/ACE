@@ -3,8 +3,8 @@
 Tests for the ACE MCP Server.
 
 Tests that:
-1. All expected tools are exposed (ace_retrieve, ace_reflect, ace_curate, ace_commit,
-   ace_refine, ace_stats, ace_record_trajectory)
+1. All expected tools are exposed, including stable dotted ACE contracts and
+   legacy underscore aliases.
 2. Each tool returns schema-correct responses
 3. The ace://playbook.json resource returns the same structure as `ace playbook dump`
 """
@@ -161,42 +161,52 @@ EXPECTED_TOOLS = [
     "ace_pipeline",
 ]
 
+DOTTED_TOOL_ALIASES = [
+    "ace.retrieve",
+    "ace.reflect",
+    "ace.curate",
+    "ace.commit",
+    "ace.refine",
+    "ace.stats",
+    "ace.record_trajectory",
+    "ace.pipeline",
+]
+
 
 class TestMCPServerToolListing:
     """Tests for MCP server tool discovery."""
 
     @pytest.mark.asyncio
     async def test_lists_all_expected_tools(self, mcp_server):
-        """MCP server should expose all expected tools."""
+        """MCP server should expose underscore aliases and dotted ACE contracts."""
         async with Client(mcp_server) as client:
             tools = await client.list_tools()
             tool_names = [t.name for t in tools]
 
             for expected_tool in EXPECTED_TOOLS:
-                assert (
-                    expected_tool in tool_names
-                ), f"Missing tool: {expected_tool}"
+                assert expected_tool in tool_names, f"Missing tool: {expected_tool}"
+            for expected_tool in DOTTED_TOOL_ALIASES:
+                assert expected_tool in tool_names, f"Missing dotted alias: {expected_tool}"
 
     @pytest.mark.asyncio
     async def test_tool_count(self, mcp_server):
         """MCP server should have the expected number of tools."""
         async with Client(mcp_server) as client:
             tools = await client.list_tools()
-            assert len(tools) >= len(
-                EXPECTED_TOOLS
-            ), f"Expected at least {len(EXPECTED_TOOLS)} tools, got {len(tools)}"
+            expected_tool_count = len(EXPECTED_TOOLS + DOTTED_TOOL_ALIASES)
+            assert len(tools) >= expected_tool_count, (
+                f"Expected at least {expected_tool_count} tools, got {len(tools)}"
+            )
 
 
 class TestAceRetrieveTool:
-    """Tests for ace_retrieve tool."""
+    """Tests for retrieval tool aliases."""
 
     @pytest.mark.asyncio
     async def test_retrieve_returns_list(self, mcp_server):
         """ace_retrieve should return a list of bullet dicts."""
         async with Client(mcp_server) as client:
-            result = await client.call_tool(
-                "ace_retrieve", {"query": "retrieval", "top_k": 5}
-            )
+            result = await client.call_tool("ace_retrieve", {"query": "retrieval", "top_k": 5})
 
             assert result is not None
             data = parse_tool_result(result)
@@ -207,9 +217,7 @@ class TestAceRetrieveTool:
     async def test_retrieve_bullets_have_required_fields(self, mcp_server):
         """Retrieved bullets should have required schema fields."""
         async with Client(mcp_server) as client:
-            result = await client.call_tool(
-                "ace_retrieve", {"query": "retrieval", "top_k": 5}
-            )
+            result = await client.call_tool("ace_retrieve", {"query": "retrieval", "top_k": 5})
 
             data = parse_tool_result(result)
             bullets = json.loads(data) if isinstance(data, str) else data
@@ -220,9 +228,20 @@ class TestAceRetrieveTool:
                 for field in required_fields:
                     assert field in bullet, f"Missing field: {field}"
 
+    @pytest.mark.asyncio
+    async def test_dotted_retrieve_alias_returns_same_shape(self, mcp_server):
+        """ace.retrieve should be callable via the stable dotted contract."""
+        async with Client(mcp_server) as client:
+            result = await client.call_tool("ace.retrieve", {"query": "retrieval", "top_k": 5})
+
+            assert result is not None
+            data = parse_tool_result(result)
+            parsed = json.loads(data) if isinstance(data, str) else data
+            assert isinstance(parsed, list)
+
 
 class TestAceCommitTool:
-    """Tests for ace_commit tool."""
+    """Tests for commit tool aliases."""
 
     @pytest.mark.asyncio
     async def test_commit_returns_version(self, mcp_server):
@@ -236,9 +255,19 @@ class TestAceCommitTool:
             commit_result = json.loads(data) if isinstance(data, str) else data
 
             assert "version" in commit_result, "Result should have 'version' field"
-            assert isinstance(
-                commit_result["version"], int
-            ), "'version' should be an integer"
+            assert isinstance(commit_result["version"], int), "'version' should be an integer"
+
+    @pytest.mark.asyncio
+    async def test_dotted_commit_alias_returns_version(self, mcp_server):
+        """ace.commit should be callable via the stable dotted contract."""
+        async with Client(mcp_server) as client:
+            delta = {"ops": [{"op": "INCR_HELPFUL", "target_id": "strat-001"}]}
+            result = await client.call_tool("ace.commit", {"delta": delta})
+
+            assert result is not None
+            data = parse_tool_result(result)
+            commit_result = json.loads(data) if isinstance(data, str) else data
+            assert isinstance(commit_result["version"], int)
 
 
 class TestAceRefineTool:
@@ -318,9 +347,9 @@ class TestPlaybookResource:
             resources = await client.list_resources()
             resource_uris = [str(r.uri) for r in resources]
 
-            assert any(
-                "playbook.json" in uri for uri in resource_uris
-            ), f"Expected ace://playbook.json in {resource_uris}"
+            assert any("playbook.json" in uri for uri in resource_uris), (
+                f"Expected ace://playbook.json in {resource_uris}"
+            )
 
     @pytest.mark.asyncio
     async def test_playbook_resource_returns_valid_json(self, mcp_server):
@@ -362,18 +391,14 @@ class TestPlaybookResource:
                 store_playbook_dict = store_playbook.model_dump()
 
                 assert resource_playbook["version"] == store_playbook_dict["version"]
-                assert len(resource_playbook["bullets"]) == len(
-                    store_playbook_dict["bullets"]
-                )
+                assert len(resource_playbook["bullets"]) == len(store_playbook_dict["bullets"])
 
 
 class TestPlaybookResourceMatchesDump:
     """Test that ace://playbook.json matches what `ace playbook dump` would output."""
 
     @pytest.mark.asyncio
-    async def test_resource_structure_matches_cli_dump(
-        self, mcp_server, store_with_bullets
-    ):
+    async def test_resource_structure_matches_cli_dump(self, mcp_server, store_with_bullets):
         """ace://playbook.json should have the same structure as CLI dump."""
         async with Client(mcp_server) as client:
             resources = await client.list_resources()
@@ -391,16 +416,12 @@ class TestPlaybookResourceMatchesDump:
                 playbook = store_with_bullets.load_playbook()
                 cli_dump = playbook.model_dump()
 
-                assert set(resource_playbook.keys()) == set(
-                    cli_dump.keys()
-                ), "Keys should match"
+                assert set(resource_playbook.keys()) == set(cli_dump.keys()), "Keys should match"
 
                 if resource_playbook["bullets"] and cli_dump["bullets"]:
                     resource_bullet_keys = set(resource_playbook["bullets"][0].keys())
                     cli_bullet_keys = set(cli_dump["bullets"][0].keys())
-                    assert (
-                        resource_bullet_keys == cli_bullet_keys
-                    ), "Bullet fields should match"
+                    assert resource_bullet_keys == cli_bullet_keys, "Bullet fields should match"
 
 
 class TestMCPServerRoundTrip:
@@ -419,6 +440,4 @@ class TestMCPServerRoundTrip:
             commit_data = parse_tool_result(commit_result)
             new_version = json.loads(commit_data)["version"]
 
-            assert (
-                new_version > initial_version
-            ), "Version should increment after commit"
+            assert new_version > initial_version, "Version should increment after commit"
