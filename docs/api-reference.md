@@ -322,8 +322,8 @@ class PlaybookManager:
 
 | Method | Description |
 |--------|-------------|
-| `load_playbook(path)` | Load playbook from disk (not implemented) |
-| `save_playbook(path)` | Save playbook to disk (not implemented) |
+| `load_playbook(path)` | Load a playbook from a JSON file and replace in-memory state |
+| `save_playbook(path)` | Save the current playbook to a JSON file |
 | `apply_delta(delta)` | Apply a `DeltaOp` to the playbook |
 
 **Delta Operations:**

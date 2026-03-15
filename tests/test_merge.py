@@ -1,4 +1,8 @@
+import json
+from pathlib import Path
+
 import pytest
+from pydantic import ValidationError
 
 from ace.core.manager import PlaybookManager
 from ace.core.schema import DeltaOp
@@ -313,3 +317,48 @@ def test_add_duplicate_id_is_noop():
     assert manager.playbook.version == version_before
     assert len(manager.playbook.bullets) == count_before
     assert manager.playbook.bullets[0].content == "First"  # Original content preserved
+
+
+def test_save_and_load_playbook_round_trip(tmp_path: Path):
+    manager = PlaybookManager()
+    manager.apply_delta(
+        DeltaOp(
+            op="ADD",
+            new_bullet={
+                "id": "persist-001",
+                "section": "strategies_and_hard_rules",
+                "content": "Persist this bullet",
+                "tags": ["topic:persistence"],
+            },
+        )
+    )
+    manager.apply_delta(DeltaOp(op="INCR_HELPFUL", target_id="persist-001"))
+
+    playbook_path = tmp_path / "nested" / "playbook.json"
+    manager.save_playbook(str(playbook_path))
+
+    saved_payload = json.loads(playbook_path.read_text())
+    assert saved_payload["version"] == manager.playbook.version
+    assert saved_payload["bullets"][0]["id"] == "persist-001"
+
+    loaded_manager = PlaybookManager()
+    loaded_playbook = loaded_manager.load_playbook(str(playbook_path))
+
+    assert loaded_playbook.model_dump() == manager.playbook.model_dump()
+    assert loaded_manager.playbook.model_dump() == manager.playbook.model_dump()
+
+
+def test_load_playbook_missing_file_raises(tmp_path: Path):
+    manager = PlaybookManager()
+
+    with pytest.raises(FileNotFoundError):
+        manager.load_playbook(str(tmp_path / "missing-playbook.json"))
+
+
+def test_load_playbook_invalid_payload_raises_validation_error(tmp_path: Path):
+    manager = PlaybookManager()
+    playbook_path = tmp_path / "invalid-playbook.json"
+    playbook_path.write_text('{"version": "bad", "bullets": "not-a-list"}', encoding="utf-8")
+
+    with pytest.raises(ValidationError):
+        manager.load_playbook(str(playbook_path))

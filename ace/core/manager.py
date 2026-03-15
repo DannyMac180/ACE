@@ -1,5 +1,7 @@
+import json
 import uuid
 from datetime import UTC, datetime
+from pathlib import Path
 
 from ace.core.schema import Bullet, DeltaOp, Playbook
 
@@ -14,12 +16,17 @@ class PlaybookManager:
         self.playbook = Playbook(version=0)
 
     def load_playbook(self, path: str) -> Playbook:
-        """Load playbook from disk. To be implemented."""
-        raise NotImplementedError("Persistence not yet implemented")
+        """Load a playbook from a JSON file and replace the in-memory state."""
+        payload = Path(path).read_text(encoding="utf-8")
+        self.playbook = Playbook.model_validate_json(payload)
+        return self.playbook
 
-    def save_playbook(self, path: str):
-        """Save playbook to disk. To be implemented."""
-        raise NotImplementedError("Persistence not yet implemented")
+    def save_playbook(self, path: str) -> None:
+        """Persist the current playbook to a JSON file."""
+        output_path = Path(path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        payload = json.dumps(self.playbook.model_dump(mode="json"), indent=2)
+        output_path.write_text(payload + "\n", encoding="utf-8")
 
     def _find_bullet(self, bullet_id: str) -> Bullet:
         """Find a bullet by ID."""
