@@ -49,8 +49,8 @@ class RefineRunner:
         Pipeline stages:
         1. Curator: Convert reflection to delta operations
         2. Deduplication: Find near-duplicate bullets
-        3. Consolidation: Merge duplicates and transfer counters (stubbed)
-        4. Archival: Remove low-utility bullets (stubbed)
+        3. Consolidation: Merge duplicates and transfer counters
+        4. Archival: Remove low-utility bullets with repeated harmful feedback
 
         Args:
             reflection: The Reflection object to process
@@ -205,7 +205,8 @@ class RefineRunner:
         Archive low-utility bullets based on harmful/helpful ratio.
 
         Bullets are archived if their harmful ratio (harmful / (helpful + harmful))
-        exceeds the archive_ratio threshold.
+        exceeds the archive_ratio threshold and they have accumulated repeated
+        harmful feedback.
 
         Returns:
             List of ARCHIVE operations
@@ -220,7 +221,7 @@ class RefineRunner:
             if total_count > 0:
                 harmful_ratio = bullet.harmful / total_count
 
-                if harmful_ratio > self.archive_ratio:
+                if harmful_ratio > self.archive_ratio and bullet.harmful >= 3:
                     # Create ARCHIVE operation
                     archive_op = RefineOp(op="ARCHIVE", target_ids=[bullet.id])
                     archive_ops.append(archive_op)

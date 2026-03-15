@@ -549,7 +549,7 @@ class RefineRunner:
 **Parameters:**
 - `playbook`: Current playbook to refine against
 - `threshold`: Cosine similarity threshold for deduplication (default: 0.90)
-- `archive_ratio`: Harmful ratio threshold for archival (default: 0.75)
+- `archive_ratio`: Harmful ratio threshold for archival once a bullet has repeated harmful feedback (default: 0.75)
 
 #### `run(reflection) -> RefineResult`
 
@@ -559,7 +559,7 @@ Execute the refinement pipeline.
 1. **Curator**: Convert reflection to delta operations (produces `ADD`/`INCR_*` ops)
 2. **Deduplication**: Find near-duplicate bullets using embedding cosine + MinHash Jaccard
 3. **Consolidation**: Transfer counters from merged bullets to survivors (modifies in-memory playbook only)
-4. **Archival**: Remove low-utility bullets from in-memory playbook (harmful_ratio > archive_ratio)
+4. **Archival**: Remove low-utility bullets from in-memory playbook when `harmful_ratio > archive_ratio` and `harmful >= 3`
 
 > **Implementation Note:** The current implementation operates on the **in-memory playbook** passed at construction. Candidate bullets from `ADD` operations are checked for duplicates but are **not** actually added to the playbook or persisted to the store. To commit new bullets, you must separately call `apply_delta()` with the curator's output. The `_consolidate()` and `_archive()` methods modify `self.playbook.bullets` directly but do not persist changes.
 

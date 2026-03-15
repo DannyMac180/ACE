@@ -45,7 +45,7 @@ def test_refine_with_reflection_processes_curator():
 
     result = refine(reflection, playbook)
 
-    # Curator stage runs successfully (dedup/consolidate/archive are stubbed)
+    # Curator stage runs successfully and refine returns a structured summary.
     assert isinstance(result.merged, int)
     assert isinstance(result.archived, int)
     assert isinstance(result.ops, list)
@@ -502,7 +502,7 @@ def test_consolidate_handles_candidate_ids():
 
 
 def test_archive_policy_removes_high_harmful_ratio_bullets():
-    """Test that archival policy removes bullets with harmful ratio exceeding threshold."""
+    """Test that archival requires both a high harmful ratio and repeated harm."""
     playbook = Playbook(
         version=1,
         bullets=[
@@ -521,6 +521,14 @@ def test_archive_policy_removes_high_harmful_ratio_bullets():
                 tags=["topic:retrieval"],
                 helpful=2,
                 harmful=8,  # ratio: 8/10 = 0.80 (archive, exceeds 0.75)
+            ),
+            Bullet(
+                id="strat-00002b",
+                section="strategies_and_hard_rules",
+                content="Prematurely judged strategy",
+                tags=["topic:retrieval"],
+                helpful=0,
+                harmful=2,  # ratio: 2/2 = 1.0 (keep, not enough harmful evidence)
             ),
             Bullet(
                 id="strat-00003",
@@ -553,14 +561,15 @@ def test_archive_policy_removes_high_harmful_ratio_bullets():
     reflection = Reflection()
     result = refine(reflection, playbook, archive_ratio=0.75)
 
-    # Should archive strat-00002 (0.80) and strat-00005 (0.909)
+    # Should archive only bullets above the ratio threshold with harmful >= 3
     assert result.archived == 2
 
     # Verify archived bullets are removed from playbook
-    assert len(playbook.bullets) == 3
+    assert len(playbook.bullets) == 4
     remaining_ids = [b.id for b in playbook.bullets]
     assert "strat-00001" in remaining_ids
     assert "strat-00002" not in remaining_ids
+    assert "strat-00002b" in remaining_ids
     assert "strat-00003" in remaining_ids
     assert "strat-00004" in remaining_ids  # 0.75 equals threshold, should keep
     assert "strat-00005" not in remaining_ids
@@ -571,3 +580,25 @@ def test_archive_policy_removes_high_harmful_ratio_bullets():
     archived_ids = [op.target_ids[0] for op in archive_ops]
     assert "strat-00002" in archived_ids
     assert "strat-00005" in archived_ids
+
+
+def test_archive_policy_requires_repeated_harmful_feedback():
+    """A single harmful signal should not archive an otherwise unproven bullet."""
+    playbook = Playbook(
+        version=1,
+        bullets=[
+            Bullet(
+                id="strat-00006",
+                section="strategies_and_hard_rules",
+                content="Unproven strategy",
+                tags=["topic:test"],
+                helpful=0,
+                harmful=1,
+            )
+        ],
+    )
+
+    result = refine(Reflection(), playbook, archive_ratio=0.75)
+
+    assert result.archived == 0
+    assert [bullet.id for bullet in playbook.bullets] == ["strat-00006"]
