@@ -247,3 +247,8 @@
   fact: "Later on Saturday, March 14, 2026, the CMO added an explicit Friday, March 20, 2026 post-launch profile decision to the governed week-one launch stack, so the README-first bio, website link, and Monday pin must either be carried into week two with a reason or be replaced by an exact logged next surface before closeout."
   source: "agents/cmo/memory/2026-03-14.md"
   recorded_at: "2026-03-14"
+- id: ace-marketing-2026-03-15-preflight-state-stable
+  status: active
+  fact: "Early on Sunday, March 15, 2026, the CMO re-audited `ACE-10`, `ACE-9`, and the governed week-one launch stack from a live Paperclip heartbeat and found no new repo-side launch blocker or scope redirect; the controlling variable remains Dan completing the seven Sunday preflight tasks and calling the `20:00` ET gate `go` or `blocked` with evidence."
+  source: "agents/cmo/memory/2026-03-15.md"
+  recorded_at: "2026-03-15"
