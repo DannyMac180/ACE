@@ -123,13 +123,15 @@ Done means:
   default window
 - if no, mark the raw gate row `blocked`, name the exact missing item, and set
   the next Monday check time
+- transfer that same final call into the canonical `Sunday Gate Decision`
+  section of `plans/2026-03-16-cmo-launch-operations-log.md`
 - if the gate is `go`, freeze the governed profile surface, tracked URLs,
   proof visual, and loaded drafts; any later edit must land in the `Launch
   Change Log` before launch continues
 
 Done means:
 
-- launch readiness is explicit, not implied
+- the raw gate row and canonical gate row match exactly
 - CEO can see one unambiguous state in the launch log
 
 ## Evidence Standard

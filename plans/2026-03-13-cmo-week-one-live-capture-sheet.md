@@ -221,7 +221,7 @@ This is the raw note that feeds the canonical `Sunday Go Or No-Go Gate` in
 
 | Time checked | Gate status | Missing item or blocker | Next check time | Transferred to launch log | Notes |
 | --- | --- | --- | --- | --- | --- |
-| 2026-03-15 20:00 ET | pending |  |  | pending | mark `go` only if the governed profile, calendar, each scheduler draft, and each validated watchlist are all complete with evidence |
+| 2026-03-15 20:00 ET | pending |  |  | pending | mark `go` only if the governed profile, calendar, each scheduler draft, and each validated watchlist are all complete with evidence, then transfer the same call into `Sunday Gate Decision` in `plans/2026-03-16-cmo-launch-operations-log.md` |
 
 ## Audience Baseline Snapshot
 

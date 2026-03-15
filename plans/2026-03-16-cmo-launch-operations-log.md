@@ -254,6 +254,19 @@ Minimum evidence rule:
   URL, calendar import confirmation, scheduler confirmation, or validated
   watchlist note
 
+## Sunday Gate Decision
+
+Record the final Sunday, March 15, 2026 `20:00` ET readiness call here after
+the raw scratchpad row in
+`plans/2026-03-13-cmo-week-one-live-capture-sheet.md` is updated.
+
+This is the canonical gate record that CEO should use when deciding whether the
+default Monday, March 16, 2026 window can ship.
+
+| Time checked | Gate status | Missing item or blocker | Next check time | Logged by | Status | Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| 2026-03-15 20:00 ET | pending |  |  | Dan | pending | transfer the final raw gate row here the same night; use `go` only when all seven receipt rows are `completed` with evidence, otherwise mark `blocked` and name the exact missing item |
+
 ## Launch Freeze Rule
 
 Use this immediately after the Sunday, March 15, 2026 `20:00` ET gate.

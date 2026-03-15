@@ -237,6 +237,11 @@
   fact: "Later on Saturday, March 14, 2026, the CMO added a governed `Launch Freeze Rule`, canonical `Launch Change Log`, and matching raw change-capture path to the week-one launch stack so no post-preflight copy, tracked URL, proof asset, or profile-surface edit can happen off-book after the Sunday, March 15, 2026 `20:00` ET gate."
   source: "agents/cmo/memory/2026-03-14.md"
   recorded_at: "2026-03-14"
+- id: ace-marketing-2026-03-15-canonical-gate-decision
+  status: active
+  fact: "Later on Sunday, March 15, 2026, the CMO added a dedicated canonical `Sunday Gate Decision` table to `plans/2026-03-16-cmo-launch-operations-log.md` and wired the operator brief, Sunday preflight command card, and live capture sheet so the raw `20:00` ET go-or-blocked call must be transferred into one CEO-visible launch-log record the same night."
+  source: "agents/cmo/memory/2026-03-15.md"
+  recorded_at: "2026-03-15"
 - id: ace-marketing-2026-03-14-attribution-guardrail
   status: active
   fact: "Later on Saturday, March 14, 2026, the CMO added an explicit attribution guardrail across the week-one growth docs: GitHub `utm_*` launch URLs are governed routing labels, measurable click counts must come from real sending-surface analytics such as X link-click data, and any DM or profile route without a reliable click readout must be logged as `unavailable` plus downstream reply, DM, issue, or setup evidence instead of a guessed total."

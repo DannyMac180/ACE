@@ -156,6 +156,10 @@ not depend on paging through the full operator brief mid-motion.
 
 - by `20:00` ET, every row in the `Sunday Preflight Completion Receipt` must be
   either `completed` with evidence or explicitly `blocked` with a named blocker
+- after the raw gate row is decided, transfer that exact decision into the
+  `Sunday Gate Decision` section of
+  `plans/2026-03-16-cmo-launch-operations-log.md` the same night so CEO has
+  one canonical readiness record
 - do not assume Monday, March 16, 2026 is ready just because the drafts exist
   in the repo; the live profile, calendar, scheduler, and watchlist checks are
   the real go-or-no-go inputs
