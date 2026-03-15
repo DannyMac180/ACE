@@ -10,10 +10,12 @@ import logging
 import time
 import uuid
 from contextlib import asynccontextmanager
+from html import escape
 from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 
 from ace.core.config import ACEConfig, load_config
 from ace.core.logging_utils import configure_logging
@@ -21,7 +23,7 @@ from ace.core.merge import Delta as MergeDelta
 from ace.core.merge import apply_delta
 from ace.core.metrics import MetricsTracker, get_tracker
 from ace.core.retrieve import Retriever
-from ace.core.schema import Playbook
+from ace.core.schema import Bullet, Playbook, Section
 from ace.core.storage.store_adapter import Store
 from ace.curator.curator import curate
 from ace.generator.schemas import TrajectoryDoc
@@ -45,6 +47,27 @@ from .schema import (
 )
 
 logger = logging.getLogger(__name__)
+
+SECTION_ORDER: tuple[Section, ...] = (
+    "strategies_and_hard_rules",
+    "code_snippets_and_templates",
+    "troubleshooting_and_pitfalls",
+    "domain_facts_and_references",
+)
+
+SECTION_LABELS: dict[Section, str] = {
+    "strategies_and_hard_rules": "Strategies and Hard Rules",
+    "code_snippets_and_templates": "Code Snippets and Templates",
+    "troubleshooting_and_pitfalls": "Troubleshooting and Pitfalls",
+    "domain_facts_and_references": "Domain Facts and References",
+}
+
+SECTION_DESCRIPTIONS: dict[Section, str] = {
+    "strategies_and_hard_rules": "Operating heuristics, policies, and durable tactics.",
+    "code_snippets_and_templates": "Reusable implementation patterns and scaffolds.",
+    "troubleshooting_and_pitfalls": "Failure signatures, debugging cues, and avoidance rules.",
+    "domain_facts_and_references": "Reference material and stable domain knowledge.",
+}
 
 
 class OnlineServer:
@@ -355,6 +378,501 @@ class OnlineServer:
         """Return the current playbook as JSON-serializable data."""
         return self.store.load_playbook().model_dump()
 
+    def render_playbook_view(self) -> str:
+        """Render the current playbook as a lightweight HTML dashboard."""
+        playbook = self.store.load_playbook()
+        bullets_by_section: dict[Section, list[Bullet]] = {section: [] for section in SECTION_ORDER}
+        all_tags: list[str] = []
+        helpful_total = 0
+        harmful_total = 0
+        recently_used = 0
+
+        for bullet in playbook.bullets:
+            bullets_by_section.setdefault(bullet.section, []).append(bullet)
+            all_tags.extend(bullet.tags)
+            helpful_total += bullet.helpful
+            harmful_total += bullet.harmful
+            if bullet.last_used is not None:
+                recently_used += 1
+
+        def section_sort_key(item: Bullet) -> tuple[int, int, str]:
+            return (-item.helpful, item.harmful, item.id)
+
+        section_markup: list[str] = []
+        total_bullets = len(playbook.bullets)
+        top_tags = sorted({tag for tag in all_tags})[:12]
+
+        for section in SECTION_ORDER:
+            bullets = sorted(bullets_by_section.get(section, []), key=section_sort_key)
+            cards = "".join(self._render_bullet_card(bullet) for bullet in bullets)
+            empty_state = (
+                ""
+                if bullets
+                else "<div class='empty-state'>No bullets stored in this section yet.</div>"
+            )
+            section_markup.append(
+                f"""
+                <section class="section-panel" data-section="{escape(section)}">
+                  <div class="section-header">
+                    <div>
+                      <p class="section-kicker">{escape(section.replace('_', ' '))}</p>
+                      <h2>{escape(SECTION_LABELS[section])}</h2>
+                    </div>
+                    <span class="section-count">{len(bullets)} bullets</span>
+                  </div>
+                  <p class="section-description">{escape(SECTION_DESCRIPTIONS[section])}</p>
+                  <div class="bullet-grid">
+                    {cards or empty_state}
+                  </div>
+                </section>
+                """
+            )
+
+        tag_markup = "".join(
+            f"<span class='tag-chip'>{escape(tag)}</span>"
+            for tag in top_tags
+        ) or "<span class='tag-chip muted'>No tags yet</span>"
+
+        return f"""<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ACE Playbook Viewer</title>
+    <style>
+      :root {{
+        --bg: #f4efe2;
+        --surface: rgba(255, 252, 245, 0.86);
+        --surface-strong: #fff9ef;
+        --text: #1f2a1f;
+        --muted: #5d6758;
+        --line: rgba(31, 42, 31, 0.12);
+        --accent: #1e6b52;
+        --accent-soft: rgba(30, 107, 82, 0.12);
+        --warn: #8a4b1f;
+        --shadow: 0 20px 40px rgba(31, 42, 31, 0.10);
+      }}
+
+      * {{ box-sizing: border-box; }}
+
+      body {{
+        margin: 0;
+        font-family: "Avenir Next", "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(30, 107, 82, 0.18), transparent 32%),
+          radial-gradient(circle at top right, rgba(138, 75, 31, 0.15), transparent 28%),
+          linear-gradient(180deg, #f9f4e8 0%, var(--bg) 42%, #efe5d0 100%);
+      }}
+
+      main {{
+        width: min(1180px, calc(100vw - 32px));
+        margin: 0 auto;
+        padding: 32px 0 48px;
+      }}
+
+      .hero {{
+        background: linear-gradient(135deg, rgba(255, 249, 239, 0.96), rgba(255, 252, 245, 0.72));
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }}
+
+      .hero-inner {{
+        display: grid;
+        gap: 24px;
+        grid-template-columns: 2fr 1fr;
+        padding: 32px;
+      }}
+
+      .eyebrow {{
+        display: inline-flex;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-size: 0.82rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }}
+
+      h1, h2, h3, .stat-number {{
+        font-family: "Iowan Old Style", "Palatino Linotype", serif;
+      }}
+
+      h1 {{
+        margin: 14px 0 12px;
+        font-size: clamp(2.4rem, 4vw, 4.4rem);
+        line-height: 0.98;
+      }}
+
+      .hero-copy p,
+      .section-description,
+      .bullet-meta,
+      .search-note {{
+        color: var(--muted);
+      }}
+
+      .hero-copy p {{
+        margin: 0;
+        max-width: 62ch;
+        font-size: 1rem;
+        line-height: 1.6;
+      }}
+
+      .stats-grid {{
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }}
+
+      .stat-card {{
+        padding: 18px;
+        border-radius: 20px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+      }}
+
+      .stat-label {{
+        display: block;
+        color: var(--muted);
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }}
+
+      .stat-number {{
+        display: block;
+        margin-top: 8px;
+        font-size: 2rem;
+      }}
+
+      .controls {{
+        margin-top: 20px;
+        display: grid;
+        gap: 16px;
+        grid-template-columns: 1.2fr 1fr;
+        align-items: start;
+      }}
+
+      .search-panel,
+      .tag-panel,
+      .section-panel {{
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+      }}
+
+      .search-panel,
+      .tag-panel {{
+        padding: 20px;
+      }}
+
+      .search-label {{
+        display: block;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+      }}
+
+      .search-input {{
+        width: 100%;
+        margin-top: 10px;
+        padding: 14px 16px;
+        border-radius: 16px;
+        border: 1px solid rgba(31, 42, 31, 0.16);
+        background: var(--surface-strong);
+        color: var(--text);
+        font-size: 1rem;
+      }}
+
+      .search-input:focus {{
+        outline: 2px solid rgba(30, 107, 82, 0.22);
+        border-color: var(--accent);
+      }}
+
+      .search-note {{
+        margin: 10px 0 0;
+        font-size: 0.92rem;
+      }}
+
+      .tag-panel h3 {{
+        margin: 0 0 12px;
+        font-size: 1.1rem;
+      }}
+
+      .tag-row {{
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }}
+
+      .tag-chip {{
+        display: inline-flex;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(31, 42, 31, 0.06);
+        color: var(--text);
+        font-size: 0.92rem;
+      }}
+
+      .tag-chip.muted {{
+        color: var(--muted);
+      }}
+
+      .sections {{
+        margin-top: 24px;
+        display: grid;
+        gap: 18px;
+      }}
+
+      .section-panel {{
+        padding: 24px;
+      }}
+
+      .section-header {{
+        display: flex;
+        gap: 16px;
+        justify-content: space-between;
+        align-items: baseline;
+      }}
+
+      .section-kicker {{
+        margin: 0 0 8px;
+        color: var(--accent);
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }}
+
+      .section-header h2 {{
+        margin: 0;
+        font-size: 1.8rem;
+      }}
+
+      .section-count {{
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(31, 42, 31, 0.06);
+        color: var(--muted);
+        white-space: nowrap;
+      }}
+
+      .section-description {{
+        margin: 10px 0 0;
+        line-height: 1.5;
+      }}
+
+      .bullet-grid {{
+        margin-top: 20px;
+        display: grid;
+        gap: 14px;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      }}
+
+      .bullet-card {{
+        padding: 18px;
+        border-radius: 20px;
+        background: var(--surface-strong);
+        border: 1px solid rgba(31, 42, 31, 0.08);
+      }}
+
+      .bullet-id {{
+        font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+        font-size: 0.85rem;
+        color: var(--accent);
+      }}
+
+      .bullet-content {{
+        margin: 12px 0 14px;
+        font-size: 1rem;
+        line-height: 1.55;
+      }}
+
+      .bullet-meta {{
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        font-size: 0.88rem;
+      }}
+
+      .bullet-tags {{
+        margin-top: 12px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }}
+
+      .bullet-tag {{
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(30, 107, 82, 0.10);
+        color: var(--accent);
+        font-size: 0.82rem;
+      }}
+
+      .empty-state {{
+        padding: 24px;
+        border-radius: 18px;
+        border: 1px dashed rgba(31, 42, 31, 0.18);
+        color: var(--muted);
+        text-align: center;
+      }}
+
+      .is-hidden {{
+        display: none !important;
+      }}
+
+      @media (max-width: 860px) {{
+        .hero-inner,
+        .controls {{
+          grid-template-columns: 1fr;
+        }}
+
+        .stats-grid {{
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }}
+      }}
+
+      @media (max-width: 560px) {{
+        main {{
+          width: min(100vw - 20px, 1180px);
+          padding-top: 20px;
+        }}
+
+        .hero-inner,
+        .section-panel,
+        .search-panel,
+        .tag-panel {{
+          padding: 18px;
+        }}
+
+        .stats-grid {{
+          grid-template-columns: 1fr;
+        }}
+
+        .section-header {{
+          flex-direction: column;
+          align-items: flex-start;
+        }}
+      }}
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <div class="hero-inner">
+          <div class="hero-copy">
+            <span class="eyebrow">ACE Playbook Viewer</span>
+            <h1>Inspect the live playbook without losing the JSON contract.</h1>
+            <p>
+              This view sits on top of the same store that powers retrieval and
+              adaptation. Use it to audit section balance, bullet quality, and tag
+              coverage before you refine or patch the playbook.
+            </p>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-label">Version</span>
+              <span class="stat-number">{playbook.version}</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Bullets</span>
+              <span class="stat-number">{total_bullets}</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Helpful Marks</span>
+              <span class="stat-number">{helpful_total}</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Used at Least Once</span>
+              <span class="stat-number">{recently_used}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="controls">
+        <div class="search-panel">
+          <label class="search-label" for="playbook-search">Filter bullets</label>
+          <input
+            class="search-input"
+            id="playbook-search"
+            type="search"
+            placeholder="Search by id, content, section, or tag"
+          />
+          <p class="search-note">
+            Harmful marks tracked: <strong>{harmful_total}</strong>.
+            Filtering happens in-browser on the live page.
+          </p>
+        </div>
+        <div class="tag-panel">
+          <h3>Observed tags</h3>
+          <div class="tag-row">{tag_markup}</div>
+        </div>
+      </section>
+
+      <section class="sections" id="playbook-sections">
+        {''.join(section_markup)}
+      </section>
+    </main>
+
+    <script>
+      const searchInput = document.getElementById("playbook-search");
+      const cards = Array.from(document.querySelectorAll(".bullet-card"));
+      const sections = Array.from(document.querySelectorAll(".section-panel"));
+
+      function updateVisibility() {{
+        const query = searchInput.value.trim().toLowerCase();
+
+        for (const card of cards) {{
+          const haystack = card.dataset.search || "";
+          card.classList.toggle("is-hidden", query.length > 0 && !haystack.includes(query));
+        }}
+
+        for (const section of sections) {{
+          const visibleCards = section.querySelectorAll(".bullet-card:not(.is-hidden)");
+          const emptyState = section.querySelector(".empty-state");
+          section.classList.toggle("is-hidden", query.length > 0 && visibleCards.length === 0);
+          if (emptyState) {{
+            emptyState.classList.toggle("is-hidden", query.length > 0);
+          }}
+        }}
+      }}
+
+      searchInput.addEventListener("input", updateVisibility);
+    </script>
+  </body>
+</html>
+"""
+
+    @staticmethod
+    def _render_bullet_card(bullet: Bullet) -> str:
+        """Render a single bullet card for the HTML playbook view."""
+        tags = "".join(
+            f"<span class='bullet-tag'>{escape(tag)}</span>"
+            for tag in bullet.tags
+        ) or "<span class='bullet-tag'>untagged</span>"
+        search_text = " ".join([bullet.id, bullet.section, bullet.content, *bullet.tags]).lower()
+        last_used = bullet.last_used.isoformat() if bullet.last_used is not None else "Never"
+        added_at = bullet.added_at.isoformat()
+        return f"""
+        <article class="bullet-card" data-search="{escape(search_text, quote=True)}">
+          <div class="bullet-id">{escape(bullet.id)}</div>
+          <p class="bullet-content">{escape(bullet.content)}</p>
+          <div class="bullet-meta">
+            <span>Helpful {bullet.helpful}</span>
+            <span>Harmful {bullet.harmful}</span>
+            <span>Added {escape(added_at)}</span>
+            <span>Last used {escape(last_used)}</span>
+          </div>
+          <div class="bullet-tags">{tags}</div>
+        </article>
+        """
+
     def _update_avg_adaptation_ms(self, new_ms: float) -> None:
         """Update running average of adaptation time."""
         n = self.stats.requests_processed
@@ -530,6 +1048,11 @@ def create_app(
     async def playbook() -> dict[str, Any]:
         """Get the full playbook."""
         return get_server().get_playbook()
+
+    @app.get("/playbook/view", response_class=HTMLResponse)
+    async def playbook_view() -> HTMLResponse:
+        """Render the playbook as a human-friendly HTML dashboard."""
+        return HTMLResponse(get_server().render_playbook_view())
 
     @app.get("/playbook/version")
     async def playbook_version() -> dict[str, int]:

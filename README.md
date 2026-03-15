@@ -97,7 +97,7 @@ sequenceDiagram
 - `ace evolve`: run reflect -> curate -> commit from an explicit task document.
 - `ace pipeline`: either run the built-in generator loop or process external execution feedback with `--feedback`.
 - `ace refine`: merge near-duplicates and archive low-utility bullets.
-- `ace serve`: start the FastAPI serving layer with `/health`, `/retrieve`, `/feedback`, `/stats`, `/metrics`, and `/playbook/version`.
+- `ace serve`: start the FastAPI serving layer with `/health`, `/retrieve`, `/feedback`, `/stats`, `/metrics`, `/playbook`, `/playbook/view`, and `/playbook/version`.
 - `python -m ace_mcp_server`: expose the `ace_*` tool surface over FastMCP.
 
 ## Quickstart
@@ -130,6 +130,13 @@ Start the MCP server:
 
 ```bash
 python -m ace_mcp_server
+```
+
+Start the HTTP server and open the playbook viewer:
+
+```bash
+ace serve --host 127.0.0.1 --port 8000
+# then visit http://127.0.0.1:8000/playbook/view
 ```
 
 Notes:

@@ -777,6 +777,8 @@ def run_server(
 | `/health` | GET | Health check, returns `{"status": "ok", "mode": "online"}` |
 | `/stats` | GET | Session statistics including warmup info |
 | `/metrics` | GET | Prometheus scrape endpoint for session, playbook, and validation metrics |
+| `/playbook` | GET | Full playbook as JSON |
+| `/playbook/view` | GET | Human-friendly HTML dashboard for playbook inspection |
 | `/playbook/version` | GET | Current playbook version |
 | `/retrieve` | POST | Retrieve bullets for a query |
 | `/feedback` | POST | Process execution feedback and adapt playbook |

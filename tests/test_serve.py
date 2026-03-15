@@ -2,6 +2,7 @@
 
 import json
 import tempfile
+from datetime import UTC, datetime
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -9,6 +10,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from ace.core.metrics import ValidationMetrics
+from ace.core.schema import Bullet
 from ace.reflector.schema import BulletTag, CandidateBullet, Reflection
 from ace.serve.runner import OnlineServer, create_app
 from ace.serve.schema import (
@@ -739,6 +741,34 @@ class TestCreateApp:
                     response = client.get("/playbook")
                     assert response.status_code == 200
                     assert response.json() == {"version": 1, "bullets": []}
+
+    def test_playbook_view_endpoint(self, mock_store):
+        playbook = mock_store.load_playbook.return_value
+        playbook.bullets = [
+            Bullet(
+                id="strat-001",
+                section="strategies_and_hard_rules",
+                content="Prefer hybrid retrieval with deterministic reranking.",
+                tags=["topic:retrieval", "repo:ace"],
+                helpful=3,
+                harmful=1,
+                last_used=datetime(2026, 3, 14, 12, 0, tzinfo=UTC),
+                added_at=datetime(2026, 3, 10, 9, 30, tzinfo=UTC),
+            )
+        ]
+
+        with patch("ace.serve.runner.Reflector"):
+            with patch("ace.serve.runner.Retriever"):
+                app = create_app(store=mock_store)
+                with TestClient(app) as client:
+                    response = client.get("/playbook/view")
+
+        assert response.status_code == 200
+        assert response.headers["content-type"].startswith("text/html;")
+        assert "ACE Playbook Viewer" in response.text
+        assert "strat-001" in response.text
+        assert "Prefer hybrid retrieval with deterministic reranking." in response.text
+        assert "topic:retrieval" in response.text
 
 
 class TestAutoRefine:
