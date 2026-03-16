@@ -233,6 +233,15 @@ def _relative_doc_link(doc_path: Path, target_path: Path) -> str:
 
 
 def write_doc(output_path: Path, asset_dir: Path) -> None:
+    terminal_session_link = _relative_doc_link(
+        output_path, asset_dir / "terminal-session.txt"
+    )
+    still_link = _relative_doc_link(output_path, asset_dir / "still.svg")
+    caption_script_link = _relative_doc_link(output_path, asset_dir / "caption-script.md")
+    what_you_see_link = _relative_doc_link(output_path, asset_dir / "what-you-see.md")
+    demo_task_link = _relative_doc_link(output_path, asset_dir / "demo-task.json")
+    reflection_link = _relative_doc_link(output_path, asset_dir / "reflection.json")
+    delta_link = _relative_doc_link(output_path, asset_dir / "delta.json")
     doc = textwrap.dedent(
         f"""\
         # ACE proof demo asset
@@ -245,13 +254,13 @@ def write_doc(output_path: Path, asset_dir: Path) -> None:
 
         ## Files
 
-        - [terminal-session.txt]({_relative_doc_link(output_path, asset_dir / 'terminal-session.txt')})
-        - [still.svg]({_relative_doc_link(output_path, asset_dir / 'still.svg')})
-        - [caption-script.md]({_relative_doc_link(output_path, asset_dir / 'caption-script.md')})
-        - [what-you-see.md]({_relative_doc_link(output_path, asset_dir / 'what-you-see.md')})
-        - [demo-task.json]({_relative_doc_link(output_path, asset_dir / 'demo-task.json')})
-        - [reflection.json]({_relative_doc_link(output_path, asset_dir / 'reflection.json')})
-        - [delta.json]({_relative_doc_link(output_path, asset_dir / 'delta.json')})
+        - [terminal-session.txt]({terminal_session_link})
+        - [still.svg]({still_link})
+        - [caption-script.md]({caption_script_link})
+        - [what-you-see.md]({what_you_see_link})
+        - [demo-task.json]({demo_task_link})
+        - [reflection.json]({reflection_link})
+        - [delta.json]({delta_link})
 
         ## Recording notes
 
