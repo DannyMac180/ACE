@@ -265,7 +265,7 @@ default Monday, March 16, 2026 window can ship.
 
 | Time checked | Gate status | Missing item or blocker | Next check time | Logged by | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2026-03-15 20:00 ET | pending |  |  | Dan | pending | transfer the final raw gate row here the same night; use `go` only when all seven receipt rows are `completed` with evidence, otherwise mark `blocked` and name the exact missing item |
+| 2026-03-16 16:14 ET | blocked | Sunday gate never completed and the Monday same-day recovery standard expired without logged proof for the governed profile surface, imported calendar, connected Monday draft, or validated Tuesday watchlist | 2026-03-17 09:30 ET | CMO | blocked | Monday, March 16, 2026 can no longer ship the anchor thread; follow the dated recovery sequence in `plans/2026-03-16-cmo-launch-recovery-brief.md` unless a newer logged change supersedes it |
 
 ## Missed Gate Recovery Trigger
 
@@ -281,6 +281,11 @@ Use `plans/2026-03-16-cmo-launch-recovery-brief.md` if the row above is still
 - if that standard is missed, log the slip and follow the dated recovery
   sequence in `plans/2026-03-16-cmo-launch-recovery-brief.md` instead of
   improvising an untracked same-day substitute
+- as of `2026-03-16 16:14` ET, the standard has been missed with no governed
+  proof logged, so the active launch state is the dated slip path: Tuesday,
+  March 17, 2026 anchor thread, Thursday, March 19, 2026 proof post, and
+  Monday, March 23, 2026 adoption post unless a newer logged change supersedes
+  it
 
 ## Launch Freeze Rule
 
@@ -307,7 +312,7 @@ If nothing changes after the Sunday gate, leave the default row untouched.
 
 | Time | Changed surface | Affected motion or code | Why change was required | Re-verified against canonical source by | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-|  |  |  |  |  | pending | log every post-freeze launch change before publish, not after metrics arrive |
+| 2026-03-16 16:14 ET | publish schedule | `w1_thread_readme`, `w1_proof_demo`, `w1_adoption_example` | the Monday same-day recovery standard expired without logged operator proof, so the default March 16 or 18 or 20 sequence is no longer valid | CMO | slipped | new working dates are Tuesday, March 17, 2026 `11:00-11:30` ET for the anchor thread, Thursday, March 19, 2026 `11:00-11:30` ET for the proof post, and Monday, March 23, 2026 `10:30-11:00` ET for the adoption post unless a newer logged change supersedes this row |
 
 ## Live Launch Contingency Rules
 
@@ -336,7 +341,7 @@ issue that could force week-one drift.
 
 | Date | Motion | Failure mode | What broke | Containment move | Next check time | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-|  |  |  |  |  |  | pending | log every live publish-window problem here even if it was fixed within minutes |
+| 2026-03-16 | Monday anchor recovery window | missed recovery cutoff | by `16:14` ET there is still no logged Sunday gate completion or Monday same-day ship proof, so the default Monday publish can no longer be treated as live | stop Monday publishing, keep `ACE-10` blocked, and move to the dated recovery sequence recorded in the change log | 2026-03-17 09:30 ET | blocked | operator still needs to complete the governed profile, calendar, draft, and watchlist proof surfaces before the slipped Tuesday sequence can be treated as ready |
 
 ## Immediate Publish QA Rule
 

@@ -257,6 +257,11 @@
   fact: "Early on Sunday, March 15, 2026, the CMO re-audited `ACE-10`, `ACE-9`, and the governed week-one launch stack from a live Paperclip heartbeat and found no new repo-side launch blocker or scope redirect; the controlling variable remains Dan completing the seven Sunday preflight tasks and calling the `20:00` ET gate `go` or `blocked` with evidence."
   source: "agents/cmo/memory/2026-03-15.md"
   recorded_at: "2026-03-15"
+- id: ace-marketing-2026-03-16-missed-recovery-cutoff
+  status: active
+  fact: "On Monday, March 16, 2026 at 16:14 ET, the ACE week-one launch missed the recovery brief's `14:00` ET same-day ship standard with no logged Sunday gate evidence or operator proof, so the canonical schedule slipped to Tuesday, March 17, 2026 for the anchor thread, Thursday, March 19, 2026 for the proof post, and Monday, March 23, 2026 for the adoption post unless a newer logged change supersedes it."
+  source: "plans/2026-03-16-cmo-launch-operations-log.md"
+  recorded_at: "2026-03-16"
 - id: ace-marketing-2026-03-15-launch-ops-blocked-on-preflight
   status: active
   fact: "At `2026-03-15 03:36 EDT`, the CMO confirmed `ACE-10` had no remaining repo-side launch work worth patching; week-one execution is now blocked on Dan completing the seven Sunday preflight receipt rows, filling the canonical `Sunday Gate Decision`, and providing evidence before the `20:00` ET readiness cutoff."

@@ -178,6 +178,20 @@ not depend on paging through the full operator brief mid-motion.
   Log` in `plans/2026-03-16-cmo-launch-operations-log.md` and then re-verified
   against the canonical source
 
+## Current Recovery Status
+
+As of Monday, March 16, 2026 at `16:14` ET, the same-day recovery standard has
+been missed with no governed proof logged in the Sunday receipt or gate row.
+
+- do not publish the Monday anchor thread from memory or from the old default
+  window
+- treat the launch as slipped to Tuesday, March 17, 2026 for the anchor
+  thread, Thursday, March 19, 2026 for the proof post, and Monday, March 23,
+  2026 for the adoption post
+- before any attempt to override those dates, update
+  `plans/2026-03-16-cmo-launch-operations-log.md` first so the live schedule
+  is explicit instead of implied
+
 ## Default Publish And Check Windows
 
 Use these as the default scheduler and follow-up windows in Eastern Time.
