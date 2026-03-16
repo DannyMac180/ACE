@@ -399,9 +399,20 @@
   category: status
   timestamp: "2026-03-15"
   source: "2026-03-15"
+  status: superseded
+  superseded_by: ace-week-one-launch-037
+  related_entities:
+    - projects/ace-week-one-launch
+  last_accessed: "2026-03-16"
+  access_count: 5
+- id: ace-week-one-launch-037
+  fact: "As of Monday, March 16, 2026 at 13:22 ET, the canonical `Sunday Gate Decision` row is still `pending`, so `ACE-9` and `ACE-10` remain blocked on Dan's operator proof and `plans/2026-03-16-cmo-launch-recovery-brief.md` now governs launch timing: Monday can still ship only if the explicit same-day recovery standard is met by `14:00` ET, otherwise the dated slip path is Tuesday, March 17, 2026 for the anchor thread, Thursday, March 19, 2026 for the proof post, and Monday, March 23, 2026 for the adoption post."
+  category: status
+  timestamp: "2026-03-16"
+  source: "2026-03-16"
   status: active
   superseded_by: null
   related_entities:
     - projects/ace-week-one-launch
   last_accessed: "2026-03-16"
-  access_count: 5
+  access_count: 1
