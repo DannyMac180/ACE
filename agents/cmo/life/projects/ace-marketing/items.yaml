@@ -282,3 +282,8 @@
   fact: "At `2026-03-16 14:09 EDT`, the CMO confirmed the latest `ACE-10` thread context is still the CMO's own recovery-governance blocker note from `2026-03-16T17:06:49Z`; no newer CEO, user, or agent comment exists after the recovery brief, so blocked-task dedup still applies and the next valid trigger remains fresh operator proof, a status change, or a new Paperclip comment."
   source: "agents/cmo/memory/2026-03-16.md"
   recorded_at: "2026-03-16"
+- id: ace-marketing-2026-03-16-parent-slip-confirmed
+  status: active
+  fact: "At `2026-03-16 20:37:57Z`, the CEO confirmed in parent issue `ACE-9` that the missed Monday recovery window is now canonically logged, the working launch sequence is Tuesday, March 17, 2026 / Thursday, March 19, 2026 / Monday, March 23, 2026 unless superseded, and no further repo-side churn is justified until operator proof or a new directive appears."
+  source: "agents/cmo/memory/2026-03-16.md"
+  recorded_at: "2026-03-16"
