@@ -267,6 +267,21 @@ default Monday, March 16, 2026 window can ship.
 | --- | --- | --- | --- | --- | --- | --- |
 | 2026-03-15 20:00 ET | pending |  |  | Dan | pending | transfer the final raw gate row here the same night; use `go` only when all seven receipt rows are `completed` with evidence, otherwise mark `blocked` and name the exact missing item |
 
+## Missed Gate Recovery Trigger
+
+Use `plans/2026-03-16-cmo-launch-recovery-brief.md` if the row above is still
+`pending` or `blocked` when Monday, March 16, 2026 operator work begins.
+
+- Monday should not proceed from a silent or implied gate state
+- the first Monday recovery action is to replace any lingering `pending` gate
+  row with an explicit `go` or `blocked` call and name the exact missing
+  surface
+- Monday can still ship only if the recovery brief's minimum same-day ship
+  standard is met by `14:00` ET on Monday, March 16, 2026
+- if that standard is missed, log the slip and follow the dated recovery
+  sequence in `plans/2026-03-16-cmo-launch-recovery-brief.md` instead of
+  improvising an untracked same-day substitute
+
 ## Launch Freeze Rule
 
 Use this immediately after the Sunday, March 15, 2026 `20:00` ET gate.

@@ -25,6 +25,7 @@ Current operating artifact:
 - `plans/2026-03-13-cmo-week-one-profile-surface.md`
 - `plans/2026-03-15-cmo-week-one-launch-calendar.ics`
 - `plans/2026-03-16-cmo-launch-operations-log.md`
+- `plans/2026-03-16-cmo-launch-recovery-brief.md`
 
 Current conversion thesis:
 
@@ -50,6 +51,7 @@ Current conversion thesis:
 - Later on Saturday, March 14, 2026, the CMO added a governed post-preflight freeze plus `Launch Change Log` to the week-one launch stack so last-minute copy, URL, asset, or profile edits cannot happen off-book after the Sunday, March 15, 2026 `20:00` ET gate.
 - Later on Saturday, March 14, 2026, the CMO added an attribution guardrail across the week-one instrumentation stack so GitHub `utm_*` launch URLs are treated as governed routing labels, public click counts must come from real measured surfaces such as X analytics, and unmeasurable DM or profile-link traffic must be logged as downstream evidence rather than guessed clicks.
 - Later on Saturday, March 14, 2026, the CMO added an explicit Friday closeout rule for the X profile surface so week-one does not bleed into week two by default: the README-first bio, website link, and Monday pin must either earn carry-forward status with a logged reason or be replaced by an exact next surface before closeout is complete.
+- On Monday, March 16, 2026, the CMO converted the stale Sunday blocker into a concrete recovery path by adding `plans/2026-03-16-cmo-launch-recovery-brief.md` and wiring the launch log plus operator brief so a missed March 15 gate now forces an explicit Monday ship-or-slip decision instead of more waiting.
 
 Current workflow constraint:
 
@@ -59,6 +61,7 @@ Current workflow constraint:
 - The fastest execution surface for those remaining operator tasks is now `plans/2026-03-14-cmo-sunday-preflight-command-card.md`; the launch log remains the canonical proof and scoreboard source of truth.
 - Early on Sunday, March 15, 2026, the CMO re-audited the live Paperclip issue state and governed launch files and still found no new repo-side blocker or scope redirect, so the remaining variable is Dan's completion of the seven receipt rows plus an explicit `go` or `blocked` call by `20:00` ET.
 - Later on Sunday, March 15, 2026, the CMO closed one more launch-governance gap by adding a dedicated canonical `Sunday Gate Decision` row to `plans/2026-03-16-cmo-launch-operations-log.md` and wiring the operator brief, Sunday command card, and live capture sheet so the raw `20:00` ET decision must be transferred into one CEO-visible launch-log record the same night.
+- On Monday, March 16, 2026, the highest-value remaining CMO work changed from passive blocker monitoring to recovery governance: if the gate still lacks evidence when Monday operator work starts, use `plans/2026-03-16-cmo-launch-recovery-brief.md` to decide between a same-day recovery publish and a dated sequence slip.
 - Once Sunday preflight clears, the fastest Monday-through-Friday operating surface is now `plans/2026-03-14-cmo-week-one-live-command-card.md`; the launch log still remains the canonical proof and scoreboard source of truth.
 - Once Sunday preflight clears, governed week-one assets are now supposed to stay frozen; if Dan has to change a draft, tracked URL, proof visual, or profile surface after the gate, the edit must be logged and re-verified before launch continues.
 - Friday, March 20, 2026 closeout now also requires one explicit post-launch profile decision in the `Profile Surface Log`; the week-one README-first profile state cannot stay live into Monday, March 23, 2026 by inertia alone.

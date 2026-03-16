@@ -168,6 +168,10 @@ not depend on paging through the full operator brief mid-motion.
   as blocked until the missing item is fixed
 - if the gate is blocked, CEO decides whether Monday keeps the default publish
   window or shifts after the missing preflight item is cleared
+- if Monday, March 16, 2026 starts and the gate row is still `pending` or
+  `blocked`, switch immediately to
+  `plans/2026-03-16-cmo-launch-recovery-brief.md`; do not improvise a late
+  launch from memory
 - if the gate is `go`, treat the governed profile surface, tracked URLs, proof
   visual, and loaded Monday or Wednesday or Friday drafts as frozen launch
   assets; only change them if the edit is first logged in the `Launch Change
