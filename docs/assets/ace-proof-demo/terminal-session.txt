@@ -15,9 +15,9 @@ Found 3 bullets:
   Ensure retrieval queries are specific and context-aware to prevent irrelevant or conflicting information from polluting the context.
   Tags: topic:retrieval, discipline:hygiene
   Helpful: 0 | Harmful: 0
-[trbl-00001] (troubleshooting_and_pitfalls)
-  Reflector/Curator must emit valid JSON without markdown fencing; reject and retry on parse errors.
-  Tags: topic:parsing, robustness
+[tmpl-00001] (code_snippets_and_templates)
+  Unit test template for merge: apply Delta ops and assert version increment + idempotency.
+  Tags: topic:testing
   Helpful: 0 | Harmful: 0
 
 $ /home/dan-mcateer/dev/ACE/.venv/bin/python /home/dan-mcateer/dev/ACE/scripts/demo_reflect.py demo-task.json
@@ -72,7 +72,7 @@ $ ACE_DB_URL=ace.db ACE_EMBEDDINGS=mock .venv/bin/python -m ace.cli curate --ref
       "op": "ADD",
       "target_id": null,
       "new_bullet": {
-        "id": "stra-9ea3af12",
+        "id": "stra-1926460c",
         "section": "strategies_and_hard_rules",
         "content": "When retrieval returns a generic result, tighten the query with the concrete task and tool names before reflecting.",
         "tags": [

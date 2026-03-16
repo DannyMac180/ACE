@@ -227,6 +227,11 @@ def write_explainer(output_path: Path) -> None:
     output_path.write_text(explainer, encoding="utf-8")
 
 
+def _relative_doc_link(doc_path: Path, target_path: Path) -> str:
+    """Return a markdown-friendly relative link from the doc to a target file."""
+    return Path(os.path.relpath(target_path, start=doc_path.parent)).as_posix()
+
+
 def write_doc(output_path: Path, asset_dir: Path) -> None:
     doc = textwrap.dedent(
         f"""\
@@ -240,13 +245,13 @@ def write_doc(output_path: Path, asset_dir: Path) -> None:
 
         ## Files
 
-        - [terminal-session.txt]({asset_dir.relative_to(REPO_ROOT) / 'terminal-session.txt'})
-        - [still.svg]({asset_dir.relative_to(REPO_ROOT) / 'still.svg'})
-        - [caption-script.md]({asset_dir.relative_to(REPO_ROOT) / 'caption-script.md'})
-        - [what-you-see.md]({asset_dir.relative_to(REPO_ROOT) / 'what-you-see.md'})
-        - [demo-task.json]({asset_dir.relative_to(REPO_ROOT) / 'demo-task.json'})
-        - [reflection.json]({asset_dir.relative_to(REPO_ROOT) / 'reflection.json'})
-        - [delta.json]({asset_dir.relative_to(REPO_ROOT) / 'delta.json'})
+        - [terminal-session.txt]({_relative_doc_link(output_path, asset_dir / 'terminal-session.txt')})
+        - [still.svg]({_relative_doc_link(output_path, asset_dir / 'still.svg')})
+        - [caption-script.md]({_relative_doc_link(output_path, asset_dir / 'caption-script.md')})
+        - [what-you-see.md]({_relative_doc_link(output_path, asset_dir / 'what-you-see.md')})
+        - [demo-task.json]({_relative_doc_link(output_path, asset_dir / 'demo-task.json')})
+        - [reflection.json]({_relative_doc_link(output_path, asset_dir / 'reflection.json')})
+        - [delta.json]({_relative_doc_link(output_path, asset_dir / 'delta.json')})
 
         ## Recording notes
 
@@ -266,10 +271,17 @@ def main() -> int:
         default=str(OUTPUT_DIR),
         help="Directory where generated assets will be written.",
     )
+    parser.add_argument(
+        "--doc-path",
+        default=str(DOC_PATH),
+        help="Markdown explainer path to write alongside the generated assets.",
+    )
     args = parser.parse_args()
 
     output_dir = Path(args.output_dir).resolve()
+    doc_path = Path(args.doc_path).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
+    doc_path.parent.mkdir(parents=True, exist_ok=True)
 
     env = os.environ.copy()
     env.update(
@@ -373,7 +385,7 @@ def main() -> int:
     write_svg(output_dir / "still.svg")
     write_caption_script(output_dir / "caption-script.md")
     write_explainer(output_dir / "what-you-see.md")
-    write_doc(DOC_PATH, output_dir)
+    write_doc(doc_path, output_dir)
     return 0
 
 

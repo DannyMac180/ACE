@@ -8,13 +8,13 @@ output stable enough to reuse across X posts, README callouts, and docs.
 
 ## Files
 
-- [terminal-session.txt](docs/assets/ace-proof-demo/terminal-session.txt)
-- [still.svg](docs/assets/ace-proof-demo/still.svg)
-- [caption-script.md](docs/assets/ace-proof-demo/caption-script.md)
-- [what-you-see.md](docs/assets/ace-proof-demo/what-you-see.md)
-- [demo-task.json](docs/assets/ace-proof-demo/demo-task.json)
-- [reflection.json](docs/assets/ace-proof-demo/reflection.json)
-- [delta.json](docs/assets/ace-proof-demo/delta.json)
+- [terminal-session.txt](assets/ace-proof-demo/terminal-session.txt)
+- [still.svg](assets/ace-proof-demo/still.svg)
+- [caption-script.md](assets/ace-proof-demo/caption-script.md)
+- [what-you-see.md](assets/ace-proof-demo/what-you-see.md)
+- [demo-task.json](assets/ace-proof-demo/demo-task.json)
+- [reflection.json](assets/ace-proof-demo/reflection.json)
+- [delta.json](assets/ace-proof-demo/delta.json)
 
 ## Recording notes
 

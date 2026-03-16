@@ -1,5 +1,6 @@
 # ace/curator/curator.py
-import uuid
+import hashlib
+import json
 
 from ace.core.schema import Bullet, Delta, DeltaOp
 from ace.reflector.schema import Reflection
@@ -7,11 +8,18 @@ from ace.reflector.schema import Reflection
 from .semantic_matcher import SemanticMatcher
 
 
-def _generate_bullet_id(section: str) -> str:
-    """Generate a unique bullet ID with section prefix."""
+def _generate_bullet_id(section: str, content: str, tags: list[str]) -> str:
+    """Generate a deterministic bullet ID from canonical bullet content."""
     prefix = section[:4] if len(section) >= 4 else section
-    short_uuid = uuid.uuid4().hex[:8]
-    return f"{prefix}-{short_uuid}"
+    normalized_payload = {
+        "section": section,
+        "content": " ".join(content.split()),
+        "tags": sorted(set(tags)),
+    }
+    digest = hashlib.sha1(
+        json.dumps(normalized_payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()[:8]
+    return f"{prefix}-{digest}"
 
 
 def curate(
@@ -70,7 +78,11 @@ def curate(
                     DeltaOp(
                         op="ADD",
                         new_bullet={
-                            "id": _generate_bullet_id(candidate.section),
+                            "id": _generate_bullet_id(
+                                candidate.section,
+                                candidate.content,
+                                candidate.tags,
+                            ),
                             "section": candidate.section,
                             "content": candidate.content,
                             "tags": candidate.tags,
@@ -84,7 +96,11 @@ def curate(
                 DeltaOp(
                     op="ADD",
                     new_bullet={
-                        "id": _generate_bullet_id(candidate.section),
+                        "id": _generate_bullet_id(
+                            candidate.section,
+                            candidate.content,
+                            candidate.tags,
+                        ),
                         "section": candidate.section,
                         "content": candidate.content,
                         "tags": candidate.tags,

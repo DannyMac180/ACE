@@ -3,6 +3,7 @@ from datetime import UTC, datetime
 
 from ace.core.schema import Bullet
 from ace.curator import curate
+from ace.curator.curator import _generate_bullet_id
 from ace.reflector.schema import BulletTag, CandidateBullet, Reflection
 
 
@@ -81,6 +82,36 @@ def test_curate_with_candidate_bullets():
     assert delta.ops[1].new_bullet["section"] == "troubleshooting_and_pitfalls"
     assert delta.ops[1].new_bullet["content"] == "Check FAISS index dimension mismatch"
     assert delta.ops[1].new_bullet["tags"] == ["topic:vector", "tool:faiss"]
+
+
+def test_generate_bullet_id_is_deterministic_for_same_content():
+    first_id = _generate_bullet_id(
+        "strategies_and_hard_rules",
+        "Use hybrid retrieval for better results",
+        ["stack:python", "topic:retrieval"],
+    )
+    second_id = _generate_bullet_id(
+        "strategies_and_hard_rules",
+        "Use hybrid retrieval for better results",
+        ["topic:retrieval", "stack:python"],
+    )
+
+    assert first_id == second_id
+
+
+def test_generate_bullet_id_changes_when_content_changes():
+    base_id = _generate_bullet_id(
+        "strategies_and_hard_rules",
+        "Use hybrid retrieval for better results",
+        ["topic:retrieval"],
+    )
+    revised_id = _generate_bullet_id(
+        "strategies_and_hard_rules",
+        "Tighten hybrid retrieval queries with task-specific wording",
+        ["topic:retrieval"],
+    )
+
+    assert base_id != revised_id
 
 
 def test_curate_with_mixed_operations():
