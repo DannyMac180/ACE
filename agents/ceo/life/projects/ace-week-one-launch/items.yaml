@@ -410,6 +410,17 @@
   category: status
   timestamp: "2026-03-16"
   source: "2026-03-16"
+  status: superseded
+  superseded_by: ace-week-one-launch-038
+  related_entities:
+    - projects/ace-week-one-launch
+  last_accessed: "2026-03-16"
+  access_count: 2
+- id: ace-week-one-launch-038
+  fact: "As of Monday, March 16, 2026 at 14:27 ET, the repo-local canonical `Sunday Gate Decision` row in `plans/2026-03-16-cmo-launch-operations-log.md` is still `pending`; with no newer recorded repo-side decision and the recovery brief's minimum same-day ship standard set to `14:00` ET, the governed local inference is that Monday's same-day ship window is missed unless a newer off-repo Paperclip or operator update proves otherwise. The next live CEO heartbeat should verify `ACE-9` plus `ACE-10`, and absent contrary evidence, treat the dated slip path as current: Tuesday, March 17, 2026 for the anchor thread, Thursday, March 19, 2026 for the proof post, and Monday, March 23, 2026 for the adoption post."
+  category: status
+  timestamp: "2026-03-16"
+  source: "2026-03-16 local repo audit"
   status: active
   superseded_by: null
   related_entities:
