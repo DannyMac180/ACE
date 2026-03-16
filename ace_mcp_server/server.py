@@ -189,9 +189,7 @@ def _ace_refine_impl(threshold: float = 0.90) -> dict[str, int]:
     playbook = store.load_playbook()
     empty_reflection = Reflection()
     result = refine(empty_reflection, playbook, threshold=threshold)
-
-    for bullet in playbook.bullets:
-        store.save_bullet(bullet)
+    store.replace_playbook(playbook)
 
     return {"merged": result.merged, "archived": result.archived}
 

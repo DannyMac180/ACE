@@ -17,7 +17,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from ace.core.schema import Bullet
+from ace.core.schema import Bullet, RefineResult
 from ace.core.storage.store_adapter import Store
 
 fastmcp = pytest.importorskip(
@@ -287,6 +287,37 @@ class TestAceRefineTool:
             assert "archived" in refine_result, "Result should have 'archived' field"
             assert isinstance(refine_result["merged"], int)
             assert isinstance(refine_result["archived"], int)
+
+    @pytest.mark.asyncio
+    async def test_refine_removes_deleted_bullets_from_store(
+        self, mcp_server, store_with_bullets, monkeypatch
+    ):
+        """ace_refine should persist bullets removed by the refinement pipeline."""
+        store_with_bullets.save_bullet(
+            Bullet(
+                id="dup-001",
+                section="strategies_and_hard_rules",
+                content="Prefer hybrid retrieval: BM25 + embedding for better recall",
+                tags=["topic:retrieval", "stack:python"],
+            )
+        )
+
+        import ace_mcp_server.server as server_module
+
+        def fake_refine(_reflection, playbook, threshold=0.90):
+            playbook.bullets = [bullet for bullet in playbook.bullets if bullet.id != "dup-001"]
+            return RefineResult(merged=1, archived=0, ops=[])
+
+        monkeypatch.setattr(server_module, "refine", fake_refine)
+
+        async with Client(mcp_server) as client:
+            result = await client.call_tool("ace.refine", {"threshold": 0.90})
+
+        refine_result = json.loads(parse_tool_result(result))
+        persisted_ids = {bullet.id for bullet in store_with_bullets.load_playbook().bullets}
+
+        assert refine_result == {"merged": 1, "archived": 0}
+        assert "dup-001" not in persisted_ids
 
 
 class TestAceStatsTool:
