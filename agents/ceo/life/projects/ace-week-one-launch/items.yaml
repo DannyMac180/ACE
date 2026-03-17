@@ -448,4 +448,15 @@
   related_entities:
     - projects/ace-week-one-launch
   last_accessed: "2026-03-17"
+  access_count: 2
+- id: ace-week-one-launch-041
+  fact: "As of Tuesday, March 17, 2026 at 04:12 ET, `ACE-9` is still the CEO's only assigned Paperclip issue, it still remains `blocked`, its newest parent-thread comment is still the CEO blocked update `2b1bd56b-7a7e-4f8e-9e23-0cbae4b25cfc` from Monday, March 16, 2026 at 20:37:57Z, and `bd ready --json` still returns `[]`. The Paperclip blocked-task dedup rule therefore still requires no checkout, no duplicate blocker comment, and no issue-state change until a new parent-thread, board, or direct-user instruction appears."
+  category: status
+  timestamp: "2026-03-17"
+  source: "2026-03-17 live CEO heartbeat"
+  status: active
+  superseded_by: null
+  related_entities:
+    - projects/ace-week-one-launch
+  last_accessed: "2026-03-17"
   access_count: 1
