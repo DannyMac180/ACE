@@ -1,8 +1,21 @@
 import filecmp
+import importlib.util
 import subprocess
 import sys
 from pathlib import Path
 
+
+def _load_build_proof_demo():
+    script_path = Path(__file__).resolve().parents[1] / "scripts" / "build_proof_demo.py"
+    spec = importlib.util.spec_from_file_location("build_proof_demo", script_path)
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+BUILD_PROOF_DEMO = _load_build_proof_demo()
 
 def _run_build(output_dir: Path, doc_path: Path) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
@@ -49,3 +62,19 @@ def test_build_proof_demo_supports_output_dir_outside_repo(tmp_path):
     assert doc_path.exists()
     doc_text = doc_path.read_text(encoding="utf-8")
     assert "outside-repo-assets/terminal-session.txt" in doc_text
+
+
+def test_resolve_python_bin_prefers_repo_virtualenv(tmp_path):
+    repo_root = tmp_path / "repo"
+    python_bin = repo_root / ".venv" / "bin" / "python"
+    python_bin.parent.mkdir(parents=True)
+    python_bin.write_text("", encoding="utf-8")
+
+    assert BUILD_PROOF_DEMO.resolve_python_bin(repo_root) == python_bin
+
+
+def test_resolve_python_bin_falls_back_to_active_interpreter(tmp_path):
+    repo_root = tmp_path / "repo"
+    repo_root.mkdir()
+
+    assert BUILD_PROOF_DEMO.resolve_python_bin(repo_root) == Path(sys.executable).resolve()

@@ -8,13 +8,13 @@ import json
 import os
 import re
 import subprocess
+import sys
 import tempfile
 import textwrap
 from html import escape
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-PYTHON_BIN = REPO_ROOT / ".venv" / "bin" / "python"
 OUTPUT_DIR = REPO_ROOT / "docs" / "assets" / "ace-proof-demo"
 DOC_PATH = REPO_ROOT / "docs" / "ace-proof-demo.md"
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
@@ -31,6 +31,14 @@ DEMO_TASK = {
         "surface": "cli",
     },
 }
+
+
+def resolve_python_bin(repo_root: Path = REPO_ROOT) -> Path:
+    """Prefer the repo virtualenv, but fall back to the active interpreter."""
+    repo_python = repo_root / ".venv" / "bin" / "python"
+    if repo_python.exists():
+        return repo_python
+    return Path(sys.executable).resolve()
 
 
 def run_command(command: list[str], cwd: Path, env: dict[str, str]) -> str:
@@ -289,6 +297,7 @@ def main() -> int:
 
     output_dir = Path(args.output_dir).resolve()
     doc_path = Path(args.doc_path).resolve()
+    python_bin = resolve_python_bin()
     output_dir.mkdir(parents=True, exist_ok=True)
     doc_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -311,15 +320,15 @@ def main() -> int:
 
         commands = [
             (
-                f"$ ACE_EMBEDDINGS=mock {PYTHON_BIN} {REPO_ROOT / 'scripts' / 'seed.py'}",
-                [str(PYTHON_BIN), str(REPO_ROOT / "scripts" / "seed.py")],
+                f"$ ACE_EMBEDDINGS=mock {python_bin} {REPO_ROOT / 'scripts' / 'seed.py'}",
+                [str(python_bin), str(REPO_ROOT / "scripts" / "seed.py")],
                 None,
             ),
             (
-                '$ ACE_DB_URL=ace.db ACE_EMBEDDINGS=mock .venv/bin/python -m ace.cli '
+                f'$ ACE_DB_URL=ace.db ACE_EMBEDDINGS=mock {python_bin} -m ace.cli '
                 'retrieve "hybrid retrieval" --top-k 3',
                 [
-                    str(PYTHON_BIN),
+                    str(python_bin),
                     "-m",
                     "ace.cli",
                     "retrieve",
@@ -330,19 +339,19 @@ def main() -> int:
                 None,
             ),
             (
-                f"$ {PYTHON_BIN} {REPO_ROOT / 'scripts' / 'demo_reflect.py'} demo-task.json",
+                f"$ {python_bin} {REPO_ROOT / 'scripts' / 'demo_reflect.py'} demo-task.json",
                 [
-                    str(PYTHON_BIN),
+                    str(python_bin),
                     str(REPO_ROOT / "scripts" / "demo_reflect.py"),
                     str(demo_task_path),
                 ],
                 output_dir / "reflection.json",
             ),
             (
-                "$ ACE_DB_URL=ace.db ACE_EMBEDDINGS=mock .venv/bin/python -m ace.cli "
+                f"$ ACE_DB_URL=ace.db ACE_EMBEDDINGS=mock {python_bin} -m ace.cli "
                 "curate --reflection reflection.json --json",
                 [
-                    str(PYTHON_BIN),
+                    str(python_bin),
                     "-m",
                     "ace.cli",
                     "curate",
@@ -353,10 +362,10 @@ def main() -> int:
                 output_dir / "delta.json",
             ),
             (
-                "$ ACE_DB_URL=ace.db ACE_EMBEDDINGS=mock .venv/bin/python -m ace.cli "
+                f"$ ACE_DB_URL=ace.db ACE_EMBEDDINGS=mock {python_bin} -m ace.cli "
                 "commit --delta delta.json --json",
                 [
-                    str(PYTHON_BIN),
+                    str(python_bin),
                     "-m",
                     "ace.cli",
                     "commit",
@@ -367,9 +376,9 @@ def main() -> int:
                 None,
             ),
             (
-                "$ ACE_DB_URL=ace.db ACE_EMBEDDINGS=mock .venv/bin/python -m ace.cli "
+                f"$ ACE_DB_URL=ace.db ACE_EMBEDDINGS=mock {python_bin} -m ace.cli "
                 "stats --json",
-                [str(PYTHON_BIN), "-m", "ace.cli", "stats", "--json"],
+                [str(python_bin), "-m", "ace.cli", "stats", "--json"],
                 None,
             ),
         ]
