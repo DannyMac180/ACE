@@ -128,17 +128,43 @@ class EmbeddingStore:
         self.index: Any | None = None
         self.id_to_idx: dict[str, int] = {}
         self.idx_to_id: dict[int, str] = {}
+        self.next_idx = 0
         self.load_index()
+
+    @staticmethod
+    def _new_sqlite_index() -> Any:
+        return faiss.IndexIDMap2(faiss.IndexFlatIP(_MOCK_EMBEDDING_DIM))
 
     def _sqlite_embedding_count(self) -> int:
         rows = self.db.fetchall("SELECT COUNT(*) FROM embeddings")
         return int(rows[0][0]) if rows else 0
+
+    def _load_mappings(self) -> None:
+        with open(self.index_path + ".mapping", "rb") as f:
+            payload = pickle.load(f)
+
+        if (
+            isinstance(payload, tuple)
+            and len(payload) == 3
+            and isinstance(payload[0], dict)
+            and isinstance(payload[1], dict)
+            and isinstance(payload[2], int)
+        ):
+            self.id_to_idx, self.idx_to_id, self.next_idx = payload
+            return
+
+        self.id_to_idx, self.idx_to_id = payload
+        self.next_idx = max(self.idx_to_id, default=-1) + 1
+
+    def _index_supports_direct_ids(self) -> bool:
+        return self.index is not None and type(self.index).__name__ == "IndexIDMap2"
 
     def load_index(self):
         if not self.db.is_sqlite:
             self.index = None
             self.id_to_idx = {}
             self.idx_to_id = {}
+            self.next_idx = 0
             return
 
         index_exists = os.path.exists(self.index_path)
@@ -148,33 +174,37 @@ class EmbeddingStore:
             self.index = faiss.read_index(self.index_path)
             # Load mappings
             if mapping_exists:
-                with open(self.index_path + ".mapping", "rb") as f:
-                    self.id_to_idx, self.idx_to_id = pickle.load(f)
+                self._load_mappings()
             else:
                 self.id_to_idx = {}
                 self.idx_to_id = {}
+                self.next_idx = 0
         else:
-            self.index = faiss.IndexFlatIP(384)  # Cosine similarity
+            self.index = self._new_sqlite_index()
             self.id_to_idx = {}
             self.idx_to_id = {}
+            self.next_idx = 0
 
         expected_rows = self._sqlite_embedding_count()
         observed_rows = len(self.id_to_idx)
         observed_index_size = self.index.ntotal if self.index is not None else 0
-        if expected_rows and (
-            not index_exists
-            or not mapping_exists
+        needs_rebuild = (
+            not self._index_supports_direct_ids()
             or observed_rows != expected_rows
             or observed_index_size != expected_rows
-        ):
+        )
+        if expected_rows > 0 and (not index_exists or not mapping_exists):
+            needs_rebuild = True
+        if needs_rebuild:
             self.rebuild_index()
 
     def save_index(self):
         if not self.db.is_sqlite:
             return
+        assert self.index is not None
         faiss.write_index(self.index, self.index_path)
         with open(self.index_path + ".mapping", "wb") as f:
-            pickle.dump((self.id_to_idx, self.idx_to_id), f)
+            pickle.dump((self.id_to_idx, self.idx_to_id, self.next_idx), f)
 
     @staticmethod
     def _to_pgvector_literal(vector: np.ndarray[tuple[int], np.dtype[np.float32]]) -> str:
@@ -198,8 +228,9 @@ class EmbeddingStore:
         if bullet_id in self.id_to_idx:
             self.rebuild_index()
             return
-        idx = self.index.ntotal
-        self.index.add(vector.reshape(1, -1))
+        idx = self.next_idx
+        self.next_idx += 1
+        self.index.add_with_ids(vector.reshape(1, -1), np.array([idx], dtype=np.int64))
         self.id_to_idx[bullet_id] = idx
         self.idx_to_id[idx] = bullet_id
         self.save_index()
@@ -226,26 +257,29 @@ class EmbeddingStore:
         if bullet_id not in self.id_to_idx:
             return
         idx = self.id_to_idx[bullet_id]
-        # FAISS doesn't support removal easily, so rebuild index
-        # For simplicity, mark as removed or rebuild
-        # TODO: Implement proper removal
+        assert self.index is not None
+        removed = self.index.remove_ids(np.array([idx], dtype=np.int64))
         del self.id_to_idx[bullet_id]
         del self.idx_to_id[idx]
-        # Rebuild index
-        self.rebuild_index()
+        if removed != 1:
+            self.rebuild_index()
+            return
+        self.save_index()
 
     def rebuild_index(self):
         if not self.db.is_sqlite:
             return
-        self.index = faiss.IndexFlatIP(384)
+        self.index = self._new_sqlite_index()
         assert self.index is not None
         self.id_to_idx = {}
         self.idx_to_id = {}
+        self.next_idx = 0
         rows = self.db.fetchall("SELECT bullet_id, vector FROM embeddings")
         for bullet_id, vector_bytes in rows:
             vector = np.frombuffer(vector_bytes, dtype=np.float32)
-            idx = self.index.ntotal
-            self.index.add(vector.reshape(1, -1))
+            idx = self.next_idx
+            self.next_idx += 1
+            self.index.add_with_ids(vector.reshape(1, -1), np.array([idx], dtype=np.int64))
             self.id_to_idx[bullet_id] = idx
             self.idx_to_id[idx] = bullet_id
         self.save_index()
