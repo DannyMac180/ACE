@@ -193,7 +193,7 @@ Route by score:
 
 ## Sunday, March 15, 2026 Preflight Scratchpad
 
-Use this to confirm launch-week readiness before Monday.
+Use this to confirm launch-week readiness before the slipped sequence starts.
 
 Use this as the raw working surface, then transfer the final completion
 timestamps and evidence into the `Sunday Preflight Completion Receipt` in
@@ -205,23 +205,23 @@ evidence into this scratchpad.
 
 | Check | Status | Notes |
 | --- | --- | --- |
-| `plans/2026-03-15-cmo-week-one-launch-calendar.ics` imported into live calendar | pending | verify the import created the Monday through Friday live windows plus the same-day reply and logging check blocks in Eastern Time |
-| Monday publish window blocked on calendar (`11:00-11:30` ET) | pending | confirm the imported event matches this slot |
-| Tuesday distribution pass blocked on calendar (`12:00-13:00` ET) | pending | confirm the imported event matches this slot |
-| Wednesday publish window blocked on calendar (`11:00-11:30` ET) | pending | confirm the imported event matches this slot |
-| Thursday follow-up pass blocked on calendar (`12:00-13:00` ET) | pending | confirm the imported event matches this slot |
-| Friday publish window blocked on calendar (`10:30-11:00` ET) | pending | confirm the imported event matches this slot |
+| `plans/2026-03-15-cmo-week-one-launch-calendar.ics` imported into live calendar | pending | verify the import created the active slipped-sequence live windows plus the same-day reply and logging check blocks in Eastern Time |
+| Tuesday anchor publish window blocked on calendar (`11:00-11:30` ET) | pending | confirm the imported event matches this slot |
+| Wednesday distribution pass blocked on calendar (`12:00-13:00` ET) | pending | confirm the imported event matches this slot |
+| Thursday proof publish window blocked on calendar (`11:00-11:30` ET) | pending | confirm the imported event matches this slot |
+| Friday follow-up pass blocked on calendar (`12:00-13:00` ET) | pending | confirm the imported event matches this slot |
+| Monday adoption publish window blocked on calendar (`10:30-11:00` ET) | pending | confirm the imported event matches this slot |
 | week-one bio updated from `plans/2026-03-13-cmo-week-one-profile-surface.md` | pending | |
 | X website field updated to `profile_w1_readme` | pending | |
-| Monday anchor draft pasted into live X composer or scheduler as a connected `9`-post thread | pending | note the scheduler or composer surface used so Monday can be verified fast if the thread breaks |
-| Wednesday proof draft pasted into live X composer or scheduler | pending | confirm the tracked URL stayed exact and `docs/assets/ace-proof-demo/still.svg` is still attached unless an approved replacement was logged |
-| Friday adoption draft pasted into live X composer or scheduler | pending | confirm the tracked URL stayed exact and the worked-example CTA still points to `w1_adoption_example` |
+| Tuesday anchor draft pasted into live X composer or scheduler as a connected `9`-post thread | pending | note the scheduler or composer surface used so Tuesday can be verified fast if the thread breaks |
+| Thursday proof draft pasted into live X composer or scheduler | pending | confirm the tracked URL stayed exact and `docs/assets/ace-proof-demo/still.svg` is still attached unless an approved replacement was logged |
+| Monday adoption draft pasted into live X composer or scheduler | pending | confirm the tracked URL stayed exact and the worked-example CTA still points to `w1_adoption_example` |
 | week-one response bank open and ready | pending | |
 | `docs/assets/ace-proof-demo/still.svg` confirmed as proof visual | pending | |
 | launch operations log open and ready | pending | |
 | this live capture sheet open and ready | pending | |
-| Tuesday distribution watchlist prepared | pending | a URL-backed seed pool is loaded below with `2026-03-14 search note` evidence; before Sunday close, confirm the best `5` still look live, then swap in the strongest Monday engagers first |
-| Thursday follow-up watchlist prepared | pending | a URL-backed seed pool is loaded below with `2026-03-14 search note` evidence; before Sunday close, confirm the best `5` still look live, then swap in the strongest Wednesday engagers first |
+| Wednesday distribution watchlist prepared | pending | a URL-backed seed pool is loaded below with `2026-03-14 search note` evidence; before Sunday close, confirm the best `5` still look live, then swap in the strongest Tuesday engagers first |
+| Friday follow-up watchlist prepared | pending | a URL-backed seed pool is loaded below with `2026-03-14 search note` evidence; before Sunday close, confirm the best `5` still look live, then swap in the strongest Thursday engagers first |
 
 ## Sunday Go Or No-Go Scratchpad
 
@@ -548,7 +548,7 @@ Before closing each launch day:
 
 1. move the live post URL and final same-day metrics into the `Execution Log`
 2. move the immediate publish QA result into the `Immediate Publish QA Log`
-3. move every Tuesday or Thursday distribution session into the
+3. move every Wednesday or Friday distribution or follow-up session into the
    `Distribution Pass Log`
 4. add at least one `Engagement Follow-Up Log` row for each qualified reply
    burst, outbound DM, or inbound DM thread
@@ -556,7 +556,7 @@ Before closing each launch day:
 6. move the most important checkpoint decision into the `Checkpoint Decision Log`
 7. move any bio, website-link, or pinned-post change into the
    `Profile Surface Log`
-8. on Friday, transfer the explicit post-launch profile decision into the
+8. on Monday, March 23, 2026, transfer the explicit post-launch profile decision into the
    `Profile Surface Log` so the week-one bio, website link, and pin do not
    drift into week two by default
 9. move any launch incident into the `Launch Contingency Log`

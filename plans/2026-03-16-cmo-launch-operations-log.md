@@ -147,33 +147,33 @@ execution order, then record the canonical proof in the tables below.
 
 After Sunday preflight is complete, use
 `plans/2026-03-14-cmo-week-one-live-command-card.md` as the fastest live
-operator path during Monday through Friday launch motions while this file stays
-the canonical evidence surface.
+operator path during the active slipped-sequence launch motions while this file
+stays the canonical evidence surface.
 
 | Check | Owner | Status | Notes |
 | --- | --- | --- | --- |
 | Confirm `ACE-10` is the execution owner and `ACE-9` remains oversight only | CMO | ready | delegated on 2026-03-13 so week-one execution no longer depends on ad hoc handoff through the parent issue |
-| Confirm Monday thread uses `w1_thread_readme` exactly | CMO | ready | verified on 2026-03-12 against `plans/2026-03-11-cmo-launch-copy-pack.md`; no shortened links and no alternate README CTA |
-| Confirm Wednesday proof post uses `w1_proof_demo` exactly | CMO | ready | verified on 2026-03-12 against `plans/2026-03-11-cmo-launch-copy-pack.md`; live destination remains `docs/ace-proof-demo.md` |
-| Confirm Friday adoption post uses `w1_adoption_example` exactly | CMO | ready | verified on 2026-03-12 against `plans/2026-03-11-cmo-launch-copy-pack.md`; live destination remains `docs/getting-started-example.md` |
+| Confirm anchor thread uses `w1_thread_readme` exactly | CMO | ready | verified on 2026-03-12 against `plans/2026-03-11-cmo-launch-copy-pack.md`; no shortened links and no alternate README CTA |
+| Confirm proof post uses `w1_proof_demo` exactly | CMO | ready | verified on 2026-03-12 against `plans/2026-03-11-cmo-launch-copy-pack.md`; live destination remains `docs/ace-proof-demo.md` |
+| Confirm adoption post uses `w1_adoption_example` exactly | CMO | ready | verified on 2026-03-12 against `plans/2026-03-11-cmo-launch-copy-pack.md`; live destination remains `docs/getting-started-example.md` |
 | Select one proof visual from `docs/ace-proof-demo.md` | Dan | ready | `docs/assets/ace-proof-demo/still.svg` selected on 2026-03-12 and matches the published proof asset bundle |
-| Dry-run the getting-started example locally once before Friday publishing | Dan | ready | passed on 2026-03-12 in a throwaway workspace; observed `version: 1` and `total_bullets: 12` after commit |
+| Dry-run the getting-started example locally once before the adoption publish | Dan | ready | passed on 2026-03-12 in a throwaway workspace; observed `version: 1` and `total_bullets: 12` after commit |
 | Confirm this file is the only active launch scoreboard | CMO | ready | older planning docs now carry explicit supersession notes that point week-one reporting back to this file as the only live source |
 | Confirm DM and reply follow-up codes are available in the registry | CMO | ready | registry includes approved `reply_*` and `dm_*` launch codes for thread, proof, adoption, README, example, MCP, and API follow-up |
 | Verify every week-one tracked destination, doc, and asset path resolves in the repo and matches the operator stack | CMO | ready | audited on 2026-03-13 across the launch log, operator brief, publishing surface, response bank, live capture sheet, README, docs, proof still, and workflow issue template; no tracked-link or file-path drift found |
-| Confirm Tuesday and Thursday distribution passes are explicit in the operator stack | CMO | ready | operator brief, launch log, capture sheet, and response bank now treat reply distribution and direct follow-up as governed launch motions rather than implied strategy |
-| Lock the exact Monday, Wednesday, and Friday post drafts in one canonical publishing surface | CMO | ready | `plans/2026-03-13-cmo-week-one-publishing-surface.md` now holds the exact paste-ready copy with approved tracked URLs, Monday thread segmentation, and reply fallbacks |
+| Confirm Wednesday and Friday follow-up passes are explicit in the operator stack | CMO | ready | operator brief, launch log, capture sheet, and response bank now treat reply distribution and direct follow-up as governed launch motions rather than implied strategy |
+| Lock the exact anchor, proof, and adoption drafts in one canonical publishing surface | CMO | ready | `plans/2026-03-13-cmo-week-one-publishing-surface.md` now holds the exact paste-ready copy with approved tracked URLs, anchor thread segmentation, and reply fallbacks |
 | Lock one canonical response bank for public replies, DM openers, and qualification prompts | CMO | ready | `plans/2026-03-13-cmo-week-one-response-bank.md` now holds the exact launch-week follow-up copy so day-of replies and DMs do not drift across older planning docs |
 | Prepare one canonical raw capture sheet for live metrics, replies, DMs, and friction | CMO | ready | `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` now gives Dan one fast intake surface before the same-day transfer into this scoreboard |
-| Lock one canonical X profile surface for week-one bio, profile link, and pinned-post rules | CMO | ready | `plans/2026-03-13-cmo-week-one-profile-surface.md` now governs the bio, dedicated `profile_w1_readme` website link, and Monday thread pinning rule so profile traffic does not leak into generic positioning |
-| Lock default publish windows and reply-check cadence in the operator stack | CMO | ready | operator brief, publishing surface, and live capture sheet now default to `11:00-11:30` ET Monday and Wednesday, `10:30-11:00` ET Friday, plus explicit `+30m`, `+3h`, and `17:30` ET check windows |
-| Apply the governed week-one X profile surface before Sunday close | Dan | pending | use `plans/2026-03-13-cmo-week-one-profile-surface.md` to update the bio and website link to `profile_w1_readme`; leave the existing pin alone until the Monday anchor thread is live |
-| Import the week-one launch calendar and verify every live block before Sunday close | Dan | pending | import `plans/2026-03-15-cmo-week-one-launch-calendar.ics`, then verify the Monday and Wednesday publish windows, Tuesday and Thursday operating passes, Friday publish window, plus the same-day reply and logging checks all land in Eastern Time before launch week starts |
-| Validate the Tuesday distribution watchlist before launch week starts | Dan | pending | the fallback pool in `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` now carries URL-backed `2026-03-14 search note` evidence from adjacent public X threads; before Sunday close, keep at least `5` live Tuesday targets, replace colder seeds with warmer Monday engagers first when possible, and confirm the strongest five still look timely in the live X surface |
-| Validate the Thursday follow-up watchlist before launch week starts | Dan | pending | the fallback pool in `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` now carries URL-backed `2026-03-14 search note` evidence from adjacent public X threads; before Sunday close, keep at least `5` live Thursday targets, prefer warmer Wednesday proof engagers over colder fallback seeds where possible, and confirm the strongest five still look timely in the live X surface |
-| Paste the Monday anchor thread into the actual X composer or scheduler before Sunday close | Dan | pending | use `plans/2026-03-13-cmo-week-one-publishing-surface.md` without editing tracked URLs, and confirm the Monday anchor loads as a connected `9`-post thread so launch-day publishing stays exact |
-| Paste the Wednesday proof post into the actual X composer or scheduler before Sunday close | Dan | pending | use the canonical publishing surface without editing the tracked URL and confirm `docs/assets/ace-proof-demo/still.svg` remains attached as the default visual |
-| Paste the Friday adoption post into the actual X composer or scheduler before Sunday close | Dan | pending | use the canonical publishing surface without editing the tracked URL so Friday does not depend on last-minute copy assembly |
+| Lock one canonical X profile surface for week-one bio, profile link, and pinned-post rules | CMO | ready | `plans/2026-03-13-cmo-week-one-profile-surface.md` now governs the bio, dedicated `profile_w1_readme` website link, and anchor-thread pinning rule so profile traffic does not leak into generic positioning |
+| Lock default publish windows and reply-check cadence in the operator stack | CMO | ready | operator brief, publishing surface, and live capture sheet now default to Tuesday anchor `11:00-11:30` ET, Wednesday and Friday passes at `12:00-13:00` ET, Thursday proof `11:00-11:30` ET, Monday adoption `10:30-11:00` ET, plus explicit `+30m`, `+3h`, and `17:30` ET check windows |
+| Apply the governed week-one X profile surface before Sunday close | Dan | pending | use `plans/2026-03-13-cmo-week-one-profile-surface.md` to update the bio and website link to `profile_w1_readme`; leave the existing pin alone until the Tuesday anchor thread is live |
+| Import the week-one launch calendar and verify every live block before Sunday close | Dan | pending | import `plans/2026-03-15-cmo-week-one-launch-calendar.ics`, then verify the Tuesday anchor publish window, Wednesday distribution pass, Thursday proof publish window, Friday follow-up pass, Monday adoption publish window, plus the same-day reply and logging checks all land in Eastern Time before launch week starts |
+| Validate the Wednesday distribution watchlist before launch week starts | Dan | pending | the fallback pool in `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` now carries URL-backed `2026-03-14 search note` evidence from adjacent public X threads; before Sunday close, keep at least `5` live Wednesday targets, replace colder seeds with warmer Tuesday engagers first when possible, and confirm the strongest five still look timely in the live X surface |
+| Validate the Friday follow-up watchlist before launch week starts | Dan | pending | the fallback pool in `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` now carries URL-backed `2026-03-14 search note` evidence from adjacent public X threads; before Sunday close, keep at least `5` live Friday targets, prefer warmer Thursday proof engagers over colder fallback seeds where possible, and confirm the strongest five still look timely in the live X surface |
+| Paste the Tuesday anchor thread into the actual X composer or scheduler before Sunday close | Dan | pending | use `plans/2026-03-13-cmo-week-one-publishing-surface.md` without editing tracked URLs, and confirm the anchor thread loads as a connected `9`-post thread so launch-day publishing stays exact |
+| Paste the Thursday proof post into the actual X composer or scheduler before Sunday close | Dan | pending | use the canonical publishing surface without editing the tracked URL and confirm `docs/assets/ace-proof-demo/still.svg` remains attached as the default visual |
+| Paste the Monday adoption post into the actual X composer or scheduler before Sunday close | Dan | pending | use the canonical publishing surface without editing the tracked URL so Monday does not depend on last-minute copy assembly |
 
 ## Sunday Preflight Completion Receipt
 
@@ -186,12 +186,12 @@ explicitly instead of leaving the row blank.
 | Task | Completed at | Evidence or live surface | Verified in | Status | Notes |
 | --- | --- | --- | --- | --- | --- |
 | Governed X profile surface applied |  | live X profile URL or note | `plans/2026-03-13-cmo-week-one-profile-surface.md` | pending | confirm the bio matches the governed week-one wording and the website field uses `profile_w1_readme` |
-| Week-one launch calendar imported and verified |  | calendar name, screenshot note, or import confirmation | `plans/2026-03-15-cmo-week-one-launch-calendar.ics` | pending | confirm all Monday through Friday live windows plus same-day check blocks landed in Eastern Time |
-| Monday anchor draft pasted into live composer or scheduler |  | scheduler name or draft confirmation | `plans/2026-03-13-cmo-week-one-publishing-surface.md` | pending | confirm Monday is loaded as a connected `9`-post thread and the tracked URL was not edited |
-| Wednesday proof draft pasted into live composer or scheduler |  | scheduler name or draft confirmation | `plans/2026-03-13-cmo-week-one-publishing-surface.md` | pending | confirm the tracked URL was not edited and `docs/assets/ace-proof-demo/still.svg` remains attached unless an approved replacement is logged first |
-| Friday adoption draft pasted into live composer or scheduler |  | scheduler name or draft confirmation | `plans/2026-03-13-cmo-week-one-publishing-surface.md` | pending | confirm the tracked URL was not edited and the worked-example CTA still points to `w1_adoption_example` |
-| Tuesday distribution watchlist validated against live conversations |  | concrete post URLs or dated search notes | `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` | pending | the file now includes URL-backed `2026-03-14 search note` rows; Sunday proof still requires keeping the best `5` Tuesday targets current in the live X surface and swapping in warmer Monday engagers when available |
-| Thursday follow-up watchlist validated against live conversations |  | concrete post URLs or dated search notes | `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` | pending | the file now includes URL-backed `2026-03-14 search note` rows; Sunday proof still requires keeping the best `5` Thursday targets current in the live X surface and swapping in warmer Wednesday engagers when available |
+| Week-one launch calendar imported and verified |  | calendar name, screenshot note, or import confirmation | `plans/2026-03-15-cmo-week-one-launch-calendar.ics` | pending | confirm all slipped-sequence live windows plus same-day check blocks landed in Eastern Time |
+| Tuesday anchor draft pasted into live composer or scheduler |  | scheduler name or draft confirmation | `plans/2026-03-13-cmo-week-one-publishing-surface.md` | pending | confirm the anchor thread is loaded as a connected `9`-post thread and the tracked URL was not edited |
+| Thursday proof draft pasted into live composer or scheduler |  | scheduler name or draft confirmation | `plans/2026-03-13-cmo-week-one-publishing-surface.md` | pending | confirm the tracked URL was not edited and `docs/assets/ace-proof-demo/still.svg` remains attached unless an approved replacement is logged first |
+| Monday adoption draft pasted into live composer or scheduler |  | scheduler name or draft confirmation | `plans/2026-03-13-cmo-week-one-publishing-surface.md` | pending | confirm the tracked URL was not edited and the worked-example CTA still points to `w1_adoption_example` |
+| Wednesday distribution watchlist validated against live conversations |  | concrete post URLs or dated search notes | `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` | pending | the file now includes URL-backed `2026-03-14 search note` rows; Sunday proof still requires keeping the best `5` Wednesday targets current in the live X surface and swapping in warmer Tuesday engagers when available |
+| Friday follow-up watchlist validated against live conversations |  | concrete post URLs or dated search notes | `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` | pending | the file now includes URL-backed `2026-03-14 search note` rows; Sunday proof still requires keeping the best `5` Friday targets current in the live X surface and swapping in warmer Thursday engagers when available |
 
 ## Audience Baseline Snapshot
 
@@ -210,8 +210,8 @@ not drift.
 
 ## Sunday Go Or No-Go Gate
 
-Use this rule on Sunday, March 15, 2026 so Monday, March 16, 2026 launch does
-not start from an ambiguous preflight state.
+Use this rule on Sunday, March 15, 2026 so the slipped sequence does not start
+from an ambiguous preflight state.
 
 Cutoff:
 
@@ -223,15 +223,15 @@ Go condition:
 
 - the governed X profile surface is live
 - the week-one launch calendar is imported and verified in Eastern Time
-- the Monday anchor draft is loaded into the live composer or scheduler as a
+- the Tuesday anchor draft is loaded into the live composer or scheduler as a
   connected `9`-post thread
-- the Wednesday proof draft is loaded into the live composer or scheduler with
+- the Thursday proof draft is loaded into the live composer or scheduler with
   the approved proof visual still attached unless an exception is logged
-- the Friday adoption draft is loaded into the live composer or scheduler with
+- the Monday adoption draft is loaded into the live composer or scheduler with
   the worked-example CTA intact
-- the Tuesday distribution watchlist is validated with at least `5` live
+- the Wednesday distribution watchlist is validated with at least `5` live
   targets
-- the Thursday follow-up watchlist is validated with at least `5` live targets
+- the Friday follow-up watchlist is validated with at least `5` live targets
 
 No-go condition:
 
@@ -293,7 +293,7 @@ Use `plans/2026-03-16-cmo-launch-recovery-brief.md` if the row above is still
 Use this immediately after the Sunday, March 15, 2026 `20:00` ET gate.
 
 - once the gate is `go`, treat the governed X profile surface, tracked URLs,
-  Monday or Wednesday or Friday draft copy, proof visual, and loaded scheduler
+  anchor, proof, and adoption draft copy, proof visual, and loaded scheduler
   entries as frozen launch assets
 - do not change copy, links, assets, or profile routing after the gate just
   because a last-minute rewrite feels sharper
@@ -343,7 +343,7 @@ Use these rules if a live launch motion breaks inside the operating window.
 - if the tracked URL is shortened, reformatted, or lost, stop the motion,
   rebuild it from the canonical source, and log the incident before trying
   again
-- if the Wednesday proof visual fails to attach, spend up to `15` minutes
+- if the Thursday proof visual fails to attach, spend up to `15` minutes
   restoring `docs/assets/ace-proof-demo/still.svg` or an already approved
   replacement; if the asset still cannot be attached, mark the motion
   `blocked` instead of shipping a weaker ad hoc proof post
@@ -444,13 +444,13 @@ Use this within `5` minutes of every anchor, proof, and adoption publish.
 - open this file and confirm every `ready` and `pending` preflight row has an
   explicit owner and status before end of day
 - import `plans/2026-03-15-cmo-week-one-launch-calendar.ics` into the live
-  calendar first so the Monday through Friday operating windows plus same-day
-  check blocks do not need to be recreated by hand
+  calendar first so the slipped-sequence operating windows plus same-day check
+  blocks do not need to be recreated by hand
 - use `plans/2026-03-13-cmo-week-one-profile-surface.md` before any scheduler
   work so the week-one bio and website link are live before traffic arrives
 - use `plans/2026-03-13-cmo-week-one-publishing-surface.md` as the only
-  canonical paste-ready source for the Monday, Wednesday, and Friday drafts
-- confirm the Monday anchor is pasted as a connected `9`-post thread in the
+  canonical paste-ready source for the anchor, proof, and adoption drafts
+- confirm the Tuesday anchor is pasted as a connected `9`-post thread in the
   live scheduler or composer instead of one long post
 - use the imported launch calendar plus the default live windows from
   `plans/2026-03-13-cmo-week-one-operator-brief.md` and
@@ -462,9 +462,9 @@ Use this within `5` minutes of every anchor, proof, and adoption publish.
 - keep `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` open as the raw
   note surface for live metrics, replies, DMs, and friction before same-day
   transfer into this file
-- prefill the `Tuesday And Thursday Watchlist` section in the live capture
-  sheet with at least `5` adjacent-conversation targets for Tuesday and `5`
-  proof-to-adoption follow-up targets for Thursday
+- prefill the `Active Distribution Watchlist` section in the live capture
+  sheet with at least `5` adjacent-conversation targets for Wednesday and `5`
+  proof-to-adoption follow-up targets for Friday
 - paste those exact drafts into the actual X composer or scheduler without
   changing the tracked URLs
 - confirm `docs/assets/ace-proof-demo/still.svg` is the selected proof visual
@@ -564,13 +564,14 @@ Each meaningful launch motion should contribute at least one reusable artifact:
 
 ## Scoreboard Counting Rules
 
-Use these rules so Friday numbers reflect the same funnel logic all week.
+Use these rules so the slipped-sequence scoreboard reflects the same funnel
+logic all week.
 
 - Count click metrics only from measurable surfaces tied to the governed launch
   codes, not from the presence of a UTM parameter alone.
 - Count `Profile visits` and `New follows` as the weekly total from governed
-  week-one post analytics, profile-surface checks, and logged Tuesday or
-  Thursday distribution effects.
+  week-one post analytics, profile-surface checks, and logged Wednesday or
+  Friday distribution effects.
 - Count conversation, setup, and repeat-user metrics as unique builders for the
   week.
 - A builder can count once in each funnel stage they genuinely reach, so one
@@ -586,10 +587,10 @@ Use these definitions when filling the slipped-sequence scoreboard row.
 
 | Metric | Count this | Do not count this |
 | --- | --- | --- |
-| Qualified impressions | impressions on the governed week-one posts plus logged Tuesday or Thursday distribution replies in clearly relevant coding-agent conversations | unrelated account-level impressions or generic AI chatter that was not part of a governed launch motion |
+| Qualified impressions | impressions on the governed week-one posts plus logged Wednesday or Friday distribution replies in clearly relevant coding-agent conversations | unrelated account-level impressions or generic AI chatter that was not part of a governed launch motion |
 | Engagement rate | the platform-reported engagement rate for the governed launch posts | a hand-added blend of different post types or raw reply counts without the platform denominator |
 | Outbound clicks | total measurable clicks from governed public posts and replies whose sending surface exposes a real number | untracked clicks, profile taps without a captured count, DM clicks without a measured source, or estimates from memory |
-| Profile visits | total profile visits attributed to governed week-one post snapshots, Monday pinning checks, and logged Tuesday or Thursday distribution effects | baseline account traffic outside governed launch windows or guessed profile interest without a captured snapshot |
+| Profile visits | total profile visits attributed to governed week-one post snapshots, Tuesday pinning checks, and logged Wednesday or Friday distribution effects | baseline account traffic outside governed launch windows or guessed profile interest without a captured snapshot |
 | New follows | total new follows observed during governed week-one post snapshots and profile-surface checks after the Sunday, March 15, 2026 baseline snapshot is captured | historical follower growth outside launch week, unfalsifiable estimates, or repeat touches from existing followers |
 | README clicks | measurable governed public-click counts tied to `w1_thread_readme` or `reply_w1_thread_readme`; if DM or profile clicks are not exposed, rely on downstream conversation or setup evidence instead | clicks to proof, example, MCP, or API destinations, or inferred GitHub traffic on README-coded URLs |
 | Proof clicks | measurable governed public-click counts tied to `w1_proof_demo` or `reply_w1_proof_demo` | README or example clicks, even if they came from the Wednesday audience, or inferred GitHub traffic on proof-coded URLs |
@@ -606,8 +607,8 @@ Use this file as the only shared scoreboard source of truth.
 1. Dan records raw X analytics and tracked-link observations after each live
    post, reply burst, or high-signal DM wave.
 2. CMO updates the `Execution Log` the same day for every public publishing
-   motion, adds one row to the `Distribution Pass Log` for every Tuesday or
-   Thursday distribution session or same-day adjacent-conversation push, and
+   motion, adds one row to the `Distribution Pass Log` for every Wednesday or
+   Friday distribution session or same-day adjacent-conversation push, and
    adds one row to the `Engagement Follow-Up Log` for every qualified public
    reply burst, outbound DM, or inbound DM thread that creates follow-up work.
    When available, include profile visits and new follows in the metric

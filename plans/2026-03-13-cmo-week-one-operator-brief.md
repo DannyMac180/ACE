@@ -27,12 +27,12 @@ Use these docs in this order:
 3. `plans/2026-03-13-cmo-week-one-profile-surface.md` for the week-one bio,
    profile link, and pinned-post rules on X
 4. `plans/2026-03-15-cmo-week-one-launch-calendar.ics` to import the exact
-   Monday through Friday live windows and same-day check blocks into the
+   active slipped-sequence live windows and same-day check blocks into the
    calendar before launch week starts
 5. `plans/2026-03-13-cmo-week-one-response-bank.md` for paste-ready public
    replies, DM openers, qualification prompts, and escalation copy
 6. `plans/2026-03-14-cmo-week-one-live-command-card.md` for the fastest
-   Monday-through-Friday live execution order once Sunday preflight is done
+   slipped-sequence live execution order once Sunday preflight is done
 7. `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` for raw live metrics,
    replies, DMs, and friction capture before same-day transfer into the launch
    log
@@ -93,47 +93,48 @@ scoreboard label.
 Before launch week starts:
 
 1. import `plans/2026-03-15-cmo-week-one-launch-calendar.ics` into the live
-   calendar first, then verify the Monday and Wednesday publish windows,
-   Tuesday and Thursday operating passes, Friday publish window, and the same-
-   day reply or logging checks all landed at the expected Eastern Time slots
+   calendar first, then verify the Tuesday anchor publish window, Wednesday
+   distribution pass, Thursday proof publish window, Friday follow-up pass,
+   Monday adoption publish window, and the same-day reply or logging checks
+   all landed at the expected Eastern Time slots
 2. apply `plans/2026-03-13-cmo-week-one-profile-surface.md` first so the X bio
    and website link match the ACE category thesis before launch traffic lands,
-   leave the existing pin in place until the Monday anchor thread is live, and
+   leave the existing pin in place until the Tuesday anchor thread is live, and
    record the starting follower count plus profile-visits reading in the
    `Audience Baseline Snapshot` section of
    `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`
-3. copy the approved Monday anchor thread into the actual X composer or
+3. copy the approved Tuesday anchor thread into the actual X composer or
    scheduler from `plans/2026-03-13-cmo-week-one-publishing-surface.md`
    without editing the tracked URL, and confirm the draft is loaded as a
    connected `9`-post thread instead of one long post
-4. copy the approved Wednesday proof post into the actual X composer or
+4. copy the approved Thursday proof post into the actual X composer or
    scheduler from the same publishing surface without editing the tracked URL,
    and confirm `docs/assets/ace-proof-demo/still.svg` is still attached unless
    a replacement has already been approved and logged
-5. copy the approved Friday adoption post into the actual X composer or
+5. copy the approved Monday adoption post into the actual X composer or
    scheduler from the same publishing surface without editing the tracked URL,
-   so Friday does not depend on last-minute assembly
+   so Monday does not depend on last-minute assembly
 6. open `plans/2026-03-13-cmo-week-one-response-bank.md` so the first same-day
    replies and DMs do not require improvising copy mid-launch
 7. keep `plans/2026-03-16-cmo-launch-operations-log.md` open as the only live
    scoreboard and logging surface
 8. confirm `docs/assets/ace-proof-demo/still.svg` is still the selected
-   Wednesday proof visual
+   Thursday proof visual
 9. open `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` for live post
    URLs, raw metrics, qualified replies, DM handles, and objections so same-day
    logging takes minutes instead of getting skipped
-10. validate the Tuesday watchlist in
+10. validate the Wednesday watchlist in
     `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` with at least `5`
-    live Tuesday targets before launch week starts, using the seeded builder
+    live Wednesday targets before launch week starts, using the seeded builder
     pool plus the source-pool order and search seeds in that file instead of
     starting from a blank X search; the file now carries URL-backed
     `2026-03-14 search note` rows, so Sunday proof is to confirm the best
-    `5` still look live and swap in warmer Monday engagers where possible
-11. validate the Thursday watchlist in the same file with at least `5` live
-    Thursday targets, replacing colder seeds with warmer Wednesday engagers
+    `5` still look live and swap in warmer Tuesday engagers where possible
+11. validate the Friday watchlist in the same file with at least `5` live
+    Friday targets, replacing colder seeds with warmer Thursday engagers
     first when possible; the file now carries URL-backed `2026-03-14 search
     note` rows, so Sunday proof is to confirm the best `5` still look live and
-    upgrade them with warmer Wednesday engagers where possible before marking
+    upgrade them with warmer Thursday engagers where possible before marking
     the task complete
 12. complete the `Sunday Preflight Completion Receipt` in
    `plans/2026-03-16-cmo-launch-operations-log.md` before Sunday close so the
@@ -150,9 +151,9 @@ For the fastest path through the actual Sunday work, run
 the final evidence into the launch log.
 
 After the Sunday gate is `go`, run
-`plans/2026-03-14-cmo-week-one-live-command-card.md` during the actual Monday
-through Friday windows so publishing, reply handling, and same-day logging do
-not depend on paging through the full operator brief mid-motion.
+`plans/2026-03-14-cmo-week-one-live-command-card.md` during the active
+slipped-sequence windows so publishing, reply handling, and same-day logging
+do not depend on paging through the full operator brief mid-motion.
 
 - by `20:00` ET, every row in the `Sunday Preflight Completion Receipt` must be
   either `completed` with evidence or explicitly `blocked` with a named blocker
@@ -173,7 +174,7 @@ not depend on paging through the full operator brief mid-motion.
   `plans/2026-03-16-cmo-launch-recovery-brief.md`; do not improvise a late
   launch from memory
 - if the gate is `go`, treat the governed profile surface, tracked URLs, proof
-  visual, and loaded Monday or Wednesday or Friday drafts as frozen launch
+  visual, and loaded anchor, proof, and adoption drafts as frozen launch
   assets; only change them if the edit is first logged in the `Launch Change
   Log` in `plans/2026-03-16-cmo-launch-operations-log.md` and then re-verified
   against the canonical source
@@ -231,7 +232,7 @@ follow-up window.
   `plans/2026-03-13-cmo-week-one-publishing-surface.md`
 - if a tracked URL is shortened, lost, or reformatted, stop and rebuild the
   draft from the canonical source instead of trying to fix it from memory
-- if the Wednesday proof visual fails to attach, spend up to `15` minutes
+- if the Thursday proof visual fails to attach, spend up to `15` minutes
   restoring `docs/assets/ace-proof-demo/still.svg` or an already approved
   replacement; if that fails, mark the motion blocked instead of posting a
   weaker ad hoc proof unit
@@ -609,7 +610,7 @@ Use these rules:
 
 - If a post slips, do not publish a rushed substitute. Move the motion and note
   the reason in the launch log.
-- If Tuesday or Thursday distribution slips, treat it as a missed conversion
+- If Wednesday or Friday follow-up work slips, treat it as a missed conversion
   motion and make the catch-up pass visible in the launch log instead of
   silently skipping it.
 - If clicks are weak but replies are strong, tighten the CTA before changing the

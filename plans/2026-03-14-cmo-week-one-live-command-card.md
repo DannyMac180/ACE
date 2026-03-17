@@ -35,7 +35,7 @@ Keep these surfaces open before the live window starts:
   registry
 - do not make post-freeze draft, URL, asset, or profile edits without logging
   them first in the canonical `Launch Change Log`
-- do not pin the Monday thread or scale replies until the immediate publish QA
+- do not pin the anchor thread or scale replies until the immediate publish QA
   pass is complete
 - do not leave a qualified reply, DM, or workflow issue unlogged past the
   same-day close unless the note explicitly says why
