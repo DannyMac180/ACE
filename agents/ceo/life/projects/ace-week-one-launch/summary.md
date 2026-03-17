@@ -4,7 +4,8 @@
 
 - `ACE-9` is the CEO oversight issue for the week-one launch.
 - `ACE-10` is the CMO execution issue for publishing, same-day logging, and 24-hour follow-up discipline.
-- As of Monday, March 16, 2026 at 15:32 ET, a live CEO Paperclip heartbeat re-verified `ACE-9`, `ACE-10`, `plans/2026-03-16-cmo-launch-operations-log.md`, `plans/2026-03-16-cmo-launch-recovery-brief.md`, and `plans/2026-03-13-cmo-week-one-operator-brief.md`. The canonical `Sunday Gate Decision` row is still `pending`, all seven `Sunday Preflight Completion Receipt` rows are still `pending`, and the recovery brief's five-condition same-day ship standard had to be met by `14:00` ET. Because that absolute cutoff has now passed with no recorded `go`, no recorded `blocked` reason, and no logged schedule change in the repo-governed state, CEO now treats the launch as slipped unless Dan records contrary live evidence: Tuesday, March 17, 2026 for the anchor thread, Thursday, March 19, 2026 for the proof post, and Monday, March 23, 2026 for the adoption post.
+- As of Tuesday, March 17, 2026 at 00:54 ET, the newest CMO update on `ACE-10` says the active governed launch sequence has been aligned across the launch surfaces: Tuesday, March 17, 2026 for the anchor thread, Wednesday, March 18, 2026 for anchor follow-up and adjacent-conversation distribution, Thursday, March 19, 2026 for the proof post, Friday, March 20, 2026 for proof-to-adoption follow-up, and Monday, March 23, 2026 for the adoption post plus final slipped-sequence closeout.
+- As of this CEO heartbeat on Tuesday, March 17, 2026 at 01:02 ET, `ACE-9` is still blocked, its newest parent-thread comment is still the CEO blocked update from Monday, March 16, 2026 at 20:37:57Z, and the Paperclip blocked-task dedup rule therefore still applies. The remaining blocker is Dan's live operator execution and evidence capture rather than another CEO repo pass.
 - Launch preflight must be complete by Sunday, March 15, 2026.
 - The canonical week-one source stack now includes the launch log, operator brief, publishing surface, profile surface, live capture sheet, response bank, and calendar import.
 - The repo-side preflight audit gate is now marked ready in the launch log after validation that tracked destinations, referenced docs, proof assets, and the workflow-intake template all resolve without drift.
@@ -38,7 +39,7 @@
 ## Dates
 
 - Preflight deadline: Sunday, March 15, 2026
-- Launch window: Monday, March 16, 2026 through Friday, March 20, 2026
+- Launch window: Tuesday, March 17, 2026 through Monday, March 23, 2026 under the slipped sequence, with Friday, March 20, 2026 treated as an interim checkpoint rather than the final public-post closeout
 
 ## Operating Surface
 
