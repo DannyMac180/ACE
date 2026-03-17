@@ -1,6 +1,6 @@
 # ACE Launch Operations Log
 
-Date range: 2026-03-16 to 2026-03-20
+Date range: 2026-03-16 to 2026-03-23
 Owner: CMO
 
 ## Purpose
@@ -13,7 +13,7 @@ This file is the working surface for:
 - tracked destinations
 - asset readiness
 - post schedule
-- weekly scoreboard
+- weekly scoreboard and slipped-sequence closeout
 - design-partner pipeline
 - message and docs feedback
 - content reuse candidates for week-two publishing
@@ -21,7 +21,8 @@ This file is the working surface for:
 Weekly metric owner:
 
 - CMO records day-of execution, reply, and DM metrics
-- CEO consolidates the Friday scoreboard closeout on `ACE-9`
+- CEO consolidates the Friday checkpoint and final slipped-sequence closeout on
+  `ACE-9`
 - the canonical paste-ready publishing surface is
   `plans/2026-03-13-cmo-week-one-publishing-surface.md`
 - the canonical week-one X profile surface is
@@ -32,7 +33,7 @@ Weekly metric owner:
   `plans/2026-03-13-cmo-week-one-response-bank.md`
 - the canonical raw capture surface is
   `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`
-- the fastest Monday-through-Friday live execution path is
+- the fastest live execution path is
   `plans/2026-03-14-cmo-week-one-live-command-card.md`
 
 ## Operating Split
@@ -111,7 +112,7 @@ Treat these tracked URLs as governed route labels, not as automatic analytics.
 - the `utm_*` codes preserve exact routing across posts, replies, DMs, and the
   profile surface, but GitHub does not provide reliable per-code reporting from
   those parameters alone
-- for Monday, Wednesday, and Friday public posts plus governed public replies,
+- for anchor, proof, and adoption public posts plus governed public replies,
   use X-native link-click numbers when they are available
 - for DMs, profile-link traffic, and any other surface without a reliable click
   readout, log the exact code used, then count downstream evidence such as a
@@ -314,6 +315,22 @@ If nothing changes after the Sunday gate, leave the default row untouched.
 | --- | --- | --- | --- | --- | --- | --- |
 | 2026-03-16 16:14 ET | publish schedule | `w1_thread_readme`, `w1_proof_demo`, `w1_adoption_example` | the Monday same-day recovery standard expired without logged operator proof, so the default March 16 or 18 or 20 sequence is no longer valid | CMO | slipped | new working dates are Tuesday, March 17, 2026 `11:00-11:30` ET for the anchor thread, Thursday, March 19, 2026 `11:00-11:30` ET for the proof post, and Monday, March 23, 2026 `10:30-11:00` ET for the adoption post unless a newer logged change supersedes this row |
 
+## Active Slipped Sequence
+
+Use this sequence unless a newer `Launch Change Log` row supersedes it.
+
+- Tuesday, March 17, 2026: publish the anchor thread
+- Wednesday, March 18, 2026: run anchor follow-up and adjacent-conversation
+  distribution
+- Thursday, March 19, 2026: publish the proof post
+- Friday, March 20, 2026: run proof-to-adoption follow-up and lock Monday
+  adoption prep
+- Monday, March 23, 2026: publish the adoption post and complete final
+  slipped-sequence closeout
+
+Friday, March 20, 2026 is now an interim checkpoint, not the final public-post
+closeout date.
+
 ## Live Launch Contingency Rules
 
 Use these rules if a live launch motion breaks inside the operating window.
@@ -345,7 +362,7 @@ issue that could force week-one drift.
 
 ## Immediate Publish QA Rule
 
-Use this within `5` minutes of every Monday, Wednesday, and Friday publish.
+Use this within `5` minutes of every anchor, proof, and adoption publish.
 
 - paste the live post URL into the raw capture sheet immediately after the post
   lands
@@ -353,58 +370,70 @@ Use this within `5` minutes of every Monday, Wednesday, and Friday publish.
   code exactly
 - confirm the post shipped in the expected live shape before any reply push
   starts:
-  - Monday: connected `9`-post thread
-  - Wednesday: proof still attached and rendered correctly
-  - Friday: worked-example CTA still points to `w1_adoption_example`
+  - anchor thread: connected `9`-post thread
+  - proof post: proof still attached and rendered correctly
+  - adoption post: worked-example CTA still points to `w1_adoption_example`
 - if any of those checks fail, stop the follow-up motion, log the break in the
   contingency path, and fix the live unit before treating early metrics as real
-- only pin the Monday anchor thread after this QA pass is marked complete
+- only pin the anchor thread after this QA pass is marked complete
 
 ## Publishing Run Sheet
 
 ### Monday, March 16, 2026
 
-- publish the anchor thread using the `w1_thread_readme` link
-- after the live URL is verified, pin the Monday thread and keep the X profile
-  website link on `profile_w1_readme`
-- reply to the first 10 high-signal comments the same day
-- log impressions, engagement, clicks, and notable objections
-- confirm the post code and live URL match the CEO registry before publishing
+- do not publish the anchor thread from memory or from the expired Monday
+  window
+- treat Monday as missed recovery and blocker-capture only
+- keep the dated slip path explicit across the launch log, operator brief,
+  publishing surface, live command card, and raw capture sheet
 
 ### Tuesday, March 17, 2026
+
+- publish the anchor thread using the `w1_thread_readme` link
+- after the live URL is verified, pin the Tuesday anchor thread and keep the X
+  profile website link on `profile_w1_readme`
+- reply to the first 10 high-signal comments the same day
+- log impressions, engagement, clicks, and notable objections
+- confirm the post code and live URL match the registry before publishing
+
+### Wednesday, March 18, 2026
 
 - run one explicit distribution pass on adjacent X conversations about prompt
   drift, long system prompts, agent memory failures, MCP workflow design, or
   eval regressions caused by weak context
 - use only approved `reply_*` or `dm_*` codes already listed in this file
-- move qualified builders into DM the same day instead of waiting for the next
-  anchor post
-- if Monday thread clicks are weak, tighten Wednesday proof positioning instead
+- move qualified builders into DM the same day instead of waiting for the proof
+  post
+- if Tuesday thread clicks are weak, tighten Thursday proof positioning instead
   of publishing an untracked extra post
-
-### Wednesday, March 18, 2026
-
-- publish the proof post using `w1_proof_demo`
-- attach `docs/assets/ace-proof-demo/still.svg` unless a better approved proof asset replaces it before preflight
-- capture every saver, technical reply, and DM-worthy response
-- record interim scoreboard numbers before end of day
 
 ### Thursday, March 19, 2026
 
-- run one direct-follow-up pass across Wednesday proof replies and unresolved
-  Monday prospects
+- publish the proof post using `w1_proof_demo`
+- attach `docs/assets/ace-proof-demo/still.svg` unless a better approved proof
+  asset replaces it before preflight
+- capture every saver, technical reply, and DM-worthy response
+- record interim scoreboard numbers before end of day
+
+### Friday, March 20, 2026
+
+- run one direct-follow-up pass across Thursday proof replies and unresolved
+  Tuesday prospects
 - complete `5` follow-up touches across public replies and DMs
 - route builders to the worked example, MCP guide, or API reference based on
   the actual question instead of defaulting every conversation to README
-- log the strongest repeated setup objection before the Friday adoption motion
+- log the strongest repeated setup objection before the Monday adoption motion
+- treat Friday as the interim scoreboard checkpoint, not the final public-post
+  closeout
 
-### Friday, March 20, 2026
+### Monday, March 23, 2026
 
 - publish the adoption post using `w1_adoption_example`
 - ask readers to run the example first, then reply with one concrete repeated
   failure pattern
 - move qualified responders into the design-partner pipeline below
-- CEO publishes the weekly scoreboard update before the closeout note
+- complete final slipped-sequence closeout after the adoption motion and its
+  same-day follow-up
 
 ### Sunday, March 15, 2026 Preflight
 
@@ -451,9 +480,9 @@ add the live post URL, metric snapshot, and follow-up notes on the same day.
 
 | Date | Motion | Post code | Live post URL | Exact tracked URL used | Primary metric snapshot | Follow-up due by | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2026-03-16 | anchor thread | `w1_thread_readme` |  | `https://github.com/DannyMac180/ACE/blob/main/README.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=w1_thread_readme` |  | 2026-03-17 | pending | verify the published thread points to this exact URL before logging results |
-| 2026-03-18 | proof post | `w1_proof_demo` |  | `https://github.com/DannyMac180/ACE/blob/main/docs/ace-proof-demo.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=w1_proof_demo` |  | 2026-03-19 | pending | attach `docs/assets/ace-proof-demo/still.svg` unless an approved replacement is logged before publish |
-| 2026-03-20 | adoption post | `w1_adoption_example` |  | `https://github.com/DannyMac180/ACE/blob/main/docs/getting-started-example.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=w1_adoption_example` |  | 2026-03-21 | pending | log the first concrete workflow reply or explain why none qualified |
+| 2026-03-17 | anchor thread | `w1_thread_readme` |  | `https://github.com/DannyMac180/ACE/blob/main/README.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=w1_thread_readme` |  | 2026-03-18 | pending | verify the published thread points to this exact URL before logging results |
+| 2026-03-19 | proof post | `w1_proof_demo` |  | `https://github.com/DannyMac180/ACE/blob/main/docs/ace-proof-demo.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=w1_proof_demo` |  | 2026-03-20 | pending | attach `docs/assets/ace-proof-demo/still.svg` unless an approved replacement is logged before publish |
+| 2026-03-23 | adoption post | `w1_adoption_example` |  | `https://github.com/DannyMac180/ACE/blob/main/docs/getting-started-example.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=w1_adoption_example` |  | 2026-03-24 | pending | log the first concrete workflow reply or explain why none qualified |
 
 ## Immediate Publish QA Log
 
@@ -464,9 +493,9 @@ the wrong live unit.
 
 | Date | Motion | QA completed at | Live post URL verified | Tracked URL exact | Live shape or asset verified | Contingency needed | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2026-03-16 | anchor thread |  |  | pending | pending | no | pending | confirm the live unit is a connected `9`-post thread before pinning or replying at scale |
-| 2026-03-18 | proof post |  |  | pending | pending | no | pending | confirm `docs/assets/ace-proof-demo/still.svg` is attached and rendered before the first public proof replies |
-| 2026-03-20 | adoption post |  |  | pending | pending | no | pending | confirm the worked-example CTA in the live post still points to `w1_adoption_example` before routing builders |
+| 2026-03-17 | anchor thread |  |  | pending | pending | no | pending | confirm the live unit is a connected `9`-post thread before pinning or replying at scale |
+| 2026-03-19 | proof post |  |  | pending | pending | no | pending | confirm `docs/assets/ace-proof-demo/still.svg` is attached and rendered before the first public proof replies |
+| 2026-03-23 | adoption post |  |  | pending | pending | no | pending | confirm the worked-example CTA in the live post still points to `w1_adoption_example` before routing builders |
 
 ## Profile Surface Log
 
@@ -475,19 +504,19 @@ post changes that affect profile conversion.
 
 | Date | Motion | Code | Live profile or pinned post URL | Metric snapshot | Next check due by | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2026-03-15 | apply the governed week-one bio and website link | `profile_w1_readme` |  | baseline snapshot recorded in `Audience Baseline Snapshot` before Monday publish | 2026-03-16 | pending | confirm the website field uses the exact `profile_w1_readme` URL, note any bio shortening forced by X character limits, and point to the Sunday baseline row |
-| 2026-03-16 | pin the Monday anchor thread after live URL verification | `profile_w1_readme` |  | `+3h` and `EOD` Monday profile visits plus new follows after the pin lands | 2026-03-17 | pending | log the live pinned-thread URL and leave the website field on `profile_w1_readme` through Friday close unless an exception is logged first |
-| 2026-03-20 | decide the post-launch profile state before Friday closeout | `profile_w1_readme` or week-two replacement |  | final week-one profile visits plus new follows snapshot | 2026-03-23 | pending | choose one explicit state before end of day Friday: keep the governed README-first surface into week two with a reason, or log the exact revert or replacement surface plus when it goes live |
+| 2026-03-15 | apply the governed week-one bio and website link | `profile_w1_readme` |  | baseline snapshot recorded in `Audience Baseline Snapshot` before the slipped anchor publish | 2026-03-17 | pending | confirm the website field uses the exact `profile_w1_readme` URL, note any bio shortening forced by X character limits, and point to the Sunday baseline row |
+| 2026-03-17 | pin the anchor thread after live URL verification | `profile_w1_readme` |  | `+3h` and `EOD` Tuesday profile visits plus new follows after the pin lands | 2026-03-18 | pending | log the live pinned-thread URL and leave the website field on `profile_w1_readme` through the slipped-sequence closeout unless an exception is logged first |
+| 2026-03-23 | decide the post-launch profile state after adoption closeout | `profile_w1_readme` or week-two replacement |  | final slipped-sequence profile visits plus new follows snapshot | 2026-03-24 | pending | choose one explicit state before end of day Monday: keep the governed README-first surface into week two with a reason, or log the exact revert or replacement surface plus when it goes live |
 
 ## Distribution Pass Log
 
-Use this table for Tuesday and Thursday operating passes plus any same-day
-adjacent-conversation push that materially affects launch reach or conversion.
+Use this table for the active follow-up passes plus any same-day adjacent-
+conversation push that materially affects launch reach or conversion.
 
 | Date | Pass type | Surface | Codes used | Primary topic or cohort | Qualified interactions | Next step due by | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2026-03-17 | adjacent conversation pass | X replies | `reply_w1_thread_readme` or `reply_w1_adoption_example` | prompt drift, long system prompts, agent memory, MCP workflow design, eval regressions |  | 2026-03-18 | pending | log the 3-5 highest-leverage reply-distribution touches, not every low-signal interaction |
-| 2026-03-19 | proof-to-adoption follow-up pass | replies and DMs | `reply_w1_proof_demo`, `dm_w1_example_doc`, `dm_w1_mcp_guide`, `dm_w1_api_ref` | Wednesday proof responders and unresolved Monday prospects |  | 2026-03-20 | pending | log the strongest repeated objection and the next-step routing before Friday publish |
+| 2026-03-18 | adjacent conversation pass | X replies | `reply_w1_thread_readme` or `reply_w1_adoption_example` | prompt drift, long system prompts, agent memory, MCP workflow design, eval regressions |  | 2026-03-19 | pending | log the 3-5 highest-leverage reply-distribution touches, not every low-signal interaction |
+| 2026-03-20 | proof-to-adoption follow-up pass | replies and DMs | `reply_w1_proof_demo`, `dm_w1_example_doc`, `dm_w1_mcp_guide`, `dm_w1_api_ref` | Thursday proof responders and unresolved Tuesday prospects |  | 2026-03-23 | pending | log the strongest repeated objection and the next-step routing before Monday adoption publish |
 
 ## Engagement Follow-Up Log
 
@@ -496,13 +525,13 @@ Every row should map back to one launch motion or one concrete inbound source.
 
 | Date | Source motion | Channel | Follow-up code | Public URL or handle | Exact tracked URL used | Outcome or signal | Next step due by | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2026-03-16 | anchor thread | X replies | `reply_w1_thread_readme` |  | `https://github.com/DannyMac180/ACE/blob/main/README.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=reply_w1_thread_readme` |  | 2026-03-17 | pending | log the first same-day high-signal reply burst even if no builder qualifies for DM follow-up |
-| 2026-03-18 | proof post | X replies | `reply_w1_proof_demo` |  | `https://github.com/DannyMac180/ACE/blob/main/docs/ace-proof-demo.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=reply_w1_proof_demo` |  | 2026-03-19 | pending | use for technical objections or proof questions that earn a public reply |
-| 2026-03-20 | adoption post | X replies | `reply_w1_adoption_example` |  | `https://github.com/DannyMac180/ACE/blob/main/docs/getting-started-example.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=reply_w1_adoption_example` |  | 2026-03-21 | pending | log the first public workflow reply or explain why no qualified reply appeared |
-| 2026-03-16 | week-one DM follow-up | DM | `dm_w1_readme` |  | `https://github.com/DannyMac180/ACE/blob/main/README.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=dm_w1_readme` |  | 2026-03-17 | pending | use when a builder is category-curious but not yet asking for a setup path |
-| 2026-03-16 | week-one DM follow-up | DM | `dm_w1_example_doc` |  | `https://github.com/DannyMac180/ACE/blob/main/docs/getting-started-example.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=dm_w1_example_doc` |  | 2026-03-17 | pending | use first for high-intent builders unless they ask directly for MCP or API detail |
-| 2026-03-16 | week-one DM follow-up | DM | `dm_w1_mcp_guide` |  | `https://github.com/DannyMac180/ACE/blob/main/docs/MCP_USAGE_GUIDE.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=dm_w1_mcp_guide` |  | 2026-03-17 | pending | use when the builder clearly asks how to run ACE through MCP |
-| 2026-03-16 | week-one DM follow-up | DM | `dm_w1_api_ref` |  | `https://github.com/DannyMac180/ACE/blob/main/docs/api-reference.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=dm_w1_api_ref` |  | 2026-03-17 | pending | use only when the builder asks for implementation detail beyond the worked example |
+| 2026-03-17 | anchor thread | X replies | `reply_w1_thread_readme` |  | `https://github.com/DannyMac180/ACE/blob/main/README.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=reply_w1_thread_readme` |  | 2026-03-18 | pending | log the first same-day high-signal reply burst even if no builder qualifies for DM follow-up |
+| 2026-03-19 | proof post | X replies | `reply_w1_proof_demo` |  | `https://github.com/DannyMac180/ACE/blob/main/docs/ace-proof-demo.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=reply_w1_proof_demo` |  | 2026-03-20 | pending | use for technical objections or proof questions that earn a public reply |
+| 2026-03-23 | adoption post | X replies | `reply_w1_adoption_example` |  | `https://github.com/DannyMac180/ACE/blob/main/docs/getting-started-example.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=reply_w1_adoption_example` |  | 2026-03-24 | pending | log the first public workflow reply or explain why no qualified reply appeared |
+| 2026-03-17 | week-one DM follow-up | DM | `dm_w1_readme` |  | `https://github.com/DannyMac180/ACE/blob/main/README.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=dm_w1_readme` |  | 2026-03-18 | pending | use when a builder is category-curious but not yet asking for a setup path |
+| 2026-03-17 | week-one DM follow-up | DM | `dm_w1_example_doc` |  | `https://github.com/DannyMac180/ACE/blob/main/docs/getting-started-example.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=dm_w1_example_doc` |  | 2026-03-18 | pending | use first for high-intent builders unless they ask directly for MCP or API detail |
+| 2026-03-17 | week-one DM follow-up | DM | `dm_w1_mcp_guide` |  | `https://github.com/DannyMac180/ACE/blob/main/docs/MCP_USAGE_GUIDE.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=dm_w1_mcp_guide` |  | 2026-03-18 | pending | use when the builder clearly asks how to run ACE through MCP |
+| 2026-03-17 | week-one DM follow-up | DM | `dm_w1_api_ref` |  | `https://github.com/DannyMac180/ACE/blob/main/docs/api-reference.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=dm_w1_api_ref` |  | 2026-03-18 | pending | use only when the builder asks for implementation detail beyond the worked example |
 
 ## Workflow Intake Log
 
@@ -528,10 +557,10 @@ Each meaningful launch motion should contribute at least one reusable artifact:
 
 | Date | Source motion | Artifact type | Raw evidence or handle | Why it matters | Candidate follow-up asset | Owner | Due by | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2026-03-16 | anchor thread | metric jump or thesis quote |  | prove the category line or profile surface is landing | week-two category thread or README iteration | CMO | 2026-03-23 | pending | prioritize a screenshot-worthy click, profile-lift, or builder restatement of `Agentic Context Engineering` |
-| 2026-03-17 | adjacent conversation pass | objection or reply wording |  | capture the exact pain language builders already use in public | week-two objection-handling post or reply bank patch | CMO | 2026-03-23 | pending | prefer the cleanest wording around prompt drift, memory failure, or MCP workflow friction |
-| 2026-03-18 | proof post | technical objection or workflow issue |  | turn proof skepticism into a reusable proof asset | week-two proof post, demo patch, or issue-driven case note | CMO | 2026-03-23 | pending | best candidate is a skeptic who forces a clearer mechanism explanation |
-| 2026-03-20 | adoption post | setup objection or adoption signal |  | convert setup intent into the next adoption unit | week-two setup FAQ, example patch, or design-partner CTA | CMO | 2026-03-23 | pending | prefer the strongest concrete workflow or repeated setup blocker |
+| 2026-03-17 | anchor thread | metric jump or thesis quote |  | prove the category line or profile surface is landing | week-two category thread or README iteration | CMO | 2026-03-24 | pending | prioritize a screenshot-worthy click, profile-lift, or builder restatement of `Agentic Context Engineering` |
+| 2026-03-18 | adjacent conversation pass | objection or reply wording |  | capture the exact pain language builders already use in public | week-two objection-handling post or reply bank patch | CMO | 2026-03-24 | pending | prefer the cleanest wording around prompt drift, memory failure, or MCP workflow friction |
+| 2026-03-19 | proof post | technical objection or workflow issue |  | turn proof skepticism into a reusable proof asset | week-two proof post, demo patch, or issue-driven case note | CMO | 2026-03-24 | pending | best candidate is a skeptic who forces a clearer mechanism explanation |
+| 2026-03-23 | adoption post | setup objection or adoption signal |  | convert setup intent into the next adoption unit | week-two setup FAQ, example patch, or design-partner CTA | CMO | 2026-03-24 | pending | prefer the strongest concrete workflow or repeated setup blocker |
 
 ## Scoreboard Counting Rules
 
@@ -553,7 +582,7 @@ Use these rules so Friday numbers reflect the same funnel logic all week.
 
 ## Scoreboard Metric Definitions
 
-Use these definitions when filling the Friday scoreboard row.
+Use these definitions when filling the slipped-sequence scoreboard row.
 
 | Metric | Count this | Do not count this |
 | --- | --- | --- |
@@ -587,17 +616,17 @@ Use this file as the only shared scoreboard source of truth.
    surface, record `unavailable` and log the downstream action instead of
    estimating.
 3. CMO completes the `Immediate Publish QA Log` within `5` minutes of each
-   Monday, Wednesday, and Friday public post so live URL integrity, thread
+   anchor, proof, and adoption public post so live URL integrity, thread
    shape, and asset correctness are verified before pinning or scaled reply
    work begins.
-4. CMO records one Sunday row in `Audience Baseline Snapshot` before Monday
+4. CMO records one Sunday row in `Audience Baseline Snapshot` before the anchor
    launch, then adds one row to the `Profile Surface Log` whenever the week-one
-   bio, website link, or pinned post changes, including the Monday `+3h` and
+   bio, website link, or pinned post changes, including the Tuesday `+3h` and
    `EOD` profile-lift snapshot after the anchor thread pin lands.
-5. Before Friday closeout, CMO records one explicit `Profile Surface Log`
-   decision for the post-launch state: either keep the governed README-first
-   surface into week two with a reason, or record the exact revert or
-   replacement surface plus when it should go live.
+5. Before the final slipped-sequence closeout, CMO records one explicit
+   `Profile Surface Log` decision for the post-launch state: either keep the
+   governed README-first surface into week two with a reason, or record the
+   exact revert or replacement surface plus when it should go live.
 6. CMO adds one row to the `Workflow Intake Log` for every GitHub issue or
    discussion opened from launch-week traffic.
 7. CMO adds one row to the `Content Reuse Queue` whenever a launch motion
@@ -614,8 +643,9 @@ Use this file as the only shared scoreboard source of truth.
 11. CMO updates the design-partner pipeline and friction log from the same raw
    notes within 24 hours.
 12. CEO reviews the log for completeness and consolidates week-one results into
-   the single scoreboard row below on Friday, including the rolled-up profile
-   visits and new follows captured in launch-week snapshots.
+   the single scoreboard row below at the final slipped-sequence closeout,
+   including the rolled-up profile visits and new follows captured in launch-
+   week snapshots.
 13. If a launch link was used that is not in the approved registry, log it as
    an instrumentation miss in the closeout section.
 14. On Sunday, March 15, 2026, Dan completes the `Sunday Preflight Completion
@@ -629,8 +659,8 @@ Every qualified public reply or DM must be logged in this file within 24 hours.
 Minimum capture standard:
 
 - add the source post to the `Execution Log` above if it is not already there
-- complete the `Immediate Publish QA Log` first if the interaction came from a
-  Monday, Wednesday, or Friday public post and the live unit has not yet been
+- complete the `Immediate Publish QA Log` first if the interaction came from an
+  anchor, proof, or adoption public post and the live unit has not yet been
   verified
 - confirm the Sunday `Audience Baseline Snapshot` is filled before counting any
   launch-week `New follows` lift
@@ -663,11 +693,11 @@ interest into setup help or a working session without waiting for Friday.
 
 | Date | Review pass | Owner | Exit condition |
 | --- | --- | --- | --- |
-| 2026-03-16 | review the first same-day qualified replies and DMs after the anchor thread; choose docs, GitHub issue intake, or a short call for each qualified builder | Dan | every `qualified` prospect has one next step and one `Last touch` entry in the pipeline |
-| 2026-03-17 | follow up on Monday prospects that did not convert on docs alone | Dan | every still-active prospect is either `setup_started`, `call_booked`, or explicitly parked |
-| 2026-03-18 | re-rank proof-post respondents after the Wednesday metric snapshot and move any technical-fit builders into the pipeline the same day | Dan | proof-post prospects with real workflow pain have a score and a next step |
-| 2026-03-19 | run a second outbound and inbound review pass before the adoption post | Dan | the pipeline is current and the highest-leverage prospects are queued for Friday follow-up |
-| 2026-03-20 | decide which qualified responders need a short working session the following week and record that in `Next step` before closeout | Dan | every active prospect has a concrete next step dated no later than 2026-03-23 |
+| 2026-03-17 | review the first same-day qualified replies and DMs after the anchor thread; choose docs, GitHub issue intake, or a short call for each qualified builder | Dan | every `qualified` prospect has one next step and one `Last touch` entry in the pipeline |
+| 2026-03-18 | follow up on Tuesday prospects that did not convert on docs alone | Dan | every still-active prospect is either `setup_started`, `call_booked`, or explicitly parked |
+| 2026-03-19 | re-rank proof-post respondents after the Thursday metric snapshot and move any technical-fit builders into the pipeline the same day | Dan | proof-post prospects with real workflow pain have a score and a next step |
+| 2026-03-20 | run a second outbound and inbound review pass before the Monday adoption post | Dan | the pipeline is current and the highest-leverage prospects are queued for Monday follow-up |
+| 2026-03-23 | decide which qualified responders need a short working session the following week and record that in `Next step` before closeout | Dan | every active prospect has a concrete next step dated no later than 2026-03-24 |
 
 Use the qualification rubric and 20-minute call structure from
 `plans/2026-03-11-cmo-design-partner-engine.md` when a prospect is strong
@@ -704,11 +734,11 @@ implicit.
 
 | Date | Checkpoint | Trigger observed | Decision taken | Follow-through due by | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2026-03-16 | `+3h` anchor-thread review |  |  | 2026-03-17 | pending | use when Monday performance forces a Tuesday distribution shift or a sharper Wednesday proof hook |
-| 2026-03-17 | EOD distribution review |  |  | 2026-03-18 | pending | record whether Wednesday needs stronger inspectability language, better routing, or no change |
-| 2026-03-18 | `+3h` proof-post review |  |  | 2026-03-19 | pending | record whether Friday should lead with setup fit, mechanism clarity, or public workflow capture |
-| 2026-03-19 | EOD follow-up review |  |  | 2026-03-20 | pending | record the exact Friday emphasis: worked example, MCP path, API detail, or issue intake |
-| 2026-03-20 | EOD adoption review |  |  | 2026-03-23 | pending | record the concrete week-two messaging, docs, or routing fix that launch week proved necessary |
+| 2026-03-17 | `+3h` anchor-thread review |  |  | 2026-03-18 | pending | use when Tuesday performance forces a Wednesday distribution shift or a sharper Thursday proof hook |
+| 2026-03-18 | EOD distribution review |  |  | 2026-03-19 | pending | record whether Thursday needs stronger inspectability language, better routing, or no change |
+| 2026-03-19 | `+3h` proof-post review |  |  | 2026-03-20 | pending | record whether Monday should lead with setup fit, mechanism clarity, or public workflow capture |
+| 2026-03-20 | EOD follow-up review |  |  | 2026-03-23 | pending | record the exact Monday emphasis: worked example, MCP path, API detail, or issue intake |
+| 2026-03-23 | EOD adoption review |  |  | 2026-03-24 | pending | record the concrete week-two messaging, docs, or routing fix that launch week proved necessary |
 
 ## Contingency Review Rule
 
@@ -719,12 +749,14 @@ If the `Launch Contingency Log` gets any row during week one:
   governed asset set
 - if the issue changed publish timing, update the related metric notes so the
   scoreboard does not compare unlike windows by accident
-- if the issue stayed unresolved, carry the blocker into Friday closeout as a
-  direct launch-system fix instead of burying it in general observations
+- if the issue stayed unresolved, carry the blocker into the final slipped-
+  sequence closeout as a direct launch-system fix instead of burying it in
+  general observations
 
 ## Scoreboard
 
-Update this on Friday after the adoption post and reply follow-up.
+Update this at the final slipped-sequence closeout after the Monday, March 23,
+2026 adoption post and reply follow-up.
 
 | Week | Qualified impressions | Engagement rate | Outbound clicks | Profile visits | New follows | README clicks | Proof clicks | Setup starts | Setup completions | Adoption signals | Serious conversations | Repeat-user signals |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -781,7 +813,7 @@ Use these rules at the end of week one:
 
 ## Week 1 Closeout
 
-Fill this in on Friday.
+Fill this in after the Monday, March 23, 2026 adoption motion.
 
 ### Closeout checklist
 
@@ -790,15 +822,15 @@ Mark every row before calling week one complete.
 | Check | Owner | Status | Notes |
 | --- | --- | --- | --- |
 | Scoreboard row is fully populated for week 1 | CEO | pending | include every required metric, even if the value is `0` |
-| Execution Log rows are complete for Monday, March 16, 2026 through Friday, March 20, 2026 | CEO | pending | if a motion did not publish, say so explicitly in `Notes` instead of leaving the row blank |
-| Immediate Publish QA Log is complete for Monday, Wednesday, and Friday | CMO | pending | each public post should show the live URL check, exact tracked URL check, and live shape or asset verification before broad reply work |
-| Profile Surface Log is current through the Friday, March 20, 2026 close | Dan | pending | include the applied `profile_w1_readme` state, the Monday pinned-thread URL, and the Monday profile-lift snapshot |
-| Post-launch profile state is explicitly decided before Friday closeout | CMO | pending | either keep the governed README-first profile surface into week two with a reason, or log the exact revert or replacement surface plus when it goes live |
-| Distribution Pass Log is complete for Tuesday, March 17, 2026 and Thursday, March 19, 2026 | CEO | pending | if a pass slipped, state why and record the catch-up or lost-conversion impact explicitly |
+| Execution Log rows are complete for Monday, March 16, 2026 through Monday, March 23, 2026 | CEO | pending | if a motion did not publish, say so explicitly in `Notes` instead of leaving the row blank |
+| Immediate Publish QA Log is complete for the anchor, proof, and adoption posts | CMO | pending | each public post should show the live URL check, exact tracked URL check, and live shape or asset verification before broad reply work |
+| Profile Surface Log is current through the Monday, March 23, 2026 close | Dan | pending | include the applied `profile_w1_readme` state, the Tuesday pinned-thread URL, and the Tuesday profile-lift snapshot |
+| Post-launch profile state is explicitly decided before final closeout | CMO | pending | either keep the governed README-first profile surface into week two with a reason, or log the exact revert or replacement surface plus when it goes live |
+| Distribution Pass Log is complete for Wednesday, March 18, 2026 and Friday, March 20, 2026 | CEO | pending | if a pass slipped, state why and record the catch-up or lost-conversion impact explicitly |
 | Engagement Follow-Up Log is current within the 24-hour rule | CEO | pending | audit every qualified reply burst, outbound DM, and inbound DM thread |
 | Workflow Intake Log captures every issue or discussion opened from live audience traffic | CEO | pending | include the GitHub URL, source motion, repeated failure pattern, and next step for each public workflow report |
 | Content Reuse Queue names at least `3` concrete week-two assets | CMO | pending | each entry should name the raw evidence, the follow-up asset type, and a due date instead of a vague theme |
-| Design-partner pipeline is current through the Friday, March 20, 2026 review pass | Dan | pending | every active prospect needs one next step dated no later than 2026-03-23 |
+| Design-partner pipeline is current through the Monday, March 23, 2026 review pass | Dan | pending | every active prospect needs one next step dated no later than 2026-03-24 |
 | Objections And Friction Log captures repeated message, proof, and setup blockers | CEO | pending | include the repeated blockers that should shape week-two content or docs work |
 | Highest-priority next fix names one concrete week-two change with an owner and due date | CEO | pending | do not close week one with a generic theme or an unowned idea |
 | Instrumentation misses are listed explicitly or marked `none` | CEO | pending | include any untracked links, missing metrics, or logging gaps |
@@ -831,8 +863,8 @@ Mark every row before calling week one complete.
 
 Closeout rule:
 
-- the Friday update is not complete until the scoreboard row is filled, the
-  closeout checklist is marked complete, the design-partner pipeline is current,
-  the `Content Reuse Queue` names at least `3` concrete week-two assets, and
-  `Highest-priority next fix` names one concrete docs, product, or messaging
-  change for week two
+- the final slipped-sequence update is not complete until the scoreboard row is
+  filled, the closeout checklist is marked complete, the design-partner
+  pipeline is current, the `Content Reuse Queue` names at least `3` concrete
+  week-two assets, and `Highest-priority next fix` names one concrete docs,
+  product, or messaging change for week two

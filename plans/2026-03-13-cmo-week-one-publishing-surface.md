@@ -6,8 +6,8 @@ Operator: Dan
 
 ## Purpose
 
-Use this file as the exact paste-ready source for the Monday, Wednesday, and
-Friday week-one launch posts.
+Use this file as the exact paste-ready source for the anchor, proof, and
+adoption posts in the current launch sequence.
 
 This file exists to prevent copy drift between the approved launch copy in
 `plans/2026-03-11-cmo-launch-copy-pack.md` and the live publishing surface Dan
@@ -19,29 +19,30 @@ Canonical logging and measurement still happen in
 ## Publishing Rules
 
 - Paste these drafts exactly unless the launch log is updated first.
-- Paste the Monday anchor draft as a `9`-post thread in the listed order, not as
-  one long standalone post.
+- Paste the anchor draft as a `9`-post thread in the listed order, not as one
+  long standalone post.
 - Do not replace tracked links with shortened URLs.
 - Do not add extra claims that are not already supported by the repo.
 - If a draft changes before publishing, update this file and the launch log on
   the same day.
 
-## Default Scheduler Windows
+## Active Scheduler Windows
 
-Use these windows in Eastern Time when pasting drafts into the live X composer
-or scheduler on Sunday, March 15, 2026.
+Use these windows in Eastern Time for the current slipped sequence logged at
+`2026-03-16 16:14 ET` in
+`plans/2026-03-16-cmo-launch-operations-log.md`.
 
 | Day | Motion | Default live window | Required follow-up windows |
 | --- | --- | --- | --- |
-| Monday, March 16, 2026 | anchor thread | `11:00-11:30` ET | `+30m`, `+3h`, and `17:30` ET logging |
-| Wednesday, March 18, 2026 | proof post | `11:00-11:30` ET | `+30m`, `+3h`, and `17:30` ET logging |
-| Friday, March 20, 2026 | adoption post | `10:30-11:00` ET | `+30m`, `+3h`, and `17:30` ET logging |
+| Tuesday, March 17, 2026 | anchor thread | `11:00-11:30` ET | `+30m`, `+3h`, and `17:30` ET logging |
+| Thursday, March 19, 2026 | proof post | `11:00-11:30` ET | `+30m`, `+3h`, and `17:30` ET logging |
+| Monday, March 23, 2026 | adoption post | `10:30-11:00` ET | `+30m`, `+3h`, and `17:30` ET logging |
 
 If a scheduled time changes, update
 `plans/2026-03-13-cmo-week-one-live-capture-sheet.md` before launch week starts
 so the check windows stay aligned with the actual publish slot.
 
-## Monday, March 16, 2026
+## Tuesday, March 17, 2026 Anchor Thread
 
 Post code: `w1_thread_readme`
 
@@ -113,7 +114,7 @@ If you're fighting prompt drift or giant system prompts, the core ACE thesis is 
 https://github.com/DannyMac180/ACE/blob/main/README.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=reply_w1_thread_readme
 ```
 
-## Wednesday, March 18, 2026
+## Thursday, March 19, 2026 Proof Post
 
 Post code: `w1_proof_demo`
 
@@ -145,7 +146,7 @@ If you want to inspect the proof asset directly, start here:
 https://github.com/DannyMac180/ACE/blob/main/docs/ace-proof-demo.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=reply_w1_proof_demo
 ```
 
-## Friday, March 20, 2026
+## Monday, March 23, 2026 Adoption Post
 
 Post code: `w1_adoption_example`
 
@@ -190,7 +191,7 @@ Before clicking publish:
 
 1. confirm the pasted draft still matches this file exactly
 2. confirm the tracked URL matches the post code above
-3. for Monday, confirm the scheduler or composer preview shows a connected
+3. for the anchor thread, confirm the scheduler or composer preview shows a connected
    `9`-post thread in this exact order
 4. confirm the proof post still uses `docs/assets/ace-proof-demo/still.svg`
 5. confirm the launch log is open for same-day metric and follow-up capture

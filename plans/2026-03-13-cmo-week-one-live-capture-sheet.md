@@ -38,6 +38,17 @@ into the launch log before the day ends.
   and log the downstream reply, DM response, issue, or setup evidence instead
   of estimating from the GitHub destination.
 
+## Active Slipped Sequence
+
+Use this sequence unless a newer row in the `Launch Change Log` supersedes it.
+
+- Tuesday, March 17, 2026: anchor thread publish
+- Wednesday, March 18, 2026: anchor follow-up and adjacent-conversation
+  distribution
+- Thursday, March 19, 2026: proof post publish
+- Friday, March 20, 2026: proof-to-adoption follow-up
+- Monday, March 23, 2026: adoption post publish
+
 ## Capture Windows
 
 Use these default checkpoints for each launch motion:
@@ -51,11 +62,12 @@ Default operating windows in Eastern Time:
 
 | Day | Live window | Mid-session check | Final same-day checkpoint |
 | --- | --- | --- | --- |
-| Monday, March 16, 2026 | publish `11:00-11:30` ET | `+30m` and `+3h` after publish | `17:30` ET |
-| Tuesday, March 17, 2026 | distribution pass `12:00-13:00` ET | `12:30` ET | `17:30` ET |
-| Wednesday, March 18, 2026 | publish `11:00-11:30` ET | `+30m` and `+3h` after publish | `17:30` ET |
-| Thursday, March 19, 2026 | follow-up pass `12:00-13:00` ET | `12:30` ET | `17:30` ET |
-| Friday, March 20, 2026 | publish `10:30-11:00` ET | `+30m` and `+3h` after publish | `17:30` ET |
+| Monday, March 16, 2026 | blocker logging only; no publish window remains | next check is Tuesday `11:00` ET | `17:30` ET |
+| Tuesday, March 17, 2026 | anchor publish `11:00-11:30` ET | `+30m` and `+3h` after publish | `17:30` ET |
+| Wednesday, March 18, 2026 | distribution pass `12:00-13:00` ET | `12:30` ET | `17:30` ET |
+| Thursday, March 19, 2026 | proof publish `11:00-11:30` ET | `+30m` and `+3h` after publish | `17:30` ET |
+| Friday, March 20, 2026 | follow-up pass `12:00-13:00` ET | `12:30` ET | `17:30` ET |
+| Monday, March 23, 2026 | adoption publish `10:30-11:00` ET | `+30m` and `+3h` after publish | `17:30` ET |
 
 ## Checkpoint Response Rules
 
@@ -66,12 +78,12 @@ These are the raw-capture counterparts to the `Checkpoint Decision Log` in
 
 | Motion | Checkpoint | If this is true | Required move |
 | --- | --- | --- | --- |
-| Monday anchor thread | `+30m` | engagement rate under `1.5%` or fewer than `2` meaningful builder replies | spend the next `30` minutes on thesis-clarifying public replies with `reply_w1_thread_readme`; do not change the tracked URL and do not add a new post |
-| Monday anchor thread | `+3h` | README clicks under `10` | pin the thread if the live URL is verified, run `2-3` adjacent-conversation replies from the Tuesday watchlist using `reply_w1_thread_readme`, and note that Wednesday must sharpen the proof hook instead of repeating more category language |
-| Tuesday distribution pass | EOD | fewer than `2` builders moved into DM or the design-partner pipeline | queue `2` proof-skeptic or workflow-fit targets for Wednesday from the watchlist and tighten Wednesday first replies around inspectability plus one concrete failure-pattern ask |
-| Wednesday proof post | `+3h` | proof clicks under `5` or saves or bookmarks under `5` | use `reply_w1_proof_demo` on the strongest technical skeptic, DM the highest-fit responder for one workflow plus repeated failure pattern, and make Friday lead with workflow fit instead of more loop mechanics |
-| Thursday follow-up pass | EOD | fewer than `2` qualified prospects have a dated next step | make Friday's first reply and first DM ask directly for one repeated failure pattern, default to `dm_w1_example_doc`, and push the best public-fit case toward `issue_w1_failure_pattern` |
-| Friday adoption post | `+3h` or EOD | fewer than `2` setup-start signals or no public workflow report exists yet | spend the remaining window on `1:1` follow-up with the top `3` responders, route the best public-fit workflow into `issue_w1_failure_pattern`, and log the miss explicitly if no builder qualifies |
+| Anchor thread | `+30m` | engagement rate under `1.5%` or fewer than `2` meaningful builder replies | spend the next `30` minutes on thesis-clarifying public replies with `reply_w1_thread_readme`; do not change the tracked URL and do not add a new post |
+| Anchor thread | `+3h` | README clicks under `10` | pin the thread if the live URL is verified, run `2-3` adjacent-conversation replies from the Wednesday watchlist using `reply_w1_thread_readme`, and note that Thursday must sharpen the proof hook instead of repeating more category language |
+| Anchor follow-up pass | EOD | fewer than `2` builders moved into DM or the design-partner pipeline | queue `2` proof-skeptic or workflow-fit targets for Thursday from the watchlist and tighten Thursday first replies around inspectability plus one concrete failure-pattern ask |
+| Proof post | `+3h` | proof clicks under `5` or saves or bookmarks under `5` | use `reply_w1_proof_demo` on the strongest technical skeptic, DM the highest-fit responder for one workflow plus repeated failure pattern, and make Monday adoption lead with workflow fit instead of more loop mechanics |
+| Proof-to-adoption follow-up pass | EOD | fewer than `2` qualified prospects have a dated next step | make Monday's first reply and first DM ask directly for one repeated failure pattern, default to `dm_w1_example_doc`, and push the best public-fit case toward `issue_w1_failure_pattern` |
+| Adoption post | `+3h` or EOD | fewer than `2` setup-start signals or no public workflow report exists yet | spend the remaining window on `1:1` follow-up with the top `3` responders, route the best public-fit workflow into `issue_w1_failure_pattern`, and log the miss explicitly if no builder qualifies |
 
 ## Checkpoint Decision Scratchpad
 
@@ -83,12 +95,12 @@ into the canonical `Checkpoint Decision Log` in
 
 | Date | Checkpoint | Trigger observed | Decision made | Action shipped | Transferred to launch log | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2026-03-16 | `+30m` anchor-thread review |  |  |  | pending | use only if Monday needs an immediate hook or reply adjustment |
-| 2026-03-16 | `+3h` anchor-thread review |  |  |  | pending | use when Tuesday distribution or Wednesday proof positioning changes |
-| 2026-03-17 | EOD distribution review |  |  |  | pending | use when Wednesday needs a sharper hook, CTA, or routing path |
-| 2026-03-18 | `+3h` proof-post review |  |  |  | pending | use when Friday should emphasize setup fit, mechanism clarity, or public workflow capture |
-| 2026-03-19 | EOD follow-up review |  |  |  | pending | use when Friday adoption routing needs to change before publish |
-| 2026-03-20 | `+3h` or EOD adoption review |  |  |  | pending | use when week two needs an explicit messaging, docs, or routing fix |
+| 2026-03-17 | `+30m` anchor-thread review |  |  |  | pending | use only if Tuesday needs an immediate hook or reply adjustment |
+| 2026-03-17 | `+3h` anchor-thread review |  |  |  | pending | use when Wednesday distribution or Thursday proof positioning changes |
+| 2026-03-18 | EOD anchor follow-up review |  |  |  | pending | use when Thursday needs a sharper hook, CTA, or routing path |
+| 2026-03-19 | `+3h` proof-post review |  |  |  | pending | use when Monday should emphasize setup fit, mechanism clarity, or public workflow capture |
+| 2026-03-20 | EOD follow-up review |  |  |  | pending | use when Monday adoption routing needs to change before publish |
+| 2026-03-23 | `+3h` or EOD adoption review |  |  |  | pending | use when week two needs an explicit messaging, docs, or routing fix |
 
 ## Launch Incident Scratchpad
 
@@ -114,16 +126,16 @@ This is the raw counterpart to the `Launch Change Log` in
 
 ## Immediate Publish QA Scratchpad
 
-Use this right after each Monday, Wednesday, and Friday public post goes live.
+Use this right after each anchor, proof, and adoption post goes live.
 
 This is the raw counterpart to the `Immediate Publish QA Log` in
 `plans/2026-03-16-cmo-launch-operations-log.md`.
 
 | Time | Motion | Live post URL | Tracked URL exact | Live shape or asset verified | Contingency needed | Transferred to launch log | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-|  | Monday anchor thread |  | pending | pending | no | pending | confirm the live unit is a connected `9`-post thread before pinning or wide reply distribution |
-|  | Wednesday proof post |  | pending | pending | no | pending | confirm `docs/assets/ace-proof-demo/still.svg` is attached and rendering before proof replies begin |
-|  | Friday adoption post |  | pending | pending | no | pending | confirm the worked-example CTA still points to `w1_adoption_example` before routing builders |
+|  | Tuesday anchor thread |  | pending | pending | no | pending | confirm the live unit is a connected `9`-post thread before pinning or wide reply distribution |
+|  | Thursday proof post |  | pending | pending | no | pending | confirm `docs/assets/ace-proof-demo/still.svg` is attached and rendering before proof replies begin |
+|  | Monday adoption post |  | pending | pending | no | pending | confirm the worked-example CTA still points to `w1_adoption_example` before routing builders |
 
 ## Quick Routing Rules
 
@@ -237,29 +249,30 @@ auditable.
 
 | Captured at | Starting follower count | Starting profile-visits reading | Source surface | Transferred to launch log | Notes |
 | --- | --- | --- | --- | --- | --- |
-|  |  |  |  | pending | fill this immediately after the Sunday profile update so Monday through Friday audience lift has a fixed starting point |
+|  |  |  |  | pending | fill this immediately after the Sunday profile update so the slipped launch sequence has a fixed starting point |
 
 ## Profile Surface Raw Capture
 
-Use this table for the governed week-one bio, website link, and Monday pinning
-motions before transferring the final details into the `Profile Surface Log` in
+Use this table for the governed week-one bio, website link, anchor-thread
+pinning, and final profile-state motions before transferring the final details
+into the `Profile Surface Log` in
 `plans/2026-03-16-cmo-launch-operations-log.md`.
 
 | Date | Motion | Code | Live profile or pinned post URL | Profile visits snapshot | New follows snapshot | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2026-03-15 | apply week-one bio and website link | `profile_w1_readme` |  | baseline snapshot recorded above before Monday publish | baseline snapshot recorded above before Monday publish | pending | paste the live website-field URL here, note if the bio had to be shortened for X character limits, and make sure the audience baseline row above is filled |
-| 2026-03-16 | pin the Monday anchor thread after URL verification | `profile_w1_readme` |  | `+3h` and `EOD` Monday profile visits | `+3h` and `EOD` Monday follows | pending | leave the README-first website link in place through Friday unless the launch log records an exception |
-| 2026-03-20 | decide the post-launch profile state before closeout | `profile_w1_readme` or week-two replacement |  | final week-one profile snapshot | final week-one follow snapshot | pending | note whether the README-first profile surface stays live into week two or list the exact revert or replacement surface plus timing before transferring the decision into the launch log |
+| 2026-03-15 | apply week-one bio and website link | `profile_w1_readme` |  | baseline snapshot recorded above before the slipped anchor publish | baseline snapshot recorded above before the slipped anchor publish | pending | paste the live website-field URL here, note if the bio had to be shortened for X character limits, and make sure the audience baseline row above is filled |
+| 2026-03-17 | pin the anchor thread after URL verification | `profile_w1_readme` |  | `+3h` and `EOD` Tuesday profile visits | `+3h` and `EOD` Tuesday follows | pending | leave the README-first website link in place through the slipped-sequence closeout unless the launch log records an exception |
+| 2026-03-23 | decide the post-launch profile state after adoption closeout | `profile_w1_readme` or week-two replacement |  | final slipped-sequence profile snapshot | final slipped-sequence follow snapshot | pending | note whether the README-first profile surface stays live into week two or list the exact revert or replacement surface plus timing before transferring the decision into the launch log |
 
-## Tuesday And Thursday Watchlist
+## Active Distribution Watchlist
 
-Prepare this before Monday so distribution work starts from live targets instead
-of a blank search tab.
+Prepare this before the first live publish so the slipped-sequence follow-up
+work starts from live targets instead of a blank search tab.
 
 Fill order:
 
 1. start with qualified or nearly qualified people who already engaged with the
-   Monday thread or Wednesday proof post
+   Tuesday thread or Thursday proof post
 2. add technical builders Dan already follows or regularly interacts with when
    they are discussing prompt drift, agent-memory failures, MCP workflow
    friction, or eval regressions
@@ -273,7 +286,7 @@ Selection rules:
   repeated setup friction
 - prefer accounts with technical credibility, clear workflow context, or
   visible team leverage over generic AI chatter
-- queue at least `5` Tuesday candidates and at least `5` Thursday candidates
+- queue at least `5` Wednesday candidates and at least `5` Friday candidates
 - note the most likely first routing code before launch week starts so reply
   choices are faster in the moment
 - replace stale or low-signal targets during the week, but keep the original
@@ -281,7 +294,7 @@ Selection rules:
 
 Validation evidence rule:
 
-- do not mark the Tuesday or Thursday watchlist `prepared` from handles alone
+- do not mark the Wednesday or Friday watchlist `prepared` from handles alone
 - before Sunday close, every validated target should include either one
   concrete live post URL or one dated search note from the last `72h`
 - keep the older seed rows when they are still useful, but add the live-thread
@@ -295,14 +308,14 @@ workflow pain over generic AI commentary.
 
 | Day | Search seed | What qualifies the target | Default first code |
 | --- | --- | --- | --- |
-| Tuesday | `"prompt drift" OR "system prompt" ("agent" OR "coding agent")` | the post describes context bloat, brittle prompting, or repeated instructions | `reply_w1_thread_readme` |
-| Tuesday | `("agent memory" OR "memory for agents") (broken OR failing OR context)` | the post describes retrieval misses, stale memory, or weak adaptation | `reply_w1_thread_readme` |
-| Tuesday | `("MCP" OR "Model Context Protocol") (workflow OR server OR tooling)` | the post is about real tool orchestration or context handoff, not protocol news alone | `reply_w1_adoption_example` |
-| Tuesday | `("eval regression" OR "agent evals") (prompt OR context OR memory)` | the post names recurring regressions or unstable agent behavior | `reply_w1_thread_readme` |
-| Thursday | `notifications tab plus Monday and Wednesday engager list` | start with everyone who engaged on Monday or Wednesday and still looks qualified | `reply_w1_proof_demo` |
-| Thursday | `"how do you test" ("coding agent" OR "agent workflow")` | the post asks for proof, measurement, or a concrete setup path | `reply_w1_proof_demo` |
-| Thursday | `("repeated failure" OR "keeps failing") ("agent" OR "workflow")` | the post includes one failure pattern that could turn into a DM or issue intake | `reply_w1_adoption_example` |
-| Thursday | `("MCP" OR "CLI") ("setup" OR "integration") ("agent" OR "workflow")` | the post asks operational fit questions rather than high-level architecture debate | `reply_w1_adoption_example` |
+| Wednesday | `"prompt drift" OR "system prompt" ("agent" OR "coding agent")` | the post describes context bloat, brittle prompting, or repeated instructions | `reply_w1_thread_readme` |
+| Wednesday | `("agent memory" OR "memory for agents") (broken OR failing OR context)` | the post describes retrieval misses, stale memory, or weak adaptation | `reply_w1_thread_readme` |
+| Wednesday | `("MCP" OR "Model Context Protocol") (workflow OR server OR tooling)` | the post is about real tool orchestration or context handoff, not protocol news alone | `reply_w1_adoption_example` |
+| Wednesday | `("eval regression" OR "agent evals") (prompt OR context OR memory)` | the post names recurring regressions or unstable agent behavior | `reply_w1_thread_readme` |
+| Friday | `notifications tab plus Tuesday and Thursday engager list` | start with everyone who engaged on Tuesday or Thursday and still looks qualified | `reply_w1_proof_demo` |
+| Friday | `"how do you test" ("coding agent" OR "agent workflow")` | the post asks for proof, measurement, or a concrete setup path | `reply_w1_proof_demo` |
+| Friday | `("repeated failure" OR "keeps failing") ("agent" OR "workflow")` | the post includes one failure pattern that could turn into a DM or issue intake | `reply_w1_adoption_example` |
+| Friday | `("MCP" OR "CLI") ("setup" OR "integration") ("agent" OR "workflow")` | the post asks operational fit questions rather than high-level architecture debate | `reply_w1_adoption_example` |
 
 Watchlist status rule:
 
@@ -316,23 +329,39 @@ Current seed-pool rule:
 - on Saturday, March 14, 2026, this fallback pool was upgraded from handle-only
   seeds to URL-backed adjacent-conversation targets using a public web scan
   recorded as `2026-03-14 search note` rows below
-- before Thursday, replace any colder seed with warmer Monday or Wednesday
+- before Friday, replace any colder seed with warmer Tuesday or Thursday
   engagers first; the seed pool exists so Dan does not start from a blank tab
 
 | Day | Handle or post URL | Validated at | Why this target fits ACE | Pain signal to match | Likely first code | Backup code | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Tuesday | `https://x.com/LangChain/status/2025368775780925654` | `2026-03-14 search note` | public harness-engineering discussion around thousands of coding agents maps directly to ACE's context-control and inspectability thesis | agent harness pressure, system-prompt sprawl, or execution flow drift | `reply_w1_thread_readme` | `dm_w1_readme` | queued | public web scan on 2026-03-14 found an adjacent thread about harnessing coding agents at scale; keep if the conversation is still active on Sunday |
-| Tuesday | `https://x.com/atShruti/status/2023435572644045116` | `2026-03-14 search note` | persistent-memory discussion matches ACE's claim that context must survive and improve across sessions, not reset every run | weak memory, lost context, or restart friction | `reply_w1_thread_readme` | `dm_w1_readme` | queued | good fit when the thread is about a memory layer that actually picks up where the workflow left off |
-| Tuesday | `https://x.com/dair_ai/status/2025707116653339077` | `2026-03-14 search note` | memory-recall versus action-quality discussion is a clean opening for ACE's retrieve-plus-update framing | memory recall without correct downstream action | `reply_w1_thread_readme` | `dm_w1_example_doc` | queued | use when the conversation is about memory quality translating into better decisions rather than generic LLM memory hype |
-| Tuesday | `https://x.com/aakashgupta/status/2026367615602667784` | `2026-03-14 search note` | agent distribution and product-surface discussion ties ACE to practical delivery through CLI, MCP, docs, and community | MCP workflow design, docs-to-adoption routing, or productized agent distribution | `reply_w1_adoption_example` | `dm_w1_example_doc` | queued | best when the thread is already about how agent products get adopted through real surfaces, not just category talk |
-| Tuesday | `https://x.com/code_rams/status/2026428310402572726` | `2026-03-14 search note` | CLI-plus-docs-plus-skills-plus-MCP discussion sits close to ACE's practical setup path and tool-surface message | CLI workflow design, markdown docs, or MCP-enabled setup flow | `reply_w1_adoption_example` | `dm_w1_mcp_guide` | queued | use when the thread is operational and the next move is a setup path instead of a pure thesis reply |
-| Thursday | `https://x.com/BrendanPlayford/status/2019658429095461110` | `2026-03-14 search note` | long-run coding-agent freshness discussion is a proof-first opening for ACE's inspectable update loop | long-run agent freshness, convergence, or prompt-and-rules drift | `reply_w1_proof_demo` | `dm_w1_example_doc` | queued | good Thursday target if Wednesday proof needs a stronger answer to whether the loop stays useful over long runs |
-| Thursday | `https://x.com/0xSuman/status/2025384088497275320` | `2026-03-14 search note` | app-server plus CLI integration thread maps to ACE's implementation-fit and workflow-routing story | app-server integration, CLI orchestration, or workflow-fit questions | `reply_w1_adoption_example` | `dm_w1_api_ref` | queued | use when the thread is about connecting agent surfaces rather than only discussing model quality |
-| Thursday | `https://x.com/oikon48/status/2026344594397606070` | `2026-03-14 search note` | context, MCP-versus-skills, and `/clear` ergonomics give ACE a clean proof-to-adoption angle | context hygiene, MCP versus skills, or tool-state reset problems | `reply_w1_proof_demo` | `dm_w1_mcp_guide` | queued | useful when Wednesday proof sparks toolchain questions about how the context layer fits the rest of the agent stack |
-| Thursday | `https://x.com/itsolelehmann/status/2026559843109306774` | `2026-03-14 search note` | file-based agent context discussion aligns with ACE's reusable, inspectable playbook surface | file-driven instructions, context durability, or agent memory ergonomics | `reply_w1_proof_demo` | `dm_w1_example_doc` | queued | keep if the thread still shows builders comparing persistent files against hidden prompt state on Sunday |
-| Thursday | `https://x.com/degensing/status/2026578817016566047` | `2026-03-14 search note` | markdown instructions, verified process, and read-only guardrails sit close to ACE's governable adoption story | governed setup, instruction files, or repeated workflow verification | `reply_w1_adoption_example` | `dm_w1_example_doc` | queued | strong follow-up target when the conversation is about making agent workflows inspectable and repeatable, not only faster |
+| Wednesday | `https://x.com/LangChain/status/2025368775780925654` | `2026-03-14 search note` | public harness-engineering discussion around thousands of coding agents maps directly to ACE's context-control and inspectability thesis | agent harness pressure, system-prompt sprawl, or execution flow drift | `reply_w1_thread_readme` | `dm_w1_readme` | queued | public web scan on 2026-03-14 found an adjacent thread about harnessing coding agents at scale; keep if the conversation is still active on launch day |
+| Wednesday | `https://x.com/atShruti/status/2023435572644045116` | `2026-03-14 search note` | persistent-memory discussion matches ACE's claim that context must survive and improve across sessions, not reset every run | weak memory, lost context, or restart friction | `reply_w1_thread_readme` | `dm_w1_readme` | queued | good fit when the thread is about a memory layer that actually picks up where the workflow left off |
+| Wednesday | `https://x.com/dair_ai/status/2025707116653339077` | `2026-03-14 search note` | memory-recall versus action-quality discussion is a clean opening for ACE's retrieve-plus-update framing | memory recall without correct downstream action | `reply_w1_thread_readme` | `dm_w1_example_doc` | queued | use when the conversation is about memory quality translating into better decisions rather than generic LLM memory hype |
+| Wednesday | `https://x.com/aakashgupta/status/2026367615602667784` | `2026-03-14 search note` | agent distribution and product-surface discussion ties ACE to practical delivery through CLI, MCP, docs, and community | MCP workflow design, docs-to-adoption routing, or productized agent distribution | `reply_w1_adoption_example` | `dm_w1_example_doc` | queued | best when the thread is already about how agent products get adopted through real surfaces, not just category talk |
+| Wednesday | `https://x.com/code_rams/status/2026428310402572726` | `2026-03-14 search note` | CLI-plus-docs-plus-skills-plus-MCP discussion sits close to ACE's practical setup path and tool-surface message | CLI workflow design, markdown docs, or MCP-enabled setup flow | `reply_w1_adoption_example` | `dm_w1_mcp_guide` | queued | use when the thread is operational and the next move is a setup path instead of a pure thesis reply |
+| Friday | `https://x.com/BrendanPlayford/status/2019658429095461110` | `2026-03-14 search note` | long-run coding-agent freshness discussion is a proof-first opening for ACE's inspectable update loop | long-run agent freshness, convergence, or prompt-and-rules drift | `reply_w1_proof_demo` | `dm_w1_example_doc` | queued | good Friday target if Thursday proof needs a stronger answer to whether the loop stays useful over long runs |
+| Friday | `https://x.com/0xSuman/status/2025384088497275320` | `2026-03-14 search note` | app-server plus CLI integration thread maps to ACE's implementation-fit and workflow-routing story | app-server integration, CLI orchestration, or workflow-fit questions | `reply_w1_adoption_example` | `dm_w1_api_ref` | queued | use when the thread is about connecting agent surfaces rather than only discussing model quality |
+| Friday | `https://x.com/oikon48/status/2026344594397606070` | `2026-03-14 search note` | context, MCP-versus-skills, and `/clear` ergonomics give ACE a clean proof-to-adoption angle | context hygiene, MCP versus skills, or tool-state reset problems | `reply_w1_proof_demo` | `dm_w1_mcp_guide` | queued | useful when Thursday proof sparks toolchain questions about how the context layer fits the rest of the agent stack |
+| Friday | `https://x.com/itsolelehmann/status/2026559843109306774` | `2026-03-14 search note` | file-based agent context discussion aligns with ACE's reusable, inspectable playbook surface | file-driven instructions, context durability, or agent memory ergonomics | `reply_w1_proof_demo` | `dm_w1_example_doc` | queued | keep if the thread still shows builders comparing persistent files against hidden prompt state on launch day |
+| Friday | `https://x.com/degensing/status/2026578817016566047` | `2026-03-14 search note` | markdown instructions, verified process, and read-only guardrails sit close to ACE's governable adoption story | governed setup, instruction files, or repeated workflow verification | `reply_w1_adoption_example` | `dm_w1_example_doc` | queued | strong follow-up target when the conversation is about making agent workflows inspectable and repeatable, not only faster |
 
 ## Monday, March 16, 2026 Raw Capture
+
+Motion: missed recovery and blocker capture
+
+### Recovery Facts
+
+- blocked or slipped at:
+- missing surfaces:
+- next governed live window:
+- launch-log row updated:
+- next checks due: Tuesday `11:00-11:30` ET anchor window
+
+### Notes
+
+### Friction Notes
+
+## Tuesday, March 17, 2026 Raw Capture
 
 Motion: anchor thread
 Post code: `w1_thread_readme`
@@ -371,7 +400,7 @@ Post code: `w1_thread_readme`
 
 - 
 
-## Tuesday, March 17, 2026 Raw Capture
+## Wednesday, March 18, 2026 Raw Capture
 
 Motion: adjacent conversation distribution pass
 
@@ -392,7 +421,7 @@ Motion: adjacent conversation distribution pass
 
 - 
 
-## Wednesday, March 18, 2026 Raw Capture
+## Thursday, March 19, 2026 Raw Capture
 
 Motion: proof post
 Post code: `w1_proof_demo`
@@ -432,7 +461,7 @@ Visual: `docs/assets/ace-proof-demo/still.svg`
 
 - 
 
-## Thursday, March 19, 2026 Raw Capture
+## Friday, March 20, 2026 Raw Capture
 
 Motion: proof-to-adoption follow-up pass
 
@@ -453,7 +482,7 @@ Motion: proof-to-adoption follow-up pass
 
 - 
 
-## Friday, March 20, 2026 Raw Capture
+## Monday, March 23, 2026 Raw Capture
 
 Motion: adoption post
 Post code: `w1_adoption_example`

@@ -6,8 +6,8 @@ Operator: Dan
 
 ## Purpose
 
-Use this as the one-screen operating surface for the live launch week from
-Monday, March 16, 2026 through Friday, March 20, 2026.
+Use this as the one-screen operating surface for the live launch sequence from
+Monday, March 16, 2026 through Monday, March 23, 2026.
 
 This file does not replace the canonical launch log. It compresses the day-of
 execution order so publishing, reply windows, DM routing, and same-day logging
@@ -44,7 +44,46 @@ Keep these surfaces open before the live window starts:
 - do not fix live launch incidents off-book; log the break first, then the
   containment move
 
+## Active Slipped Sequence
+
+Use this sequence unless a newer row in the `Launch Change Log` supersedes it.
+
+- Tuesday, March 17, 2026: publish the anchor thread
+- Wednesday, March 18, 2026: run anchor follow-up and adjacent-conversation
+  distribution
+- Thursday, March 19, 2026: publish the proof post
+- Friday, March 20, 2026: run proof-to-adoption follow-up and lock Monday
+  adoption prep
+- Monday, March 23, 2026: publish the adoption post
+
+Monday, March 16, 2026 is now a missed recovery and blocker-capture day only.
+
 ## Monday, March 16, 2026
+
+Window:
+
+- no publish window remains
+- use the day only to capture the missed recovery and switch to the slipped
+  sequence
+- next active live window is Tuesday, March 17, 2026 between `11:00` and
+  `11:30` ET
+
+Execution order:
+
+1. keep Monday publishing stopped; do not ship the anchor thread from memory
+2. record the missed recovery in the `Launch Contingency Log` and `Launch
+   Change Log` if that evidence is not already present
+3. make sure the next active operator path is explicit across the launch log,
+   command card, raw capture sheet, and publishing surface
+4. treat any live operator work after this point as Tuesday-sequence prep only
+
+Done means:
+
+- the missed recovery is logged
+- the slipped sequence is explicit
+- no stale Monday publish instruction remains on the active operator surface
+
+## Tuesday, March 17, 2026
 
 Window:
 
@@ -58,8 +97,8 @@ Execution order:
 1. paste the governed `9`-post thread from
    `plans/2026-03-13-cmo-week-one-publishing-surface.md`
 2. publish only with `w1_thread_readme`
-3. within `5` minutes, fill the Monday row in the raw `Immediate Publish QA
-   Scratchpad`
+3. within `5` minutes, fill the Tuesday anchor row in the raw `Immediate
+   Publish QA Scratchpad`
 4. if QA passes, pin the thread and record the pinned URL in the `Profile
    Surface Log`
 5. spend the first `30` minutes on high-signal replies using
@@ -79,7 +118,7 @@ Done means:
 - first qualified reply burst or DM wave is logged
 - one reuse candidate is captured
 
-## Tuesday, March 17, 2026
+## Wednesday, March 18, 2026
 
 Window:
 
@@ -89,14 +128,14 @@ Window:
 
 Execution order:
 
-1. start from the validated Tuesday watchlist in
+1. start from the validated Wednesday watchlist in
    `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`
 2. ship `3-5` adjacent-conversation replies using only approved reply codes
 3. if a builder wants category context, use README; if they want the shortest
    setup path, use the worked example
 4. move every credible `3-6` quickscore builder into DM the same day
 5. set a dated pipeline next step for every qualified builder before end of day
-6. capture the sharpest objection or phrase for Wednesday proof positioning
+6. capture the sharpest objection or phrase for Thursday proof positioning
 7. update the `Distribution Pass Log`, `Engagement Follow-Up Log`, pipeline,
    friction log, and `Content Reuse Queue`
 
@@ -104,9 +143,9 @@ Done means:
 
 - the main pass is logged
 - qualified builders have dated next steps
-- at least one Tuesday objection or language artifact is preserved
+- at least one Wednesday objection or language artifact is preserved
 
-## Wednesday, March 18, 2026
+## Thursday, March 19, 2026
 
 Window:
 
@@ -137,41 +176,46 @@ Done means:
 - strongest skeptic or workflow responder is logged
 - one proof artifact is captured for week-two reuse
 
-## Thursday, March 19, 2026
+## Friday, March 20, 2026
 
 Window:
 
 - run follow-ups between `12:00` and `13:00` ET
 - dated next steps locked by `16:00` ET
-- day-end logging by `17:30` ET
+- interim closeout check before end of day
 
 Execution order:
 
-1. start from the validated Thursday watchlist plus unresolved Monday or
-   Wednesday prospects
+1. start from the validated Friday watchlist plus unresolved Tuesday or
+   Thursday prospects
 2. complete `5` direct follow-ups across public replies and DMs
 3. default to the worked example, MCP guide, or API reference when the builder
    needs an operational next step
 4. move every `5-6` quickscore builder to a next step dated no later than
    Monday, March 23, 2026
-5. log the strongest repeated setup objection so Friday can answer it directly
-6. update the `Distribution Pass Log`, `Engagement Follow-Up Log`, pipeline,
-   friction log, and `Content Reuse Queue`
+5. log the strongest repeated setup objection so Monday adoption can answer it
+   directly
+6. lock Monday adoption readiness: exact draft, tracked URL, and first reply
+   routing
+7. update the `Distribution Pass Log`, `Engagement Follow-Up Log`, pipeline,
+   friction log, `Content Reuse Queue`, and interim scoreboard inputs
 
 Done means:
 
 - the pass is logged
 - qualified builders have dated next steps
-- Friday has one explicit objection or workflow-fit question to answer
+- Monday adoption is materially ready
+- the interim scoreboard state is explicit instead of implying week-one is
+  already complete
 
-## Friday, March 20, 2026
+## Monday, March 23, 2026
 
 Window:
 
 - publish between `10:30` and `11:00` ET
 - first reply check at `+30m`
 - deeper review at `+3h`
-- week-one closeout before end of day
+- final slipped-sequence closeout before end of day
 
 Execution order:
 
@@ -185,18 +229,18 @@ Execution order:
    public workflow issue
 7. update the `Execution Log`, `Immediate Publish QA Log`,
    `Engagement Follow-Up Log`, `Workflow Intake Log`, pipeline, friction log,
-   `Content Reuse Queue`, and Friday scoreboard inputs
-8. decide the post-launch profile state before closeout: either keep the
-   governed README-first profile surface into week two with a reason, or log
-   the exact revert or replacement surface plus when it should go live
+   `Content Reuse Queue`, and final scoreboard inputs
+8. decide the post-launch profile state after adoption follow-up: either keep
+   the governed README-first profile surface into week two with a reason, or
+   log the exact revert or replacement surface plus when it should go live
 
 Done means:
 
 - live adoption URL is logged
 - QA is complete
 - first workflow-fit reply or DM is logged
-- the week-one scoreboard inputs are complete enough for Friday closeout
-- the post-launch profile state is explicit instead of drifting past Friday by
+- the slipped-sequence scoreboard inputs are complete enough for final closeout
+- the post-launch profile state is explicit instead of drifting past Monday by
   default
 
 ## Day-End Rule
@@ -210,8 +254,8 @@ Before closing any launch day:
 4. if the live window broke, update the contingency log before exiting
 5. if any frozen launch asset changed, make sure the change also landed in the
    `Launch Change Log`
-6. on Friday, make sure the `Profile Surface Log` also records whether the
-   week-one README-first profile state stays live into week two or gets
-   replaced
+6. on the final slipped-sequence closeout day, make sure the `Profile Surface
+   Log` also records whether the week-one README-first profile state stays live
+   into week two or gets replaced
 
 If the day was messy, preserve the raw notes first and normalize them second.

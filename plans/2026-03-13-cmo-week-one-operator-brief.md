@@ -6,8 +6,8 @@ Operator: Dan
 
 ## Purpose
 
-Use this file during the live launch window from Monday, March 16, 2026 through
-Friday, March 20, 2026.
+Use this file during the live launch sequence from Monday, March 16, 2026
+through Monday, March 23, 2026.
 
 It compresses the existing week-one launch plan into one operator surface so
 Dan can publish, reply, route DMs, and log outcomes without switching across
@@ -50,7 +50,7 @@ Use these docs in this order:
 - Do not publish a weaker fallback asset if the approved asset is ready.
 - Do not let qualified replies or DMs sit unlogged for more than 24 hours.
 - Do not use generic AI language when the sharper category line is available.
-- Do not treat Tuesday and Thursday distribution as optional cleanup work.
+- Do not treat the slipped-sequence follow-up passes as optional cleanup work.
 - Do not ship an extra public post unless the tracked URL is already in the
   launch registry and the launch log has been updated first.
 - Do not let the X bio, website link, or pinned post drift away from the
@@ -84,9 +84,9 @@ scoreboard label.
 
 | Motion | Post code | Destination | Exact tracked URL |
 | --- | --- | --- | --- |
-| Monday anchor thread | `w1_thread_readme` | README | `https://github.com/DannyMac180/ACE/blob/main/README.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=w1_thread_readme` |
-| Wednesday proof post | `w1_proof_demo` | proof demo doc | `https://github.com/DannyMac180/ACE/blob/main/docs/ace-proof-demo.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=w1_proof_demo` |
-| Friday adoption post | `w1_adoption_example` | getting-started example doc | `https://github.com/DannyMac180/ACE/blob/main/docs/getting-started-example.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=w1_adoption_example` |
+| Anchor thread | `w1_thread_readme` | README | `https://github.com/DannyMac180/ACE/blob/main/README.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=w1_thread_readme` |
+| Proof post | `w1_proof_demo` | proof demo doc | `https://github.com/DannyMac180/ACE/blob/main/docs/ace-proof-demo.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=w1_proof_demo` |
+| Adoption post | `w1_adoption_example` | getting-started example doc | `https://github.com/DannyMac180/ACE/blob/main/docs/getting-started-example.md?utm_source=x&utm_medium=social&utm_campaign=ace_launch&utm_content=w1_adoption_example` |
 
 ## Sunday, March 15, 2026 Preflight
 
@@ -192,6 +192,18 @@ been missed with no governed proof logged in the Sunday receipt or gate row.
   `plans/2026-03-16-cmo-launch-operations-log.md` first so the live schedule
   is explicit instead of implied
 
+## Active Slipped Sequence
+
+Use this sequence unless a newer row in the `Launch Change Log` supersedes it.
+
+- Tuesday, March 17, 2026: publish the anchor thread
+- Wednesday, March 18, 2026: run anchor follow-up and adjacent-conversation
+  distribution
+- Thursday, March 19, 2026: publish the proof post
+- Friday, March 20, 2026: run proof-to-adoption follow-up and lock Monday
+  adoption prep
+- Monday, March 23, 2026: publish the adoption post
+
 ## Default Publish And Check Windows
 
 Use these as the default scheduler and follow-up windows in Eastern Time.
@@ -202,11 +214,12 @@ live capture sheet before launch week starts.
 
 | Day | Publish or pass window | First reply check | Deep follow-up check | End-of-day logging |
 | --- | --- | --- | --- | --- |
-| Monday, March 16, 2026 | publish between `11:00` and `11:30` ET | `+30m` after publish | `+3h` after publish | by `17:30` ET |
-| Tuesday, March 17, 2026 | run the adjacent-conversation pass between `12:00` and `13:00` ET | halfway through the pass | by `16:00` ET for DM routing | by `17:30` ET |
-| Wednesday, March 18, 2026 | publish between `11:00` and `11:30` ET | `+30m` after publish | `+3h` after publish | by `17:30` ET |
-| Thursday, March 19, 2026 | run direct follow-ups between `12:00` and `13:00` ET | halfway through the pass | by `16:00` ET for dated next steps | by `17:30` ET |
-| Friday, March 20, 2026 | publish between `10:30` and `11:00` ET | `+30m` after publish | `+3h` after publish | by `17:30` ET |
+| Monday, March 16, 2026 | blocker logging only; no remaining publish window | n/a | next check is Tuesday `11:00` ET anchor window | by `17:30` ET |
+| Tuesday, March 17, 2026 | publish between `11:00` and `11:30` ET | `+30m` after publish | `+3h` after publish | by `17:30` ET |
+| Wednesday, March 18, 2026 | run the adjacent-conversation pass between `12:00` and `13:00` ET | halfway through the pass | by `16:00` ET for DM routing | by `17:30` ET |
+| Thursday, March 19, 2026 | publish between `11:00` and `11:30` ET | `+30m` after publish | `+3h` after publish | by `17:30` ET |
+| Friday, March 20, 2026 | run direct follow-ups between `12:00` and `13:00` ET | halfway through the pass | by `16:00` ET for dated next steps | by `17:30` ET |
+| Monday, March 23, 2026 | publish between `10:30` and `11:00` ET | `+30m` after publish | `+3h` after publish | by `17:30` ET |
 
 ## Live Failure Rules
 
@@ -244,20 +257,20 @@ Use this if Dan has to alter a frozen launch asset after the Sunday gate.
 
 ## Immediate Publish QA
 
-Use this within `5` minutes of every Monday, Wednesday, and Friday publish
+Use this within `5` minutes of every anchor, proof, and adoption publish
 before broad replies, pinning, or metric interpretation.
 
 1. paste the live post URL into `plans/2026-03-13-cmo-week-one-live-capture-sheet.md`
 2. confirm the tracked URL in the live post still matches the approved launch
    code exactly
 3. confirm the live unit shipped in the right shape:
-   - Monday: connected `9`-post thread
-   - Wednesday: `docs/assets/ace-proof-demo/still.svg` attached and rendering
-   - Friday: worked-example CTA still points to `w1_adoption_example`
+   - anchor thread: connected `9`-post thread
+   - proof post: `docs/assets/ace-proof-demo/still.svg` attached and rendering
+   - adoption post: worked-example CTA still points to `w1_adoption_example`
 4. if any check fails, stop the reply wave, capture the break in the live
    capture sheet, and move it into the `Launch Contingency Log` before trying
    again
-5. only pin the Monday thread after this QA pass is complete
+5. only pin the anchor thread after this QA pass is complete
 
 ## Checkpoint Response Rules
 
@@ -270,12 +283,12 @@ decision into the `Checkpoint Decision Log` in
 
 | Motion | Checkpoint | If this is true | Required move |
 | --- | --- | --- | --- |
-| Monday anchor thread | `+30m` | engagement rate under `1.5%` or fewer than `2` meaningful builder replies | spend the next `30` minutes on thesis-clarifying public replies with `reply_w1_thread_readme`; do not change the tracked URL and do not add a new post |
-| Monday anchor thread | `+3h` | README clicks under `10` | pin the thread if the live URL is verified, run `2-3` adjacent-conversation replies from the Tuesday watchlist using `reply_w1_thread_readme`, and note that Wednesday must sharpen the proof hook instead of repeating more category language |
-| Tuesday distribution pass | EOD | fewer than `2` builders moved into DM or the design-partner pipeline | queue `2` proof-skeptic or workflow-fit targets for Wednesday from the watchlist and tighten Wednesday first replies around inspectability plus one concrete failure-pattern ask |
-| Wednesday proof post | `+3h` | proof clicks under `5` or saves or bookmarks under `5` | use `reply_w1_proof_demo` on the strongest technical skeptic, DM the highest-fit responder for one workflow plus repeated failure pattern, and make Friday lead with workflow fit instead of more loop mechanics |
-| Thursday follow-up pass | EOD | fewer than `2` qualified prospects have a dated next step | make Friday's first reply and first DM ask directly for one repeated failure pattern, default to `dm_w1_example_doc`, and push the best public-fit case toward `issue_w1_failure_pattern` |
-| Friday adoption post | `+3h` or EOD | fewer than `2` setup-start signals or no public workflow report exists yet | spend the remaining window on `1:1` follow-up with the top `3` responders, route the best public-fit workflow into `issue_w1_failure_pattern`, and log the miss explicitly if no builder qualifies |
+| Anchor thread | `+30m` | engagement rate under `1.5%` or fewer than `2` meaningful builder replies | spend the next `30` minutes on thesis-clarifying public replies with `reply_w1_thread_readme`; do not change the tracked URL and do not add a new post |
+| Anchor thread | `+3h` | README clicks under `10` | pin the thread if the live URL is verified, run `2-3` adjacent-conversation replies from the Wednesday watchlist using `reply_w1_thread_readme`, and note that Thursday must sharpen the proof hook instead of repeating more category language |
+| Anchor follow-up pass | EOD | fewer than `2` builders moved into DM or the design-partner pipeline | queue `2` proof-skeptic or workflow-fit targets for Thursday from the watchlist and tighten Thursday first replies around inspectability plus one concrete failure-pattern ask |
+| Proof post | `+3h` | proof clicks under `5` or saves or bookmarks under `5` | use `reply_w1_proof_demo` on the strongest technical skeptic, DM the highest-fit responder for one workflow plus repeated failure pattern, and make Monday lead with workflow fit instead of more loop mechanics |
+| Proof-to-adoption follow-up pass | EOD | fewer than `2` qualified prospects have a dated next step | make Monday's first reply and first DM ask directly for one repeated failure pattern, default to `dm_w1_example_doc`, and push the best public-fit case toward `issue_w1_failure_pattern` |
+| Adoption post | `+3h` or EOD | fewer than `2` setup-start signals or no public workflow report exists yet | spend the remaining window on `1:1` follow-up with the top `3` responders, route the best public-fit workflow into `issue_w1_failure_pattern`, and log the miss explicitly if no builder qualifies |
 
 ## Compounding Capture Rule
 
@@ -291,8 +304,8 @@ After every meaningful publish, reply burst, or DM wave:
   workflow issue that clearly names a repeated failure
 - move the best artifact the same day into the `Content Reuse Queue` in
   `plans/2026-03-16-cmo-launch-operations-log.md`
-- leave Friday with at least `3` concrete reuse candidates for week two, not
-  just a filled scoreboard
+- leave the final slipped-sequence closeout with at least `3` concrete reuse
+  candidates for week two, not just a filled scoreboard
 
 ## Routing Matrix
 
@@ -312,6 +325,32 @@ Use the next link based on the builder's question:
 
 Primary job:
 
+- stop the missed recovery from turning into an off-book launch motion
+
+Recovery handling:
+
+- do not publish the anchor thread from memory or the old Monday window
+- treat the launch as slipped and use the current dated sequence instead
+- make sure the canonical launch log, command card, publishing surface, and raw
+  capture sheet all point at the same Tuesday, Thursday, and Monday dates
+
+Same-day follow-up:
+
+- log the missed recovery and blocker state explicitly instead of leaving Monday
+  ambiguous
+- make sure Dan knows Tuesday is now the live anchor-thread day
+- preserve any proof about missing surfaces so the same slip is not re-litigated
+  from memory later
+
+Same-day success check:
+
+- the slip is explicit everywhere
+- no stale Monday publish instruction remains on the active operator surfaces
+
+## Tuesday, March 17, 2026
+
+Primary job:
+
 - make builders repeat back `Agentic Context Engineering`
 
 Publish:
@@ -324,18 +363,18 @@ Same-day follow-up:
 
 - reply to the first 10 high-signal comments
 - move qualified builders to DM the same day
-- pin the Monday anchor thread after the live URL is verified and before end of
-  day so profile visitors hit the same governed thesis; do not pin before the
-  immediate publish QA checks pass
-- record the pinned-thread URL plus the Monday `+3h` and `EOD` profile visits
+- pin the Tuesday anchor thread after the live URL is verified and before end
+  of day so profile visitors hit the same governed thesis; do not pin before
+  the immediate publish QA checks pass
+- record the pinned-thread URL plus the Tuesday `+3h` and `EOD` profile visits
   in the live capture sheet so the profile-surface lift can be transferred into
   the launch log the same day
 - use `plans/2026-03-13-cmo-week-one-response-bank.md` for the exact first
   reply and DM opener instead of improvising
 - log the live post URL, first metric snapshot, and first qualified reply burst
-- capture at least one Monday artifact for reuse, ideally a screenshot-worthy
+- capture at least one Tuesday artifact for reuse, ideally a screenshot-worthy
   click or profile-lift jump, a clean builder restatement of the thesis, or a
-  repeated pain phrase worth recycling into the next thread
+  repeated pain phrase worth recycling into the proof post
 - keep the first `30` minutes open for replies, then do one deeper pass around
   `+3h`
 
@@ -343,42 +382,37 @@ Same-day success check:
 
 - at least `20` README clicks in 24 hours
 - at least `2.5%` engagement rate
-- at least `3` meaningful builder replies by Tuesday if Monday underperforms
+- at least `3` meaningful builder replies by Wednesday if Tuesday underperforms
 
-## Tuesday, March 17, 2026
+## Wednesday, March 18, 2026
 
 Primary job:
 
-- compound the Monday thesis into qualified conversations before the thread
+- compound the Tuesday thesis into qualified conversations before the thread
   cools off
 
 Distribution pass:
 
-- run `3-5` reply-distribution comments on adjacent X conversations about prompt
-  drift, long system prompts, agent memory failures, MCP workflow design, or
-  eval regressions caused by weak context
+- run `3-5` reply-distribution comments on adjacent X conversations about
+  prompt drift, long system prompts, agent memory failures, MCP workflow
+  design, or eval regressions caused by weak context
 - use only approved week-one reply or DM codes from
   `plans/2026-03-16-cmo-launch-operations-log.md`
 - if a conversation is category-curious, route to README first; if the builder
   wants the shortest setup path, route to the worked example instead
-- do not publish a net-new public Tuesday post unless the tracked-link registry
-  is updated first; the default Tuesday motion is distribution, not a fresh
-  campaign asset
+- do not publish a net-new public Wednesday post; the active Wednesday motion
+  is distribution, not a second public asset
 
 Same-day follow-up:
 
 - move any `3-6` quickscore builder into DM the same day
 - use the response bank's adjacent-conversation prompts instead of improvising
-- work from the prefilled Tuesday watchlist in the live capture sheet before
-  searching for new conversations from scratch; if the initial queue is weak,
-  use the watchlist search seeds in that same file in priority order
-- treat handle-only seed rows as a starting pool, not a validated queue; before
-  the pass starts, prefer rows that already carry a live post URL or a dated
-  search note from the last `72h`
+- work from the prefilled Wednesday watchlist in the live capture sheet before
+  searching for new conversations from scratch
 - log each distribution pass, qualified reply burst, and DM thread before the
   day ends
-- capture the sharpest Tuesday objection or reply wording for reuse so the
-  Wednesday proof post or first replies can meet the exact language builders
+- capture the sharpest Wednesday objection or reply wording for reuse so the
+  Thursday proof post or first replies can meet the exact language builders
   used
 - complete the main pass before `13:00` ET and the DM-routing cleanup before
   `16:00` ET unless a stronger live conversation is still active
@@ -388,11 +422,11 @@ Same-day success check:
 - at least `3` adjacent-conversation replies shipped
 - at least `2` high-signal builders moved into DM or the design-partner
   pipeline
-- if Monday README clicks are still under `20` by end of day, tighten the
-  Wednesday proof hook around inspectability instead of repeating more thesis
+- if Tuesday README clicks are still under `20` by end of day, tighten the
+  Thursday proof hook around inspectability instead of repeating more thesis
   language
 
-## Wednesday, March 18, 2026
+## Thursday, March 19, 2026
 
 Primary job:
 
@@ -402,8 +436,8 @@ Publish:
 
 - use the proof post from `plans/2026-03-11-cmo-launch-copy-pack.md`
 - paste from `plans/2026-03-13-cmo-week-one-publishing-surface.md`
-- attach `docs/assets/ace-proof-demo/still.svg` unless an approved better asset
-  exists before publishing
+- attach `docs/assets/ace-proof-demo/still.svg` unless an approved better
+  asset exists before publishing
 - use only `w1_proof_demo`
 
 Same-day follow-up:
@@ -415,7 +449,7 @@ Same-day follow-up:
 - if a builder can already describe the workflow and repeated failure clearly,
   ask for the public issue template instead of burying the useful details in DM
 - log every save-worthy or technically serious response in the launch log
-- capture at least one reusable proof artifact from Wednesday, ideally a
+- capture at least one reusable proof artifact from Thursday, ideally a
   technical objection, a strong save or bookmark signal, or a public workflow
   report that can anchor a week-two proof unit
 - keep the first `30` minutes open for replies, then do one deeper pass around
@@ -427,16 +461,16 @@ Same-day success check:
 - at least `10` saves or bookmarks
 - at least `2` prospects who can describe a real repeated failure pattern
 
-## Thursday, March 19, 2026
+## Friday, March 20, 2026
 
 Primary job:
 
-- turn Monday and Wednesday attention into concrete setup intent before the
-  Friday adoption post lands
+- turn Tuesday and Thursday attention into concrete setup intent before the
+  Monday adoption post lands
 
 Distribution pass:
 
-- review every Wednesday proof reply plus any unresolved Monday prospect and
+- review every Thursday proof reply plus any unresolved Tuesday prospect and
   send `5` direct follow-ups across public replies and DMs
 - prioritize builders who asked how ACE fits an existing workflow, challenged
   the proof mechanism, or hinted at a repeated failure pattern
@@ -446,30 +480,27 @@ Distribution pass:
 
 Same-day follow-up:
 
-- log every direct follow-up in the distribution or engagement logs the same day
+- log every direct follow-up in the distribution or engagement logs the same
+  day
 - move every `5-6` quickscore builder to a concrete next step dated no later
   than Monday, March 23, 2026
-- start with the Thursday watchlist in the live capture sheet so proof
-  responders and unresolved Monday prospects are triaged in priority order; use
-  the Thursday search seeds only after those warmer targets are exhausted
-- prefer rows that already carry a live post URL or a dated validation note so
-  Thursday follow-up starts from concrete proof or workflow threads, not a
-  generic account list
-- note the strongest repeated setup objection so Friday copy and replies can
-  meet it directly
-- promote the strongest Thursday setup objection or workflow-fit question into
-  the reuse queue the same day so Friday or week two can answer it publicly
+- start with the Friday watchlist in the live capture sheet so proof
+  responders and unresolved Tuesday prospects are triaged in priority order
+- note the strongest repeated setup objection so Monday adoption copy and
+  replies can meet it directly
+- promote the strongest Friday setup objection or workflow-fit question into
+  the reuse queue the same day so Monday or week two can answer it publicly
 - complete the main pass before `13:00` ET and lock dated next steps before
   `16:00` ET unless a high-signal thread is still moving
 
 Same-day success check:
 
 - at least `5` direct follow-ups completed
-- at least `2` qualified prospects have a dated next step before Friday close
-- the Friday adoption motion is informed by one real objection or failure
-  pattern from this week
+- at least `2` qualified prospects have a dated next step before Monday close
+- the Monday adoption motion is informed by one real objection or failure
+  pattern from this sequence
 
-## Friday, March 20, 2026
+## Monday, March 23, 2026
 
 Primary job:
 
@@ -484,14 +515,14 @@ Publish:
 Same-day follow-up:
 
 - ask strong responders for one concrete repeated failure pattern
-- send `dm_w1_example_doc` first unless the builder asks directly for MCP or API
-  detail
+- send `dm_w1_example_doc` first unless the builder asks directly for MCP or
+  API detail
 - route any builder who can clearly document the workflow into
-  `issue_w1_failure_pattern` so Friday creates at least one reusable public
+  `issue_w1_failure_pattern` so adoption creates at least one reusable public
   artifact instead of only private follow-up
 - use the response bank qualification prompts instead of ad hoc discovery
 - log the first concrete workflow reply even if it does not qualify for a call
-- capture at least one Friday artifact for reuse, ideally the cleanest setup
+- capture at least one Monday artifact for reuse, ideally the cleanest setup
   objection, the best workflow issue opened from live traffic, or the strongest
   reply proving setup intent
 - keep the first `30` minutes open for replies, then do one deeper pass around
@@ -501,7 +532,7 @@ Same-day success check:
 
 - at least `3` setup-start signals or concrete workflow replies
 - at least `1` GitHub issue or discussion opened from live audience traffic
-- Friday closeout row is complete before the week ends
+- the slipped-sequence closeout row is complete before the day ends
 
 ## Qualification Rule
 
